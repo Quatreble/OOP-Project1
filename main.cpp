@@ -2,6 +2,9 @@
 #include <string>
 using namespace std;
 
+
+int Person::pCount = 0;
+
 class Person{
 private:
     static int pCount;
@@ -33,7 +36,10 @@ public:
     friend istream& operator>>(std::istream& is, Person& p);
 };
 
-int Person::pCount = 0;
+class Secretary{
+    //map me pointers sta persons
+};
+
 
 int Person::getCount(){
     return pCount;
