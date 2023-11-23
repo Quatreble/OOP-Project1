@@ -3,7 +3,7 @@
 using namespace std;
 
 class Secretary{
-//contains map with pointers to Person instances
+    //contains map with pointers to Person instances
 };
 
 class Person{
@@ -44,6 +44,17 @@ public:
     friend istream& operator>>(std::istream& is, Person& p);
 };
 
+//testarw
+
+int main(){
+    Person student;
+    cin >> student;
+    cout << student;
+    cout << "Number of persons: " << Person::getCount() << endl;
+
+
+}
+
 int Person::pCount = 0;
 
 int Person::getCount(){
@@ -78,9 +89,3 @@ istream& operator>>(std::istream& is, Person& p){
     return is >> p.firstName >> p.lastName >> p.idCode;
 }
 
-int main(){
-    Person student;
-    cin >> student;
-    cout << student;
-    cout << "Number of persons: " << Person::getCount() << endl;
-}
