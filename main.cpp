@@ -3,24 +3,54 @@
 using namespace std;
 
 class Person{
-public:
-    string first_name;
-    string last_name;
+private:
+    static int pCount;
+    string firstName;
+    string lastName;
     int age;
-    string id_code;
+    string idCode;
 public:
-    Person(string f_name, string l_name)
-    : first_name(f_name), last_name(l_name)
-    {}
-
-    ~Person(){
-        cout << "Destructed!";
+    Person()
+    : firstName(""), lastName(""), idCode("")
+    {
+        cout << "Constructed!" << endl;
+        pCount++;
     }
 
+    Person(string fName, string lName, string id)
+    : firstName(fName), lastName(lName), idCode(id)
+    {
+        pCount++;
+    }
 
+    ~Person(){
+        cout << "Destructed " << firstName << " " << lastName << "!" << '\n';
+        pCount--;
+    }
+
+    static int getCount();
+    friend ostream& operator<<(std::ostream& os, const Person& p);
+    friend istream& operator>>(std::istream& is, Person& p);
 };
 
+int Person::pCount = 0;
+
+int Person::getCount(){
+    return pCount;
+}
+
+ostream& operator<<(ostream& os, const Person& p) {
+    return os << "Name: " << p.firstName << " " << p.lastName << endl << "ID code: " << p.idCode << endl;
+}
+
+istream& operator>>(std::istream& is, Person& p){
+    return is >> p.firstName >> p.lastName >> p.idCode;
+}
+
 int main(){
-    Person elpida("elpida", "stergiou");
-    cout << elpida.first_name << " " << elpida.last_name << endl;
+    Person elpida;
+    cin >> elpida;
+    cout << elpida;
+ 
+    cout << "Number of persons: " << Person::getCount() << endl;
 }
