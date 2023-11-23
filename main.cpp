@@ -3,9 +3,9 @@
 using namespace std;
 
 class Secretary{
-    //map me pointers sta persons
+//contains map with pointers to Person instances
 };
-//geiaaaaaa
+
 class Person{
 private:
     static int pCount;
