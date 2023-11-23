@@ -33,6 +33,8 @@ public:
     void setAge();
     int getAge();
     string getName();
+    string getLastName();
+    string getIdCode();
     friend ostream& operator<<(std::ostream& os, const Person& p);
     friend istream& operator>>(std::istream& is, Person& p);
 };
@@ -58,6 +60,14 @@ int Person::getAge(){
 
 string Person::getName(){
     return firstName;
+}
+
+string Person::getLastName(){
+    return lastName;
+}
+
+string Person::getIdCode(){
+    return idCode;
 }
 
 ostream& operator<<(ostream& os, const Person& p) {
