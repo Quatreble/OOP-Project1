@@ -2,6 +2,9 @@
 #include <string>
 using namespace std;
 
+class Secretary{
+    //map me pointers sta persons
+};
 
 class Person{
 private:
@@ -30,35 +33,24 @@ public:
     }
 
     static int getCount();
-    void setAge();
-    int getAge();
-    string getName();
+    string getFirstName();
     string getLastName();
     string getIdCode();
+    int getAge();
+
+    void setAge(int age);
+
     friend ostream& operator<<(std::ostream& os, const Person& p);
     friend istream& operator>>(std::istream& is, Person& p);
 };
 
 int Person::pCount = 0;
 
-class Secretary{
-    //map me pointers sta persons
-};
-
-
 int Person::getCount(){
     return pCount;
 }
 
-void Person::setAge(){
-    cin >> age;
-}
-
-int Person::getAge(){
-    return age;
-}
-
-string Person::getName(){
+string Person::getFirstName(){
     return firstName;
 }
 
@@ -68,6 +60,14 @@ string Person::getLastName(){
 
 string Person::getIdCode(){
     return idCode;
+}
+
+int Person::getAge(){
+    return age;
+}
+
+void Person::setAge(int age){
+    this->age = age;
 }
 
 ostream& operator<<(ostream& os, const Person& p) {
