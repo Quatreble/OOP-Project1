@@ -3,8 +3,6 @@
 using namespace std;
 
 
-int Person::pCount = 0;
-
 class Person{
 private:
     static int pCount;
@@ -32,9 +30,14 @@ public:
     }
 
     static int getCount();
+    void setAge();
+    int getAge();
+    string getName();
     friend ostream& operator<<(std::ostream& os, const Person& p);
     friend istream& operator>>(std::istream& is, Person& p);
 };
+
+int Person::pCount = 0;
 
 class Secretary{
     //map me pointers sta persons
@@ -43,6 +46,18 @@ class Secretary{
 
 int Person::getCount(){
     return pCount;
+}
+
+void Person::setAge(){
+    cin >> age;
+}
+
+int Person::getAge(){
+    return age;
+}
+
+string Person::getName(){
+    return firstName;
 }
 
 ostream& operator<<(ostream& os, const Person& p) {
@@ -54,9 +69,8 @@ istream& operator>>(std::istream& is, Person& p){
 }
 
 int main(){
-    Person elpida;
-    cin >> elpida;
-    cout << elpida;
- 
+    Person student;
+    cin >> student;
+    cout << student;
     cout << "Number of persons: " << Person::getCount() << endl;
 }
