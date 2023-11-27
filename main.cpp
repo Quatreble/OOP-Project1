@@ -1,10 +1,7 @@
 #include <iostream>
 #include <string>
+#include <map>
 using namespace std;
-
-class Secretary{
-    //contains map with pointers to Person instances
-};
 
 class Person{
 private:
@@ -27,9 +24,13 @@ public:
         pCount++;
     }
 
+    Person(const Person& p) //pros to paron den auksanei to pcount
+    : firstName(p.firstName), lastName(p.lastName), age(p.age), idCode(p.idCode)
+    {}
+
     ~Person(){
         cout << "Destructed " << firstName << " " << lastName << "!" << '\n';
-        pCount--;
+        // pCount--;
     }
 
     static int getCount();
@@ -44,16 +45,60 @@ public:
     friend istream& operator>>(std::istream& is, Person& p);
 };
 
+class Secretary{
+private:
+    map<string, Person*> myMap;
+public:
+    Secretary(){
+        cout<<"Secretary constructed!"<<endl;
+        cout<<"People in secretary: " << myMap.size()<<endl;
+    }
+
+    ~Secretary(){
+        for(auto it = myMap.begin(); it != myMap.end(); ++it){
+            cout << "deleted " << it->first << endl;
+            delete it->second;
+
+        }
+    }
+
+    void addPerson(const Person& p){
+        Person* newP = new Person(p);
+        myMap.insert(make_pair(newP->getIdCode(), newP));
+    }
+
+    bool findPerson(const string& id){
+        auto it = myMap.find(id);
+        if(it != myMap.end()){
+            cout << "Person found!" << endl;
+            return true;
+        }
+        cout << "Person not found:(" << endl;
+        return false;
+    }
+
+    void removePerson(string id){
+        auto it = myMap.find(id);
+        delete it->second;
+        myMap.erase(id);
+        cout << "removed person vohtheia" << endl;
+    }
+
+    void printSecSize(){
+        cout << "People in secretary: " << myMap.size() << endl;
+    }
+};
+
 //testarw
 //testarw k egw <3
 
 int main(){
-    Person student;
-    cin >> student;
-    cout << student;
-    cout << "Number of persons: " << Person::getCount() << endl;
-
-
+    Person elpida("Elpida", "Stergiou", "sdi2200173");
+    Secretary sec;
+    sec.addPerson(elpida);
+    sec.findPerson("sdi2200173");
+    sec.printSecSize();
+    sec.removePerson(elpida.getIdCode());
 }
 
 int Person::pCount = 0;
