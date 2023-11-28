@@ -129,7 +129,7 @@ public:
 
     friend ostream& operator<<(ostream& os, Secretary& secretary);
 
-    Secretary operator+=(Person& p){
+    Secretary& operator+=(Person& p){
         addPerson(p);
         return *this;
     }
