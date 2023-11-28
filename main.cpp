@@ -1,20 +1,20 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <vector>
 using namespace std;
 
 class Person{
-private:
+protected:
     static int pCount;
+
     string firstName;
     string lastName;
-    int age;
     string idCode;
 public:
     Person()
     : firstName(""), lastName(""), idCode("")
     {
-        cout << "Constructed!" << endl;
         pCount++;
     }
 
@@ -25,11 +25,11 @@ public:
     }
 
     Person(const Person& p) //pros to paron den auksanei to pcount
-    : firstName(p.firstName), lastName(p.lastName), age(p.age), idCode(p.idCode)
+    : firstName(p.firstName), lastName(p.lastName), idCode(p.idCode)
     {}
 
-    ~Person(){
-        cout << "Destructed " << firstName << " " << lastName << "!" << '\n';
+    virtual ~Person(){
+     //   cout << "Destructed " << firstName << " " << lastName << '\n';
         // pCount--;
     }
 
@@ -37,68 +37,176 @@ public:
     string getFirstName();
     string getLastName();
     string getIdCode();
-    int getAge();
-
-    void setAge(int age);
 
     friend ostream& operator<<(std::ostream& os, const Person& p);
     friend istream& operator>>(std::istream& is, Person& p);
 };
 
-class Secretary{
-private:
-    map<string, Person*> myMap;
+class Student : public Person {
 public:
-    Secretary(){
-        cout<<"Secretary constructed!"<<endl;
-        cout<<"People in secretary: " << myMap.size()<<endl;
+    Student()
+    : Person()
+    {
+        cout << "Constructed faculty!" << endl;
+    }
+
+    Student(string fName, string lName, string id)
+    : Person(fName, lName, id)
+    {
+        cout << "Constructed student!" << endl;
+    }
+
+    Student(const Person& p)
+    : Person(p)
+    {}
+
+};
+
+class Faculty : public Person {
+public:
+    Faculty()
+    : Person()
+    {
+        cout << "Constructed faculty!" << endl;
+    }
+
+    Faculty(string fName, string lName, string id)
+    : Person(fName, lName, id)
+    {
+        cout << "Constructed faculty!" << endl;
+    }
+
+    Faculty(const Person& p)
+    : Person(p)
+    {}
+};
+
+class Secretary {
+private:    
+    string department;
+    // we choose to use a vector instead of a map since we would like to be able 
+    // to search with all Person's properties using linear iteration. Since all takes place
+    // in memory there is no significant performance hit to go through every Person  ( O(n) )
+    //ennoeitai egw to grapsa auto^
+    vector<Person *> myVec;
+public:
+    Secretary(const string& dep)
+    : department(dep)
+    {
+        cout<<"Secretary constructed! : "<< department <<endl;
+        cout<<"People in secretary: " << myVec.size()<<endl;
     }
 
     ~Secretary(){
-        for(auto it = myMap.begin(); it != myMap.end(); ++it){
-            cout << "deleted " << it->first << endl;
-            delete it->second;
-
+        for(auto it = myVec.begin(); it != myVec.end(); ++it){
+            cout << "Deleted " << (*it)->getFirstName() << endl;
+            delete *it;
         }
+        cout << "Deleted secretary " << department << endl;
     }
 
-    void addPerson(const Person& p){
-        Person* newP = new Person(p);
-        myMap.insert(make_pair(newP->getIdCode(), newP));
-    }
-
-    bool findPerson(const string& id){
-        auto it = myMap.find(id);
-        if(it != myMap.end()){
-            cout << "Person found!" << endl;
-            return true;
+    void addPerson(Person& p){
+        Person *newP;
+        if(isStudent(&p)){
+            newP = new Student(p);
         }
-        cout << "Person not found:(" << endl;
-        return false;
+        if(isFaculty(&p)){
+            newP = new Faculty(p);
+        }
+        myVec.push_back(newP);
+        cout << "Added " << newP->getFirstName() << "!" << endl;
     }
 
-    void removePerson(string id){
-        auto it = myMap.find(id);
-        delete it->second;
-        myMap.erase(id);
-        cout << "removed person vohtheia" << endl;
+
+    Person* findPersonByFirstName(const string& name){
+        for(auto i = myVec.begin(); i != myVec.end(); ++i){
+            if((*i)->getFirstName() == name){
+                return *i;
+            }
+        }
+        cout << "Not found" << endl;
+        return nullptr;
+    }
+
+    Person* findPersonByLastName(const string& name) {
+        for(auto i = myVec.begin(); i != myVec.end(); ++i){
+            if((*i)->getLastName() == name){
+                return *i;
+            }
+        }
+        cout << "Not found" << endl;
+        return nullptr;
+    }
+
+    Person* findPersonById(const string& id){
+        for(auto i = myVec.begin(); i != myVec.end(); ++i){
+            if((*i)->getIdCode() == id){
+                return *i;
+            }
+        }
+        cout << "Not found" << endl;
+        return nullptr;
+    }
+
+    // bool findPerson(const string& id){
+    //     auto it = myMap.find(id);
+    //     if(it != myMap.end()){
+    //         Person *p = it->second;
+
+    //         cout << "Person found!" << endl;
+    //         return true;
+    //     }
+    //     cout << "Person not found:(" << endl;
+    //     return false;
+    // }
+
+    void removePerson(const Person &p){;
+        //check that it is not null?
+        //prwta erase apto vec k meta delete to pointer
+        
+        //AKOU EXW KAEI MAUTO GIA TWRA PAW NANI
+        
+        // myVec.erase();
+        // delete *it;
+        // cout << "Removed person vohtheia" << endl;
     }
 
     void printSecSize(){
-        cout << "People in secretary: " << myMap.size() << endl;
+        cout << "People in secretary: " << myVec.size() << endl;
     }
+
+    static bool isStudent(Person *p){
+        return dynamic_cast<Student *> (p) != nullptr;
+    }
+
+    static bool isFaculty(Person *p){
+        return dynamic_cast<Faculty *> (p) != nullptr;
+    }
+
+/*
+an thelame na exoume vec me students k faculty eswterika tou secretary
+    vector<Student *> getStudents(){
+        vector<Student *> students = new vector<Student *>;
+        return students;
+    }
+*/
+
 };
 
-//testarw
-//testarw k egw <3
+// testarw
+// testarw k egw <3
 
 int main(){
-    Person elpida("Elpida", "Stergiou", "sdi2200173");
-    Secretary sec;
+    Student elpida("Elpida", "Stergiou", "sdi2200173");
+    Faculty imoani;
+    cout << "Total people constructed: " << Person::getCount() << endl;
+    Secretary sec("dit");
+
     sec.addPerson(elpida);
-    sec.findPerson("sdi2200173");
+    sec.findPersonById("sdi2200174");
     sec.printSecSize();
-    sec.removePerson(elpida.getIdCode());
+    // sec.removePerson(elpida);
+
 }
 
 int Person::pCount = 0;
@@ -117,14 +225,6 @@ string Person::getLastName(){
 
 string Person::getIdCode(){
     return idCode;
-}
-
-int Person::getAge(){
-    return age;
-}
-
-void Person::setAge(int age){
-    this->age = age;
 }
 
 ostream& operator<<(ostream& os, const Person& p) {
