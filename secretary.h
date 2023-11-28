@@ -151,20 +151,6 @@ an thelame na exoume vec me students k faculty eswterika tou secretary
 
 };
 
-//agnoeis
-
-// Secretary operator+=(Secretary& sec1, const Secretary& sec2){
-//    Secretary result(sec1);
-//     for (auto it = sec2.myVec.begin(); it != sec2.myVec.end(); ++it){
-//         result.myVec.push_back(*it);
-//     }
-//     return result;
-// }
-
-// Secretary operator+(const Secretary& secretary,const Person& person){
-//     addPerson(person)
-// }
-
 
 ostream& operator<<(ostream& os,Secretary& secretary){
     os << "Secretary " << "(" << secretary.department << ") :" << endl;
