@@ -122,7 +122,7 @@ int Person::getCount(){
 }
 
 ostream& operator<<(ostream& os, const Person& p) {
-    return os << "Name: " << p.firstName << " " << p.lastName << " " << "ID code: " << p.idCode << endl;
+    return os << "Name: " << p.firstName << " " << p.lastName << endl << "ID code: " << p.idCode << endl;
 }
 
 istream& operator>>(std::istream& is, Person& p){
