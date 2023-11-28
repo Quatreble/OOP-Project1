@@ -87,8 +87,8 @@ public:
     //check that it is not null?
         for (auto i = myVec.begin(); i != myVec.end(); ++i){
             if(p.personEqual(*i)){
-                myVec.erase(i);    //prwta erase apto vec k meta delete to pointer
                 delete *i;
+                myVec.erase(i);    //prwta erase apto vec k meta delete to pointer // ociiii
                 cout << "People in secretary after deletion: " << myVec.size() << endl;
                 return;
             }
@@ -134,9 +134,22 @@ public:
         return *this;
     }
 
-    Secretary& operator+=(Secretary& sec){
+    Secretary& operator+=(const Secretary& sec){
         for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it){
            addPerson(**it);
+        }
+        return *this;
+    }
+
+    Secretary& operator=(const Secretary& sec){
+        if (this != &sec){
+            department = sec.department;
+            while (!myVec.empty()){
+                removePerson(*myVec.front());
+            }
+            for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it){
+                addPerson(**it);
+            }
         }
         return *this;
     }

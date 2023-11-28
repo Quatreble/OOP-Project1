@@ -36,5 +36,7 @@ int main(){
     cout << sec;
     sec = sec + loko;
     cout << sec;
+    sec = seccy;
+    cout << sec;
 
 }
