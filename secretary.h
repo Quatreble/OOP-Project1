@@ -3,12 +3,12 @@ using namespace std;
 
 class Secretary {
 private:    
-    string department;
-    // we choose to use a vector instead of a map since we would like to be able 
-    // to search with all Person's properties using linear iteration. Since all takes place
-    // in memory there is no significant performance hit to go through every Person  ( O(n) )
-    //ennoeitai egw to grapsa auto^
     vector<Person *> myVec;
+// we choose to use a vector instead of a map since we would like to be able 
+// to search with all Person's properties using linear iteration. Since all takes place
+// in memory there is no significant performance hit to go through every Person  ( O(n) )
+//ennoeitai egw to grapsa auto^
+    string department;
 public:
     Secretary(const string& dep)
     : department(dep)
@@ -68,27 +68,47 @@ public:
         return nullptr;
     }
 
-    // bool findPerson(const string& id){
-    //     auto it = myMap.find(id);
-    //     if(it != myMap.end()){
-    //         Person *p = it->second;
+    Person* findPerson(Person& p){
+        for (auto i = myVec.begin(); i != myVec.end(); ++i){
+            if(p.personEqual(*i)){
+                cout << "Person found!" << endl;
+                return *i;
+            }
+        }
+        cout << "Person not found:(" << endl;
+        return nullptr;
+    }
 
-    //         cout << "Person found!" << endl;
-    //         return true;
-    //     }
-    //     cout << "Person not found:(" << endl;
-    //     return false;
-    // }
+    void removePerson(Person& p){;
+    //check that it is not null?
+        for (auto i = myVec.begin(); i != myVec.end(); ++i){
+            if(p.personEqual(*i)){
+                myVec.erase(i);    //prwta erase apto vec k meta delete to pointer
+                delete *i;
+                cout << "People in secretary after deletion: " << myVec.size() << endl;
+                return;
+            }
+        }
+    }
 
-    void removePerson(const Person &p){;
-        //check that it is not null?
-        //prwta erase apto vec k meta delete to pointer
-        
-        //AKOU EXW KAEI MAUTO GIA TWRA PAW NANI
-        
-        // myVec.erase();
-        // delete *it;
-        // cout << "Removed person vohtheia" << endl;
+    void editFirstName(Person& p, const string& newName){
+        Person* ptr = findPerson(p);
+        if(ptr!=nullptr){
+            ptr->setFirstName(newName);
+        }
+       // findPerson(p)->setFirstName(newName);
+    }
+    void editLastName(Person& p, const string& newName){
+        Person* ptr = findPerson(p);
+        if(ptr!=nullptr){
+            ptr->setLastName(newName);
+        }
+    }
+    void editIDName(Person& p, const string& newId){
+        Person* ptr = findPerson(p);
+        if(ptr!=nullptr){
+            ptr->setIdCode(newId);
+        }
     }
 
     void printSecSize(){

@@ -4,7 +4,6 @@ using namespace std;
 class Person{
 protected:
     static int pCount;
-
     string firstName;
     string lastName;
     string idCode;
@@ -21,7 +20,7 @@ public:
         pCount++;
     }
 
-    Person(const Person& p) //pros to paron den auksanei to pcount
+    Person(const Person& p) //den auksanei to pcount
     : firstName(p.firstName), lastName(p.lastName), idCode(p.idCode)
     {}
 
@@ -31,9 +30,24 @@ public:
     }
 
     static int getCount();
+
+    void setFirstName(const string& name){
+        firstName = name;
+    }
+    void setLastName(const string& name){
+        lastName = name;
+    }
+    void setIdCode(const string& id){
+        idCode = id;
+    }
+
     string getFirstName();
     string getLastName();
     string getIdCode();
+
+    bool personEqual(Person* p){
+        return (firstName == p->firstName && lastName == p->lastName && idCode == p->idCode); 
+    }
 
     friend ostream& operator<<(std::ostream& os, const Person& p);
     friend istream& operator>>(std::istream& is, Person& p);
@@ -54,8 +68,7 @@ public:
     }
 
     Student(const Person& p)
-    : Person(p)
-    {}
+    : Person(p){}
 
 };
 
@@ -74,8 +87,8 @@ public:
     }
 
     Faculty(const Person& p)
-    : Person(p)
-    {}
+    : Person(p){}
+
 };
 
 int Person::pCount = 0;
