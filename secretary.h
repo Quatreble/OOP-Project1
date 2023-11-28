@@ -29,7 +29,7 @@ public:
     : department(Sec.department), myVec(Sec.myVec)
     {}
 
-    void addPerson(Person& p){
+    void addPerson(Person& p, bool printOutput = true){
         Person *newP;
         if(isStudent(&p)){
             newP = new Student(p);
@@ -38,7 +38,7 @@ public:
             newP = new Faculty(p);
         }
         myVec.push_back(newP);
-        cout << "Added " << newP->getFirstName() << "!" << endl;
+        if (printOutput) cout << "Added " << newP->getFirstName() << "!" << endl;
     }
 
 
@@ -83,13 +83,13 @@ public:
         return nullptr;
     }
 
-    void removePerson(Person& p){;
+    void removePerson(Person& p, bool printOutput = true){;
     //check that it is not null?
         for (auto i = myVec.begin(); i != myVec.end(); ++i){
             if(p.personEqual(*i)){
                 delete *i;
                 myVec.erase(i);    //prwta erase apto vec k meta delete to pointer // ociiii
-                cout << "People in secretary after deletion: " << myVec.size() << endl;
+                if (printOutput) cout << "People in secretary after deletion: " << myVec.size() << endl;
                 return;
             }
         }
@@ -145,10 +145,10 @@ public:
         if (this != &sec){
             department = sec.department;
             while (!myVec.empty()){
-                removePerson(*myVec.front());
+                removePerson(*myVec.front(),false);
             }
             for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it){
-                addPerson(**it);
+                addPerson(**it,false);
             }
         }
         return *this;
@@ -168,7 +168,7 @@ an thelame na exoume vec me students k faculty eswterika tou secretary
 ostream& operator<<(ostream& os,Secretary& secretary){
     os << "Secretary " << "(" << secretary.department << ") :" << endl;
     for (auto it = secretary.myVec.begin(); it != secretary.myVec.end(); ++it){
-        os << "   " << (*it)->getFirstName() << " " << (*it)->getLastName() << "  ID: " << (*it)->getIdCode() << endl; 
+        os << "   " << (**it); 
     }
     return os;
 }
