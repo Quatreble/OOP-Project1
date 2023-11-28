@@ -15,6 +15,7 @@ int main(){
     Student elpida("Elpida", "Stergiou", "sdi2200173");
     Faculty imoani("Imoani", "Tampouriri", "sdi2200181");
     Student gkiannhs("gkiannhs", "xortarakhs", "sdi2200162");
+    Faculty loko("xatzhko", "kolakhs", "sdi8800175");
     cout << "Total people constructed: " << Person::getCount() << endl;
     Secretary sec("dit");
     Secretary seccy("pleb");
@@ -31,7 +32,9 @@ int main(){
     // sec.findPersonByFirstName("Imoani");
     // sec.findPersonByFirstName("ioanni");
     cout << sec;
-    sec += gkiannhs;
+    sec += seccy;
+    cout << sec;
+    sec = sec + loko;
     cout << sec;
 
 }
