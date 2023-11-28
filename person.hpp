@@ -8,7 +8,7 @@ protected:
     string lastName;
     string idCode;
 public:
-    Person()
+    Person() // na dw lg ti paizei edw me to keno constructor                            
     : firstName(""), lastName(""), idCode("")
     {
         pCount++;
@@ -20,7 +20,7 @@ public:
         pCount++;
     }
 
-    Person(const Person& p) //den auksanei to pcount
+    Person(const Person& p) 
     : firstName(p.firstName), lastName(p.lastName), idCode(p.idCode)
     {}
 
@@ -41,13 +41,21 @@ public:
         idCode = id;
     }
 
-    string getFirstName();
-    string getLastName();
-    string getIdCode();
+    string getFirstName() {
+        return firstName;
+    }
+    string getLastName() {
+        return lastName;
+    }
+    string getIdCode() {
+        return idCode;
+    }
 
-    bool personEqual(Person* p){
+    virtual bool equals(Person* p){
         return (firstName == p->firstName && lastName == p->lastName && idCode == p->idCode); 
     }
+
+    virtual Person* clone() = 0;
 
     friend ostream& operator<<(std::ostream& os, const Person& p);
     friend istream& operator>>(std::istream& is, Person& p);
@@ -58,7 +66,7 @@ public:
     Student()
     : Person()
     {
-        cout << "Constructed faculty!" << endl;
+        cout << "Constructed student!" << endl;
     }
 
     Student(string fName, string lName, string id)
@@ -68,8 +76,16 @@ public:
     }
 
     Student(const Person& p)
-    : Person(p){}
+    : Person(p)
+    {}
 
+    virtual Student* clone() override{
+        return new Student(*this);
+    }
+
+    virtual bool equals(Student* s) {
+        return Person::equals(s);
+    }
 };
 
 class Faculty : public Person {
@@ -87,26 +103,22 @@ public:
     }
 
     Faculty(const Person& p)
-    : Person(p){}
+    : Person(p)
+    {}
 
+    virtual Faculty* clone() override{
+        return new Faculty(*this);
+    }
+
+    virtual bool equals(Faculty* f) {
+        return Person::equals(f);
+    }
 };
 
 int Person::pCount = 0;
 
 int Person::getCount(){
     return pCount;
-}
-
-string Person::getFirstName(){
-    return firstName;
-}
-
-string Person::getLastName(){
-    return lastName;
-}
-
-string Person::getIdCode(){
-    return idCode;
 }
 
 ostream& operator<<(ostream& os, const Person& p) {

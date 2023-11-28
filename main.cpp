@@ -3,8 +3,8 @@
 #include <vector>
 #include <algorithm>
 
-#include "person.h"
-#include "secretary.h"
+#include "person.hpp"
+#include "secretary.hpp"
 
 using namespace std;
 
@@ -24,6 +24,9 @@ int main(){
     seccy.addPerson(gkiannhs);
     sec.addPerson(elpida);
     sec.addPerson(imoani);
+
+
+    //(sec.findPersonById("sdi2200173"))->setFirstName("sdf");
     // sec.findPersonById("sdi2200174");
     // sec.findPerson(imoani);
     // sec.printSecSize();
@@ -38,5 +41,5 @@ int main(){
     cout << sec;
     sec = seccy;
     cout << sec;
-
+    
 }

@@ -1,14 +1,19 @@
 #pragma once
 using namespace std;
 
+
+//void getStudents(vector<Student *> students);
+//void getFaculty(vector<Faculty *> faculty);
+
+
 class Secretary {
 private:    
+    string department;
     vector<Person *> myVec;
 // we choose to use a vector instead of a map since we would like to be able 
 // to search with all Person's properties using linear iteration. Since all takes place
 // in memory there is no significant performance hit to go through every Person  ( O(n) )
 //ennoeitai egw to grapsa auto^
-    string department;
 public:
     Secretary(const string& dep)
     : department(dep)
@@ -19,24 +24,35 @@ public:
 
     ~Secretary(){
         for(auto it = myVec.begin(); it != myVec.end(); ++it){
-            cout << "Deleted " << (*it)->getFirstName() << endl;
+            //cout << "Deleted " << (*it)->getFirstName() << endl;
             delete *it;
         }
         cout << "Deleted secretary " << department << endl;
     }
 
-    Secretary(const Secretary& Sec)
-    : department(Sec.department), myVec(Sec.myVec)
-    {}
+    Secretary(const Secretary& sec)
+   // : department(sec.department)
+    {
+        if (this != &sec) {
+            department = sec.department;
+            for (auto it = myVec.begin(); it != myVec.end(); ++it) {
+                delete* it;
+            }
+            myVec.clear();
+            for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it) {
+                addPerson(**it);
+            }
+        }
+    }
 
     void addPerson(Person& p){
-        Person *newP;
-        if(isStudent(&p)){
-            newP = new Student(p);
-        }
-        if(isFaculty(&p)){
-            newP = new Faculty(p);
-        }
+        Person *newP = p.clone();
+        //if (isStudent(&p)) {
+        //    newP = new Student(p);
+        //}
+        //if(isFaculty(&p)){
+        //    newP = new Faculty(p);
+        //}
         myVec.push_back(newP);
         cout << "Added " << newP->getFirstName() << "!" << endl;
     }
@@ -74,7 +90,7 @@ public:
 
     Person* findPerson(Person& p){
         for (auto i = myVec.begin(); i != myVec.end(); ++i){
-            if(p.personEqual(*i)){
+            if(p.equals(*i)){
                 cout << "Person found!" << endl;
                 return *i;
             }
@@ -83,36 +99,16 @@ public:
         return nullptr;
     }
 
-    void removePerson(Person& p){;
-    //check that it is not null?
+    bool removePerson(Person& p){
         for (auto i = myVec.begin(); i != myVec.end(); ++i){
-            if(p.personEqual(*i)){
+            if(p.equals(*i)){
                 delete *i;
-                myVec.erase(i);    //prwta erase apto vec k meta delete to pointer // ociiii
+                myVec.erase(i);       //prwta erase apto vec k meta delete to pointer // ociiii // xizxix
                 cout << "People in secretary after deletion: " << myVec.size() << endl;
-                return;
+                return true;
             }
         }
-    }
-
-    void editFirstName(Person& p, const string& newName){
-        Person* ptr = findPerson(p);
-        if(ptr!=nullptr){
-            ptr->setFirstName(newName);
-        }
-       // findPerson(p)->setFirstName(newName);
-    }
-    void editLastName(Person& p, const string& newName){
-        Person* ptr = findPerson(p);
-        if(ptr!=nullptr){
-            ptr->setLastName(newName);
-        }
-    }
-    void editIDName(Person& p, const string& newId){
-        Person* ptr = findPerson(p);
-        if(ptr!=nullptr){
-            ptr->setIdCode(newId);
-        }
+        return false;
     }
 
     void printSecSize(){
@@ -127,8 +123,6 @@ public:
         return dynamic_cast<Faculty *> (p) != nullptr;
     }
 
-    friend ostream& operator<<(ostream& os, Secretary& secretary);
-
     Secretary& operator+(Person& p){
         addPerson(p);
         return *this;
@@ -142,28 +136,13 @@ public:
     }
 
     Secretary& operator=(const Secretary& sec){
-        if (this != &sec){
-            department = sec.department;
-            while (!myVec.empty()){
-                removePerson(*myVec.front());
-            }
-            for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it){
-                addPerson(**it);
-            }
-        }
+        Secretary(sec);
         return *this;
     }
 
-/*
-an thelame na exoume vec me students k faculty eswterika tou secretary
-    vector<Student *> getStudents(){
-        vector<Student *> students = new vector<Student *>;
-        return students;
-    }
-*/
+    friend ostream& operator<<(ostream& os, Secretary& secretary);
 
 };
-
 
 ostream& operator<<(ostream& os,Secretary& secretary){
     os << "Secretary " << "(" << secretary.department << ") :" << endl;
