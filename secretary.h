@@ -25,6 +25,10 @@ public:
         cout << "Deleted secretary " << department << endl;
     }
 
+    Secretary(const Secretary& Sec)
+    : department(Sec.department), myVec(Sec.myVec)
+    {}
+
     void addPerson(Person& p){
         Person *newP;
         if(isStudent(&p)){
@@ -123,6 +127,13 @@ public:
         return dynamic_cast<Faculty *> (p) != nullptr;
     }
 
+    friend ostream& operator<<(ostream& os, Secretary& secretary);
+
+    Secretary operator+=(Person& p){
+        addPerson(p);
+        return *this;
+    }
+
 /*
 an thelame na exoume vec me students k faculty eswterika tou secretary
     vector<Student *> getStudents(){
@@ -132,3 +143,26 @@ an thelame na exoume vec me students k faculty eswterika tou secretary
 */
 
 };
+
+//agnoeis
+
+// Secretary operator+=(Secretary& sec1, const Secretary& sec2){
+//    Secretary result(sec1);
+//     for (auto it = sec2.myVec.begin(); it != sec2.myVec.end(); ++it){
+//         result.myVec.push_back(*it);
+//     }
+//     return result;
+// }
+
+// Secretary operator+(const Secretary& secretary,const Person& person){
+//     addPerson(person)
+// }
+
+
+ostream& operator<<(ostream& os,Secretary& secretary){
+    os << "Secretary " << "(" << secretary.department << ") :" << endl;
+    for (auto it = secretary.myVec.begin(); it != secretary.myVec.end(); ++it){
+        os << "   " << (*it)->getFirstName() << " " << (*it)->getLastName() << "  ID: " << (*it)->getIdCode() << endl; 
+    }
+    return os;
+}
