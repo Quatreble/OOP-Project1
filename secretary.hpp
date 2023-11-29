@@ -31,21 +31,13 @@ public:
     }
 
     Secretary(const Secretary& sec)
-   // : department(sec.department)
-    {
-        if (this != &sec) {
-            department = sec.department;
-            for (auto it = myVec.begin(); it != myVec.end(); ++it) {
-                delete* it;
-            }
-            myVec.clear();
-            for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it) {
-                addPerson(**it);
-            }
+    : department(sec.department){
+        for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it) {
+            addPerson(**it,false);
         }
     }
 
-    void addPerson(Person& p){
+    void addPerson(Person& p, bool printStatement = true){
         Person *newP = p.clone();
         //if (isStudent(&p)) {
         //    newP = new Student(p);
@@ -54,7 +46,7 @@ public:
         //    newP = new Faculty(p);
         //}
         myVec.push_back(newP);
-        cout << "Added " << newP->getFirstName() << "!" << endl;
+        if (printStatement) cout << "Added " << newP->getFirstName() << "!" << endl;
     }
 
 
@@ -136,7 +128,15 @@ public:
     }
 
     Secretary& operator=(const Secretary& sec){
-        Secretary(sec);
+        if (this != &sec) {
+            for (auto it = myVec.begin(); it != myVec.end(); ++it) {
+                delete* it;
+            }
+            myVec.clear();
+            for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it) {
+                addPerson(**it,false);
+            }
+        }
         return *this;
     }
 
@@ -147,7 +147,8 @@ public:
 ostream& operator<<(ostream& os,Secretary& secretary){
     os << "Secretary " << "(" << secretary.department << ") :" << endl;
     for (auto it = secretary.myVec.begin(); it != secretary.myVec.end(); ++it){
-        os << "   " << (*it)->getFirstName() << " " << (*it)->getLastName() << "  ID: " << (*it)->getIdCode() << endl; 
+        os << "   " << (**it); 
     }
     return os;
 }
+
