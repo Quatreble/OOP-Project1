@@ -8,8 +8,8 @@ protected:
     string lastName;
     string idCode;
 public:
-    Person() // na dw lg ti paizei edw me to keno constructor                            
-    : firstName(""), lastName(""), idCode("")
+    Person()                           
+    // : firstName(""), lastName(""), idCode("")
     {
         pCount++;
     }
@@ -24,10 +24,8 @@ public:
     : firstName(p.firstName), lastName(p.lastName), idCode(p.idCode)
     {}
 
-    virtual ~Person(){
-        // cout << "Destructed " << firstName << " " << lastName << '\n';
-        // pCount--;
-    }
+    virtual ~Person()
+    {}
 
     static int getCount();
 
@@ -122,7 +120,7 @@ int Person::getCount(){
 }
 
 ostream& operator<<(ostream& os, const Person& p) {
-    return os << "Name: " << p.firstName << " " << p.lastName << " " << "ID code: " << p.idCode << endl;
+    return os << "Name: " << p.firstName << " " << p.lastName << ", " << "ID code: " << p.idCode << endl;
 }
 
 istream& operator>>(std::istream& is, Person& p){
