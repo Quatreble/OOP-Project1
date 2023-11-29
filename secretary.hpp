@@ -186,6 +186,8 @@ istream& operator>>(istream& is, Secretary& sec){
             is >> f;
             sec.addPerson(f);
         }
+        cout << "Enter s for student, f for faculty, 0 to stop adding people:" << endl;
+        is >> type;
     }
     return is;
 }

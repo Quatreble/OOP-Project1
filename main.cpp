@@ -47,8 +47,8 @@ int main(){
     // sec = seccy;
     // cout << sec;
 
-    // Secretary sec;
-    // cin >> sec;
+    Secretary sec;
+    cin >> sec;
    // cout << stud1;
     
 }
