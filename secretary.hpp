@@ -56,41 +56,44 @@ public:                          // in memory there is no significant performanc
     Person* findPersonByFirstName(const string& name){
         for(auto i = myVec.begin(); i != myVec.end(); ++i){
             if((*i)->getFirstName() == name){
+                cout << "Person Found" << endl;
                 return *i;
             }
         }
-        cout << "Not found" << endl;
+        cout << "Person Not Found" << endl;
         return nullptr;
     }
 
     Person* findPersonByLastName(const string& name) {
         for(auto i = myVec.begin(); i != myVec.end(); ++i){
             if((*i)->getLastName() == name){
+                cout << "Person Found" << endl;
                 return *i;
             }
         }
-        cout << "Not found" << endl;
+        cout << "Person Not Found" << endl;
         return nullptr;
     }
 
     Person* findPersonById(const string& id){
         for(auto i = myVec.begin(); i != myVec.end(); ++i){
             if((*i)->getIdCode() == id){
+                cout << "Person Found" << endl;
                 return *i;
             }
         }
-        cout << "Not found" << endl;
+        cout << "Person Not Found" << endl;
         return nullptr;
     }
 
     Person* findPerson(Person& p){
         for (auto i = myVec.begin(); i != myVec.end(); ++i){
             if(p.equals(*i)){
-                cout << "Person found!" << endl;
+                cout << "Person found" << endl;
                 return *i;
             }
         }
-        cout << "Person not found:(" << endl;
+        cout << "Person Not Found" << endl;
         return nullptr;
     }
 

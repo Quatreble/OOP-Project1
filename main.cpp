@@ -17,38 +17,82 @@ using namespace std;
 // the user to enter the department name and initialize it with as many students/faculty members as they want 
 
 int main(){
-    // Student elpida("Elpida", "Stergiou", "sdi2200173");
-    // Faculty imoani("Imoani", "Tampouriri", "sdi2200181");
-    // Student gkiannhs("gkiannhs", "xortarakhs", "sdi2200162");
-    // Faculty loko("xatzhko", "kolakhs", "sdi8800175");
-    // cout << "Total people constructed: " << Person::getCount() << endl;
-    // Secretary sec("dit");
-    // Secretary seccy("pleb");
 
+    // create student, faculty
+    Student s1;
+    Faculty f1("Ioannis", "Tampouris", "sdi2200181");
+    cout << endl;
 
-    // seccy.addPerson(gkiannhs);
-    // sec.addPerson(elpida);
-    // sec.addPerson(imoani);
+    //setters
+    s1.setFirstName("Elpida");
+    s1.setLastName("Stergiou");
+    s1.setIdCode("sdi2200181");
 
+    //getters
+    cout << "First Name: " << s1.getFirstName() << endl;
+    cout << "Last Name: " << s1.getLastName() << endl;
+    cout << "ID Code: " << s1.getIdCode() << endl;
+    cout << endl;
 
-    // //(sec.findPersonById("sdi2200173"))->setFirstName("sdf");
-    // // sec.findPersonById("sdi2200174");
-    // // sec.findPerson(imoani);
-    // // sec.printSecSize();
-    // //sec.removePerson(elpida);
-    // // sec.editFirstName(imoani, "ioanni");
-    // // sec.findPersonByFirstName("Imoani");
-    // // sec.findPersonByFirstName("ioanni");
-    // cout << sec;
-    // sec += seccy;
-    // cout << sec;
-    // sec = sec + loko;
-    // cout << sec;
-    // sec = seccy;
-    // cout << sec;
+    //create secretaries
+    Secretary sec1("Computer Science");
+    Secretary sec2;
+    sec2.setSecName("Mathematics");
+    cout << endl;
 
-    Secretary sec;
-    cin >> sec;
-   // cout << stud1;
-    
+    //adds
+    sec1.addPerson(s1);
+    sec1.addPerson(f1);
+    cout << endl;
+
+    //finds
+    Person *foundPerson = sec1.findPersonByFirstName("Elpida");
+    foundPerson = sec1.findPersonByLastName("Stergiou");
+    foundPerson = sec1.findPersonById("sdi2200152");
+    cout << endl;
+
+    //remove
+    sec1.removePerson(s1);
+    cout << endl;
+
+    //overloads
+    Student s2("Nikos", "Damdhmopoulos", "sdi220172");
+    Faculty f2("Ioannis", "Famelhs", "sdi2200170");
+    cout << endl;
+
+    // + , +=
+    sec1 + s2;
+    sec2 + f2;
+    sec2 += sec1;
+    cout << endl;
+
+    // By copy constructor
+    Secretary sec3 = sec1; 
+    cout << sec3 << endl;
+
+    //By = overload
+    sec3 = sec2;
+    cout << sec3 << endl;
+
+    //Sec input, output overloads
+    cin >> sec1;
+    cout << sec1;
+    cout << endl;
+
+    // Student input, output overloads
+    Student s3;
+    cout << "Please input first Name, last name and ID" << endl;
+    cin >> s3; 
+    cout << s3; 
+    cout << endl;
+
+    // Faculty input, output overloads
+    Faculty f3;
+    cout << "Please input first Name, last name and ID" << endl;
+    cin >> f3; 
+    cout << f3; 
+    cout << endl;
+
+    //Final count
+    cout << "Number of Person instances: " << Person::getCount() << endl;
 }
