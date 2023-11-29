@@ -1,18 +1,12 @@
 #pragma once
 using namespace std;
 
-
-// void getStudents(vector<Student *>& students){
-
-// }
-//void getFaculty(vector<Faculty *> faculty);
-
 class Secretary {
 private:    
     string department;
     vector<Person *> myVec;  // we choose to use a vector instead of a map since we would like to be able 
-                               // to search with all Person's properties using linear iteration. Since all takes place
-public:                          // in memory there is no significant performance hit to go through every Person  ( O(n) )
+                             // to search with all Person's properties using linear iteration. Since all takes place
+public:                      // in memory there is no significant performance hit to go through every Person  ( O(n) )
     Secretary(const string& dep)
     : department(dep)
     {
@@ -100,9 +94,9 @@ public:                          // in memory there is no significant performanc
     bool removePerson(Person& p){
         for (auto i = myVec.begin(); i != myVec.end(); ++i){
             if(p.equals(*i)){
+                cout << "Removed " << (*i)->getIdCode() << " from " << department << endl;
                 delete *i;
-                myVec.erase(i);       //prwta erase apto vec k meta delete to pointer // ociiii // xizxix
-                cout << "People in secretary after deletion: " << myVec.size() << endl;
+                myVec.erase(i);       
                 return true;
             }
         }
@@ -170,7 +164,6 @@ ostream& operator<<(ostream& os,Secretary& secretary){
 }
 
 istream& operator>>(istream& is, Secretary& sec){
-    int toRead;
     char type;
     cout << "Enter Department name: ";
     is >> sec.department;
@@ -179,13 +172,13 @@ istream& operator>>(istream& is, Secretary& sec){
     while(type !='0'){
         if(type == 's'){
             Student s;
-            cout << "Enter Name, Surname and ID Code: " << endl;
+            //cout << "Enter Name, Surname and ID Code: " << endl;
             is >> s;
             sec.addPerson(s);
         }
         if(type == 'f'){
             Faculty f;
-            cout << "Enter Name, Surname and ID Code: " << endl;
+            //cout << "Enter Name, Surname and ID Code: " << endl;
             is >> f;
             sec.addPerson(f);
         }

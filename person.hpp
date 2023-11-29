@@ -1,7 +1,8 @@
 #pragma once
+
 using namespace std;
 
-class Person{
+class Person {
 protected:
     static int pCount;
     string firstName;
@@ -42,17 +43,21 @@ public:
     string getFirstName() {
         return firstName;
     }
+
     string getLastName() {
         return lastName;
     }
+
     string getIdCode() {
         return idCode;
     }
 
+    //sub-classes should override this and add logic specific to their fields
     virtual bool equals(Person* p){
         return (firstName == p->firstName && lastName == p->lastName && idCode == p->idCode); 
     }
 
+    //sub-classes should implement that so we can dynamically create copies
     virtual Person* clone() = 0;
 
     friend ostream& operator<<(std::ostream& os, const Person& p);
@@ -81,6 +86,7 @@ public:
         return new Student(*this);
     }
 
+    //for now we just check equality of the super-class Person
     virtual bool equals(Student* s) {
         return Person::equals(s);
     }
@@ -108,11 +114,13 @@ public:
         return new Faculty(*this);
     }
 
+    //for now we just check equality of the super-class Person
     virtual bool equals(Faculty* f) {
         return Person::equals(f);
     }
 };
 
+//initialize static member
 int Person::pCount = 0;
 
 int Person::getCount(){
@@ -124,5 +132,6 @@ ostream& operator<<(ostream& os, const Person& p) {
 }
 
 istream& operator>>(std::istream& is, Person& p){
+    cout << "Enter first Name, last Name and ID code: " << endl;
     return is >> p.firstName >> p.lastName >> p.idCode;
 }
