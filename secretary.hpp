@@ -19,10 +19,11 @@ public:                      // in memory there is no significant performance hi
     }
 
     ~Secretary(){
-        for(auto it = myVec.begin(); it != myVec.end(); ++it){
+        for(Person* it : myVec){
             //cout << "Deleted " << (*it)->getFirstName() << endl;
-            delete *it;
+            delete it;
         }
+        myVec.clear();
         cout << "Deleted secretary " << department << endl;
     }
 
@@ -48,10 +49,10 @@ public:                      // in memory there is no significant performance hi
 
 
     Person* findPersonByFirstName(const string& name){
-        for(auto i = myVec.begin(); i != myVec.end(); ++i){
-            if((*i)->getFirstName() == name){
+        for(Person* i : myVec){
+            if(i->getFirstName() == name){
                 cout << "Person Found" << endl;
-                return *i;
+                return i;
             }
         }
         cout << "Person Not Found" << endl;
@@ -59,10 +60,10 @@ public:                      // in memory there is no significant performance hi
     }
 
     Person* findPersonByLastName(const string& name) {
-        for(auto i = myVec.begin(); i != myVec.end(); ++i){
-            if((*i)->getLastName() == name){
+        for(Person* i : myVec){
+            if(i->getLastName() == name){
                 cout << "Person Found" << endl;
-                return *i;
+                return i;
             }
         }
         cout << "Person Not Found" << endl;
@@ -70,10 +71,10 @@ public:                      // in memory there is no significant performance hi
     }
 
     Person* findPersonById(const string& id){
-        for(auto i = myVec.begin(); i != myVec.end(); ++i){
-            if((*i)->getIdCode() == id){
+        for(Person* i : myVec){
+            if(i->getIdCode() == id){
                 cout << "Person Found" << endl;
-                return *i;
+                return i;
             }
         }
         cout << "Person Not Found" << endl;
@@ -81,10 +82,10 @@ public:                      // in memory there is no significant performance hi
     }
 
     Person* findPerson(Person& p){
-        for (auto i = myVec.begin(); i != myVec.end(); ++i){
-            if(p.equals(*i)){
+        for (Person* i : myVec){
+            if(p.equals(i)){
                 cout << "Person found" << endl;
-                return *i;
+                return i;
             }
         }
         cout << "Person Not Found" << endl;
@@ -129,8 +130,8 @@ public:                      // in memory there is no significant performance hi
     }
 
     Secretary& operator+=(const Secretary& sec){
-        for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it){
-           addPerson(**it);
+        for (Person* it : myVec){
+           addPerson(*it);
         }
         return *this;
     }
@@ -138,12 +139,12 @@ public:                      // in memory there is no significant performance hi
     Secretary& operator=(const Secretary& sec){
         if (this != &sec) {
             department = sec.department;
-            for (auto it = myVec.begin(); it != myVec.end(); ++it) {
-                delete *it;
+            for (Person* it : myVec) {
+                delete it;
             }
             myVec.clear();
-            for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it) {
-                addPerson(**it,false);
+            for (Person* it : myVec) {
+                addPerson(*it,false);
             }
         }
         return *this;
@@ -156,8 +157,8 @@ public:                      // in memory there is no significant performance hi
 
 ostream& operator<<(ostream& os,Secretary& secretary){
     os << "Secretary " << secretary.department << ":" << endl;
-    for (auto it = secretary.myVec.begin(); it != secretary.myVec.end(); ++it){
-        os << (**it); 
+    for (Person* it : secretary.myVec){
+        os << (*it); 
     }
     os << endl;
     return os;
