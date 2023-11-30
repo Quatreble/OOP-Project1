@@ -8,7 +8,7 @@ Team members:
 |  |  |
 
 The implementation was done in Visual Studio Code using g++. A makefile is included to build and link the file, to do so:
-> make run //todo...
+> make run 
 
 
 ## Notes on requirements
