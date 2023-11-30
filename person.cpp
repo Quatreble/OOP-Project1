@@ -15,9 +15,7 @@ Person::Person(string fName, string lName, string id)
     pCount++;
 }
 
-Person::Person(const Person& p) 
-: firstName(p.firstName), lastName(p.lastName), idCode(p.idCode)
-{}
+Person::~Person() {}
 
 void Person::setFirstName(const string& name){
     firstName = name;

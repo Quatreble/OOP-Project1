@@ -32,7 +32,7 @@ Secretary::Secretary(const Secretary& sec)
     }
 }
 
-void Secretary::addPerson(Person& p, bool printStatement = true){
+void Secretary::addPerson(Person& p, bool printStatement){
     Person *newP = p.clone();  // here we use the virtual function clone of the base class person instead of simply creating a 'new' person, 
     //if (isStudent(&p)) {           // because it automatically creates either a Student or a Faculty accordingly.
     //    newP = new Student(p);     // The lines which are commented out are a different implementation of this, using the
