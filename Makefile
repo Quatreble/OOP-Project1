@@ -22,3 +22,7 @@ $(EXECUTABLE): $(OBJECTS)
 # This rule tells make to clean up everything that can be regenerated
 clean:
 	rm -f $(EXECUTABLE) $(OBJECTS)
+
+# New target 'run' added here
+run: $(EXECUTABLE)
+	./$(EXECUTABLE)
