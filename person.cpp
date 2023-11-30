@@ -1,5 +1,3 @@
-#include <iostream>
-#include <string>
 #include "person.hpp"
 
 //////Person class functions:
@@ -51,6 +49,7 @@ int Person::getCount(){
     return pCount;
 }
 
+//overloaded operators <<, >> for input and output of Person objects
 ostream& operator<<(ostream& os, const Person& p) {
     return os << "Name: " << p.firstName << " " << p.lastName << ", " << "ID code: " << p.idCode << endl;
 }
@@ -73,6 +72,7 @@ Student::Student(string fName, string lName, string id)
     cout << "Constructed student!" << endl;
 }
 
+//dynamically allocates and returns a copy of Student 
 Student* Student::clone(){
     return new Student(*this);
 }
@@ -95,6 +95,7 @@ Faculty::Faculty(string fName, string lName, string id)
     cout << "Constructed faculty!" << endl;
 }
 
+//dynamically allocates and returns a copy of Faculty 
 Faculty* Faculty::clone(){
     return new Faculty(*this);
 }

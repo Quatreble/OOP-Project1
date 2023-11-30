@@ -1,7 +1,3 @@
-#include<iostream>
-#include <string>
-#include <vector>
-
 #include "person.hpp"
 #include "secretary.hpp"
 
@@ -24,7 +20,7 @@ Secretary::~Secretary(){
     cout << "Deleted secretary " << department << endl;
 }
 
-Secretary::Secretary(const Secretary& sec)
+Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy 
 : department(sec.department)
 {
     for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it) {
@@ -44,7 +40,7 @@ void Secretary::addPerson(Person& p, bool printStatement){
     if (printStatement) cout << "Added " << newP->getFirstName() << " to " << department << "!" << endl;
 }
 
-
+//four different findPerson functions, each searching by a different property/Person&
 Person* Secretary::findPersonByFirstName(const string& name){
     for(Person* i : myVec){
         if(i->getFirstName() == name){
@@ -89,6 +85,7 @@ Person* Secretary::findPerson(Person& p){
     return nullptr;
 }
 
+//iterates vector until person with same properties is found(Person::equals function is used for this), delete Person, remove it from vector 
 bool Secretary::removePerson(Person& p){
     for (auto i = myVec.begin(); i != myVec.end(); ++i){
         if(p.equals(*i)){
@@ -112,20 +109,23 @@ void Secretary::setSecName(const string& dep){
 const string& Secretary::getSecName(){
     return department;
 }
-
+//uses a dynamic cast to Student pointer to check if Person* is a Student*
 bool Secretary::isStudent(Person *p){
     return dynamic_cast<Student *> (p) != nullptr;
 }
 
+//as above but for Faculty
 bool Secretary::isFaculty(Person *p){
     return dynamic_cast<Faculty *> (p) != nullptr;
 }
 
+//Overloaded operator + to add a Person to a Secretary 
 Secretary& Secretary::operator+(Person& p){
     addPerson(p);
     return *this;
 }
 
+//Overloaded operator += to add members of a secretary to the end of another// merges the two secretaries 
 Secretary& Secretary::operator+=(const Secretary& sec){
     for (Person* it : myVec){
         addPerson(*it);
@@ -133,6 +133,7 @@ Secretary& Secretary::operator+=(const Secretary& sec){
     return *this;
 }
 
+//the member of a secretary are added to another, after it is cleared of its previous members
 Secretary& Secretary::operator=(const Secretary& sec){
     if (this != &sec) {
         department = sec.department;
@@ -147,6 +148,7 @@ Secretary& Secretary::operator=(const Secretary& sec){
     return *this;
 }
 
+//overloaded operator << for output of a Secretary object
 ostream& operator<<(ostream& os,Secretary& secretary){
     os << "Secretary " << secretary.department << ":" << endl;
     for (Person* it : secretary.myVec){
@@ -156,6 +158,7 @@ ostream& operator<<(ostream& os,Secretary& secretary){
     return os;
 }
 
+//overloaded operator >> that allows the user to change/input the name of the Secretary and add as many People to it as they want
 istream& operator>>(istream& is, Secretary& sec){
     char type;
     cout << "Enter Department name: ";

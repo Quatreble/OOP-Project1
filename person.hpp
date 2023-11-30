@@ -1,12 +1,15 @@
 #pragma once
 
+#include <iostream>
+#include <string>
+
 using namespace std;
 
 class Person {
 protected:
-    static int pCount;
+    static int pCount; //counter for every Person object that is instantiated 
     string firstName;
-    string lastName;
+    string lastName;  //properties of a Person object
     string idCode;
 public:
     Person();
@@ -33,7 +36,7 @@ public:
     //sub-classes should implement that so we can dynamically create copies
     virtual Person* clone() = 0;
 
-    friend ostream& operator<<(std::ostream& os, const Person& p);
+    friend ostream& operator<<(std::ostream& os, const Person& p); 
     friend istream& operator>>(std::istream& is, Person& p);
 };
 
