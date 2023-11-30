@@ -23,7 +23,6 @@ public:                      // in memory there is no significant performance hi
             //cout << "Deleted " << (*it)->getFirstName() << endl;
             delete it;
         }
-        myVec.clear();
         cout << "Deleted secretary " << department << endl;
     }
 
