@@ -1,9 +1,9 @@
 CXX=g++
-CXXFLAGS=-Wall -IHeaderFiles
+CXXFLAGS=-Wall -IInclude
 
 EXECUTABLE=myprogram
 
-SOURCES=main.cpp SourceFiles/person.cpp SourceFiles/secretary.cpp
+SOURCES=main.cpp Modules/person.cpp Modules/secretary.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o)
 
