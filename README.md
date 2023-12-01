@@ -15,7 +15,7 @@ The implementation was done in Visual Studio Code using g++. A makefile is inclu
 
 We felt that there could have been more than one ways to meet some of the requirements, here is a list of the decisions we took:
 
-- **A1.1**: concerning counting number of `Person`s: the `static int pCount` of class `Person` is incremented by one each time a new `Person` is instantiated and allocated on the stack, outside of the `Secretary` struct. 
+- **A1.1**: concerning counting the number of `Person`s: the `static int pCount` of class `Person` is incremented by one each time a new `Person` is instantiated and allocated on the stack, outside of the `Secretary` struct. 
 - **A2.2**: concerning overloading the `+` operator for the `Secretary` object to add a `Person` with dynamic memory allocation: all `Person`s added to the `Secretary` are created/copied dynamically on the heap; the `+` operator just calls the existing `addPerson()` method which does exactly this.
 - **A2.3**: concerning the overloading of io operators for `Secretary`: 
   - the `<<` operator is straight-forward since it just prints the fields of the object
