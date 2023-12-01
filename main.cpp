@@ -63,16 +63,17 @@ int main(){
     // overloaded operators + and += for secretary
     sec1 + s2;
     sec2 + f2;
+    cout << endl;
     sec2 += sec1;
     cout << endl;
 
     // copy constructor, = and << operator overload for Secretary class
     Secretary sec3 = sec1; 
-    cout << sec3 << endl;
+    cout << "(sec3) " << sec3 << endl;
 
     // >> operator overload, create Secretary with user-input properties then print it
     cin >> sec1;                 // **NOTE THAT when using the overloaded operator >> to add Person objects to a Secretary object, if it was not previously empty
-    cout << sec1;                // this function will simply add the new Person objects to the Secretary without deleting the already existing ones
+    cout <<"(sec1) " << sec1;                // this function will simply add the new Person objects to the Secretary without deleting the already existing ones
     cout << endl;                // (this is what happens in this case, where in sec1 there already where 2 Person objects)
 
     // number of total Person objects allocated on stack(created outside of a Secretary object)

@@ -127,7 +127,7 @@ Secretary& Secretary::operator+(Person& p){
 
 //Overloaded operator += to add members of a secretary to the end of another// merges the two secretaries 
 Secretary& Secretary::operator+=(const Secretary& sec){
-    for (Person* it : myVec){
+    for (Person* it : sec.myVec){
         addPerson(*it);
     }
     return *this;
@@ -141,7 +141,7 @@ Secretary& Secretary::operator=(const Secretary& sec){
             delete it;
         }
         myVec.clear();
-        for (Person* it : myVec) {
+        for (Person* it : sec.myVec) {
             addPerson(*it,false);
         }
     }
