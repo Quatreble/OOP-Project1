@@ -1,9 +1,9 @@
 CXX=g++
-CXXFLAGS=-Wall
+CXXFLAGS=-Wall -IHeaderFiles
 
 EXECUTABLE=myprogram
 
-SOURCES=main.cpp person.cpp secretary.cpp
+SOURCES=main.cpp SourceFiles/person.cpp SourceFiles/secretary.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o)
 
@@ -14,6 +14,12 @@ $(EXECUTABLE): $(OBJECTS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+SourceFiles/%.o: SourceFiles/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+main.o: main.cpp
+	$(CXX) $(CXXFLAGS) -c main.cpp -o main.o
 
 clean:
 	rm -f $(EXECUTABLE) $(OBJECTS)
