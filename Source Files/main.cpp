@@ -1,10 +1,7 @@
 #include "person.hpp"
 #include "secretary.hpp"
-//vlammeno
-using namespace std;
 
-// testarw
-// testarw k egw <3
+using namespace std;
 
 // there are three ways to create a Secretary object: 1) by calling an empty constructor and 
 // then later setting the name and adding people, 2) by calling a constructor and giving the name of the department and
@@ -80,3 +77,7 @@ int main(){
     cout << "Number of Person instances: " << Person::getCount() << endl;
     cout << endl;
 }
+
+
+// testarw
+// testarw k egw <3
