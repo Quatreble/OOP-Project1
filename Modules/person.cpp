@@ -82,25 +82,25 @@ bool Student::equals(Student* s) {
     return Person::equals(s);
 }
 
-//////Faculty class functions
-Faculty::Faculty()
+//////Professor class functions
+Professor::Professor()
 : Person()
 {
-    cout << "Constructed faculty!" << endl;
+    cout << "Constructed Professor!" << endl;
 }
 
-Faculty::Faculty(string fName, string lName, string id)
+Professor::Professor(string fName, string lName, string id)
 : Person(fName, lName, id)
 {
-    cout << "Constructed faculty!" << endl;
+    cout << "Constructed Professor!" << endl;
 }
 
-//dynamically allocates and returns a copy of Faculty 
-Faculty* Faculty::clone(){
-    return new Faculty(*this);
+//dynamically allocates and returns a copy of Professor 
+Professor* Professor::clone(){
+    return new Professor(*this);
 }
 
 //for now we just check equality of the super-class Person
-bool Faculty::equals(Faculty* f) {
-    return Faculty::equals(f);
+bool Professor::equals(Professor* f) {
+    return Professor::equals(f);
 }

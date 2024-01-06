@@ -30,11 +30,11 @@ Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy
 
 void Secretary::addPerson(Person& p, bool printStatement){
     Person *newP = p.clone();  // here we use the virtual function clone of the base class person instead of simply creating a 'new' person, 
-    //if (isStudent(&p)) {           // because it automatically creates either a Student or a Faculty accordingly.
+    //if (isStudent(&p)) {           // because it automatically creates either a Student or a Professor accordingly.
     //    newP = new Student(p);     // The lines which are commented out are a different implementation of this, using the
-    //}                              // functions isStudent and isFaculty in order to distinguish between the types of person.
-    //if(isFaculty(&p)){
-    //    newP = new Faculty(p);
+    //}                              // functions isStudent and isProfessor in order to distinguish between the types of person.
+    //if(isProfessor(&p)){
+    //    newP = new Professor(p);
     //}
     myVec.push_back(newP);
     if (printStatement) cout << "Added " << newP->getFirstName() << " to " << department << "!" << endl;
@@ -114,9 +114,9 @@ bool Secretary::isStudent(Person *p){
     return dynamic_cast<Student *> (p) != nullptr;
 }
 
-//as above but for Faculty
-bool Secretary::isFaculty(Person *p){
-    return dynamic_cast<Faculty *> (p) != nullptr;
+//as above but for Professor
+bool Secretary::isProfessor(Person *p){
+    return dynamic_cast<Professor *> (p) != nullptr;
 }
 
 //Overloaded operator + to add a Person to a Secretary 
@@ -163,7 +163,7 @@ istream& operator>>(istream& is, Secretary& sec){
     char type;
     cout << "Enter Department name: ";
     is >> sec.department;
-    cout << "Enter s for student, f for faculty, 0 to stop adding people:" << endl;
+    cout << "Enter s for student, f for Professor, 0 to stop adding people:" << endl;
     is >> type;
     while(type !='0'){
         if(type == 's'){
@@ -173,12 +173,12 @@ istream& operator>>(istream& is, Secretary& sec){
             sec.addPerson(s);
         }
         if(type == 'f'){
-            Faculty f;
+            Professor f;
             //cout << "Enter Name, Surname and ID Code: " << endl;
             is >> f;
             sec.addPerson(f);
         }
-        cout << "Enter s for student, f for faculty, 0 to stop adding people:" << endl;
+        cout << "Enter s for student, f for Professor, 0 to stop adding people:" << endl;
         is >> type;
     }
     return is;

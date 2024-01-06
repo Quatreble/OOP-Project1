@@ -29,7 +29,7 @@ public:                      // in memory there is no significant performance hi
     const string& getSecName();
 
     static bool isStudent(Person *p);
-    static bool isFaculty(Person *p);
+    static bool isProfessor(Person *p);
 
     Secretary& operator+(Person& p);
     Secretary& operator+=(const Secretary& sec);

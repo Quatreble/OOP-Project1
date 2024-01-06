@@ -6,18 +6,18 @@ using namespace std;
 // there are three ways to create a Secretary object: 1) by calling an empty constructor and 
 // then later setting the name and adding people, 2) by calling a constructor and giving the name of the department and
 // then later adding people and 3) by using the overloaded operator >> as following: cin >> <secretary name> which allows
-// the user to enter the department name and initialize it with as many students/faculty members as desired.
+// the user to enter the department name and initialize it with as many students/Professor members as desired.
 
 // **NOTE THAT when using the overloaded operator >> to add Person objects to a Secretary object, if it was not previously empty
 // this function will simply add the new Person objects to the Secretary without deleting the already existing ones
 
-// Since base class Person is an abstract class, it can not be instantiated. Only child classes Student and Faculty can  
+// Since base class Person is an abstract class, it can not be instantiated. Only child classes Student and Professor can  
 
 int main(){
   
-    // create a student and a faculty member
+    // create a student and a Professor member
     Student s1;
-    Faculty f1("Ioannis", "Tampouris", "sdi2200181");
+    Professor f1("Ioannis", "Tampouris", "sdi2200181");
     cout << endl;
 
     // set properties
@@ -54,7 +54,7 @@ int main(){
 
 
     Student s2("Nikos", "Damdhmopoulos", "sdi220172");
-    Faculty f2("Giannis", "Famelhs", "sdi2200170");
+    Professor f2("Giannis", "Famelhs", "sdi2200170");
     cout << endl;
 
     // overloaded operators + and += for secretary

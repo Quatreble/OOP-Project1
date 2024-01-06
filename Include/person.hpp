@@ -54,16 +54,16 @@ public:
     virtual bool equals(Student* s);
 };
 
-class Faculty : public Person {
+class Professor : public Person {
 public:
-    Faculty();
-    Faculty(string fName, string lName, string id);
-    Faculty(const Person& p)
+    Professor();
+    Professor(string fName, string lName, string id);
+    Professor(const Person& p)
     : Person(p)
     {}
 
-    virtual Faculty* clone() override;
+    virtual Professor* clone() override;
 
     //for now we just check equality of the super-class Person
-    virtual bool equals(Faculty* f);
+    virtual bool equals(Professor* f);
 };
