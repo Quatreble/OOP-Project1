@@ -15,7 +15,6 @@ protected:
     string firstName;
     string lastName;  //properties of a Person object
     string idCode;
-    Secretary* currDepartment;
 public:
     Person();
     Person(string fName, string lName, string id);
