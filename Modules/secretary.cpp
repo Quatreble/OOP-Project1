@@ -232,22 +232,22 @@ Semester* Secretary::getSemester(int num){
     }
 }
 
-// void Secretary::addCourse(int semNum){
-//     do{
-//     cout << "Enter Courses Semester";
-//     if (semNum >= 1 && semNum <= 8){
-//         Course course;
-//         cin >> course
-//         course.setSemester(semNum);
-//         std::cout << course.getName() <<" added to " << department << " at semester " << semNum << '\n';
-//         semesters[semNum-1].courses.push_back(course);
-//     }
-//     else{
-//         std::cout << "Semester does not exist\n";
-//         return;
-//     }
-//     } while (semNum >= 1 && semNum <= 8)
-// }
+void Secretary::addCourse(){
+    cout << "Enter Courses Semester: ";
+    int semNum;
+    cin >> semNum;
+    if (semNum >= 1 && semNum <= 8){
+        Course course;
+        cin >> course;
+        course.setSemester(semNum);
+        std::cout << course.getName() <<" added to " << department << " at semester " << semNum << '\n';
+        semesters[semNum-1].courses.push_back(course);
+    }
+    else{
+        std::cout << "Semester does not exist\n";
+        return;
+    }
+}
 
 bool Secretary::startSemester(){
     SemesterStart = true;
@@ -364,7 +364,7 @@ void Secretary::SecretaryOperation(){
             cout << "3. REMOVE COURSE\n";
             cin >> op;
             if (op == 1){
-                //addCourse()
+                addCourse();
             }
 
         }

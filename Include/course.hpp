@@ -12,6 +12,8 @@ private:
     bool isMandatory;
 
 public:
+    Course();
+
     Course(std::string nameIn, int academicPointsIn, bool isMandatoryIn);
 
     Course(const Course& other);

@@ -1,6 +1,8 @@
 #include "course.hpp"
 #include <limits>
 
+Course::Course(){};
+
 Course::Course(std::string nameIn, int academicPointsIn, bool isMandatoryIn)
     : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn) {
     std::cout << "Course Created\n";
@@ -26,11 +28,14 @@ std::string Course::getName() const{
 void Course::setSemester(int semNum){
     semester = semNum;
 }
+
 std::istream& operator>>(std::istream& is, Course& course) {
     std::cout << "Please enter course name: ";
-    std::getline(is, course.name);
+    std::string name;
+    is >> course.name;
+    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    std::cout << "\nEnter course academic points: ";
+    std::cout << "Enter course academic points: ";
     is >> course.academicPoints;
     is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Clear newline after integer
 
