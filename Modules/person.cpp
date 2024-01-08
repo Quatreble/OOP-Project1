@@ -91,6 +91,7 @@ void Student::studAddCourse(Course& course){
         }
     }
     studCourses.push_back(make_pair(course,-1));
+    course.incRegistered();
     cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
 }
 
@@ -205,6 +206,24 @@ bool Professor::teachesCourse(Course& course){
         }
     }
     return false;
+}
+
+void Professor::prinStats(int sem){
+    if(profCourses.empty()){
+        cout << "The professor has no courses\n";
+        return;
+    }
+    float perc;
+    for(Course& c : profCourses){
+        if(c.getSemester() == sem){
+            perc = c.passedNumber() / c.registeredNumber() * 100;
+            cout << "Course name: " << c.getName() << endl;
+            cout << "Course academic points: " << c.getAcademicPoints() << endl;
+            cout << "Number of registered students for current semester: " << c.registeredNumber() << endl;
+            cout << "Number of students who passed for current semester: " << c.passedNumber() << endl;
+            cout << "Percentage of students who passed: " << perc << "%" << '\n';
+        }
+    }
 }
 
 // void courseRegister(){

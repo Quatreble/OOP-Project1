@@ -38,6 +38,13 @@ int Course::getSemester() const{
     return semester;
 }
 
+int Course::passedNumber(){
+    return studentsPassed.size();
+}
+int Course::registeredNumber(){
+    return registered;
+}
+
 void Course::addStudentsWhoPassed(Student& stud){
     studentsPassed.push_back(stud);
 }
@@ -87,6 +94,10 @@ std::istream& operator>>(std::istream& is, Course& course) {
     } while (true);
 
     return is;
+}
+
+void Course::incRegistered(){
+    ++registered;
 }
 
 bool Course::operator==(const Course& other) const {

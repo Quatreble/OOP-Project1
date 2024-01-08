@@ -61,6 +61,7 @@ private:
     void SecretaryOperation();
 
     Student* readAndFindStudent();
+    Professor* readAndFindProfessor();
     Course* readAndFindCourse();
 
     void nextSemester();

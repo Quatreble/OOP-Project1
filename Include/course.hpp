@@ -14,6 +14,7 @@ private:
     bool isMandatory;
     int semester;
     std::vector<Student> studentsPassed;
+    int registered = 0;
 
 public:
     Course();
@@ -36,6 +37,9 @@ public:
 
     void addStudentsWhoPassed(Student& stud);
     void printStudentsWhoPassed();
+    void incRegistered();
+    int passedNumber();
+    int registeredNumber();
 
     friend std::istream& operator>>(std::istream& is, Course& course);
     bool operator==(const Course& other) const;

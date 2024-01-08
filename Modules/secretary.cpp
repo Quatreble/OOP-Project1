@@ -455,6 +455,15 @@ void Secretary::SecretaryOperation(){
             Course* course = readAndFindCourse();
             course->printStudentsWhoPassed();
         }
+        else if(op == 7){
+            Professor* prof = readAndFindProfessor();
+            if(prof != nullptr){
+                cout << "Enter semester for stats: ";
+                int sem;
+                cin >> sem;
+                prof->prinStats(sem);
+            }
+        }
         else if(op == 8){
             Student* stud = readAndFindStudent();
             if (stud != nullptr){
@@ -525,6 +534,20 @@ Student* Secretary::readAndFindStudent(){
     }
     else{
         cout << "The person with ID " << id << " is not a Student.\n";
+        return nullptr;
+    }
+}
+
+Professor* Secretary::readAndFindProfessor(){
+    cout << "Enter Professor id: ";
+    string id;
+    cin >> id;
+    Person* person = findPersonById(id);
+    if (isProfessor(person)){
+        return dynamic_cast<Professor*>(person);
+    }
+    else{
+        cout << "The person with ID " << id << " is not a Professor.\n";
         return nullptr;
     }
 }

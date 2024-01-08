@@ -86,6 +86,7 @@ public:
     void profAddCourse(Course& course);
 
     bool teachesCourse(Course& course);
+    void prinStats(int sem);
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Professor* f);
