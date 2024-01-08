@@ -115,6 +115,10 @@ bool Professor::equals(Professor* f) {
     return Professor::equals(f);
 }
 
+void Professor::profAddCourse(Course& course){
+    profCourses.push_back(course);
+}
+
 // void courseRegister(){
 //     if (!currDepartment->startSemester()){
 //         std::cout << "Registrations not possible at the current moment\n";

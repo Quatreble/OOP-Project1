@@ -422,6 +422,27 @@ void Secretary::SecretaryOperation(){
             }
 
         }
+        else if (op == 4){
+            cout << "Enter the course name: \n";
+            string name;
+            cin >> name;
+            Course* course = findCourse(name);
+            if (course != nullptr){
+                cout << "Enter professor id: ";
+                string id;
+                cin >> id;
+                Person* person = findPersonById(id);
+                if (isProfessor(person)){
+                    Professor* prof = dynamic_cast<Professor*>(person);
+                    prof->profAddCourse(*course);
+                    cout << "Professor " << prof->getFirstName() << " " << prof->getLastName() << " now teaches " << name << '\n';
+                }
+                else
+                    cout << "Professor not found!\n";
+            }
+            else
+                cout << "Course not found!\n";
+        }
         else if (op == 10){
             cout << *this;
         }

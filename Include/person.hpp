@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include "course.hpp"
+#include <vector>
 class Secretary;
 
 using namespace std;
@@ -64,14 +65,19 @@ public:
 };
 
 class Professor : public Person {
+private:
 public:
     Professor();
     Professor(string fName, string lName, string id);
     Professor(const Person& p)
     : Person(p)
     {}
+    std::vector<Course> profCourses;
+
+
 
     virtual Professor* clone() override;
+    void profAddCourse(Course& course);
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Professor* f);
