@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <string>
+#include "course.hpp"
+class Secretary;
+class Semester;
 
 using namespace std;
 
@@ -11,6 +14,7 @@ protected:
     string firstName;
     string lastName;  //properties of a Person object
     string idCode;
+    Secretary* currDepartment;
 public:
     Person();
     Person(string fName, string lName, string id);
@@ -41,6 +45,9 @@ public:
 };
 
 class Student : public Person {
+private:
+    //Semester* currSemester;
+    int currSem;
 public:
     Student();
     Student(string fName, string lName, string id);
@@ -49,9 +56,12 @@ public:
     {}
 
     virtual Student* clone() override;
+    void setSemester();
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Student* s);
+
+    int getSemesterCount();
 };
 
 class Professor : public Person {

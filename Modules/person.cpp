@@ -1,4 +1,6 @@
 #include "person.hpp"
+#include "secretary.hpp"
+#include "Semester.hpp"
 
 //////Person class functions:
 Person::Person()                           
@@ -49,6 +51,10 @@ int Person::getCount(){
     return pCount;
 }
 
+void Student::setSemester(){
+    currSem = 1;
+}
+
 //overloaded operators <<, >> for input and output of Person objects
 ostream& operator<<(ostream& os, const Person& p) {
     return os << "Name: " << p.firstName << " " << p.lastName << ", " << "ID code: " << p.idCode << endl;
@@ -82,6 +88,11 @@ bool Student::equals(Student* s) {
     return Person::equals(s);
 }
 
+int Student::getSemesterCount() {
+    return currSem;
+}
+
+
 //////Professor class functions
 Professor::Professor()
 : Person()
@@ -104,3 +115,9 @@ Professor* Professor::clone(){
 bool Professor::equals(Professor* f) {
     return Professor::equals(f);
 }
+
+// void courseRegister(){
+//     if (!currDepartment->startSemester()){
+//         std::cout << "Registrations not possible at the current moment\n";
+//     }
+// }

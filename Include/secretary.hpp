@@ -1,15 +1,21 @@
 #pragma once
 
 #include <vector>
+#include "course.hpp"
+class Person;
+class Semester;
 
 using namespace std;
 
 class Secretary {
-private:    
+private:  
+    bool SemesterStart = false;
     string department;
     vector<Person *> myVec;  // we choose to use a vector instead of a map since we would like to be able 
                              // to search with all Person's properties using linear iteration. Since all takes place
-public:                      // in memory there is no significant performance hit to go through every Person  ( O(n) )
+                             // in memory there is no significant performance hit to go through every Person  ( O(n) )
+    vector<Semester> semesters;
+    public:
     Secretary(const string& dep);
     Secretary();
     ~Secretary();
@@ -38,4 +44,13 @@ public:                      // in memory there is no significant performance hi
     friend ostream& operator<<(ostream& os, Secretary& secretary);
     friend istream& operator>>(istream& is, Secretary& secretary);
 
+    Semester* getSemester(int num);
+
+    void addCourse(const Course& c, int semester);
+
+    bool startSemester();
+
+    void printMenu();
+
+    void SecretaryOperation();
 };

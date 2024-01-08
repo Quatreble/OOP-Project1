@@ -1,15 +1,25 @@
 #include "person.hpp"
 #include "secretary.hpp"
+#include "Semester.hpp"
 
 //////Secretary class functions
 Secretary::Secretary(const string& dep)
 : department(dep)
 {
-    cout<<"Secretary " << department << " constructed!" <<endl;
+    for (int i = 1; i <= 8; ++i){
+        semesters.push_back(Semester(i));
+    }
+    //cout<<"Secretary " << department << " constructed!" <<endl;
+    printMenu();
 }
 
 Secretary::Secretary(){
-    cout << "Secretary constructed!" << endl;
+    for (int i = 1; i <= 8; ++i){
+        semesters.push_back(Semester(i));
+    }
+    //cout << "Secretary constructed!" << endl;
+    printMenu();
+
 }
 
 Secretary::~Secretary(){
@@ -26,16 +36,22 @@ Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy
     for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it) {
         addPerson(**it, false);
     }
+
+    for (const auto semesterInstance : sec.semesters) {
+        semesters.push_back(Semester(semesterInstance));
+    }
 }
 
 void Secretary::addPerson(Person& p, bool printStatement){
+
+    // // Check if the cast was successful
+    // if (isStudent(&p)) {
+    //     // Now that we know p is indeed a Student, we can call Student-specific methods
+    //     newS->setSemester();
+    // }
+
     Person *newP = p.clone();  // here we use the virtual function clone of the base class person instead of simply creating a 'new' person, 
-    //if (isStudent(&p)) {           // because it automatically creates either a Student or a Professor accordingly.
-    //    newP = new Student(p);     // The lines which are commented out are a different implementation of this, using the
-    //}                              // functions isStudent and isProfessor in order to distinguish between the types of person.
-    //if(isProfessor(&p)){
-    //    newP = new Professor(p);
-    //}
+
     myVec.push_back(newP);
     if (printStatement) cout << "Added " << newP->getFirstName() << " to " << department << "!" << endl;
 }
@@ -109,6 +125,8 @@ void Secretary::setSecName(const string& dep){
 const string& Secretary::getSecName(){
     return department;
 }
+
+
 //uses a dynamic cast to Student pointer to check if Person* is a Student*
 bool Secretary::isStudent(Person *p){
     return dynamic_cast<Student *> (p) != nullptr;
@@ -182,5 +200,85 @@ istream& operator>>(istream& is, Secretary& sec){
         is >> type;
     }
     return is;
+}
+
+Semester* Secretary::getSemester(int num){
+    if (1 <= num && num <= 8){
+        return &semesters[num-1];
+    }
+    else{
+        std::cout << "semester doesnt exist. Returned first semester\n";
+        return &semesters[0];
+    }
+}
+
+void Secretary::addCourse(const Course& course,int semNum){
+    if (semNum >= 1 && semNum <= 8){
+        std::cout << course.getName() <<" added to " << department << " at semester " << semNum << '\n';
+        semesters[semNum-1].courses.push_back(course);
+    }
+    else{
+        std::cout << "Semester does not exist\n";
+        return;
+    }
+}
+
+bool Secretary::startSemester(){
+    SemesterStart = true;
+    return SemesterStart;
+}
+
+void Secretary::printMenu(){
+    cout << "\tECLASS\n";
+    cout << "1. PROFESSOR OPTIONS\n";
+    cout << "2. STUDENT OPTIONS\n";
+    cout << "3. COURSE OPTIONS\n";
+    cout << "4. SET COURSE PROFESSOR\n";
+    cout << "5. REGISTER TO COURSE(STUDENT ONLY)\n";
+    cout << "6. STUDENTS WHO PASSED A COURSE\n";
+    cout << "7. GET COURSE STATS(PROF ONLY)\n";
+    cout << "8. GET GRADES(STUDENT ONLY)\n";
+    cout << "9. WHO GRADUATES?\n";
+    cout << "TYPE 0 TO EXIT\n";
+    SecretaryOperation();
+}
+
+void Secretary::SecretaryOperation(){
+    int op;
+    while (true){
+        cin >> op;
+        if (op == 0){
+            cout << "GOODBYE <3";
+            return;
+        }
+        else if (op < 0 || op > 9){
+            cout << "WRONG INPUT\n";
+            cout << "INPUT AGAIN\n";
+            continue;
+        }
+        else if (op == 1){
+            cout << "1. ADD PROFESSOR\n";
+            cout << "2. MODIFY PROFESSOR\n";
+            cout << "3. REMOVE PROFESSOR\n";
+            cin >> op;
+            if (op == 1){
+                Professor peepee;
+                cin >> peepee;
+              //  addProfessor(peepee);
+            }
+            else if (op == 2){
+                cout << "INPUT PROFESSOR ID: ";
+                string id;
+                cin >> id;
+                Professor prof = findPersonrById(id);
+
+                
+            }
+            else if (op == 3){
+                
+            }
+        }
+    }
+    
 }
 
