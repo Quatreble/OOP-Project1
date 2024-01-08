@@ -107,6 +107,21 @@ Course* Secretary::findCourse(string name){
     return nullptr;
 }
 
+void Secretary::changeSemester(Course&  course){
+    cout << "Enter new semester: ";
+    int sem;
+    cin >> sem;
+    course.setSemester(sem);
+    cout << course.getName() << " semester changed to " << sem << '\n';
+}
+
+void Secretary::modifyCourse(Course& course){
+    string prevName = course.getName();
+    cout << "Please enter new attributes\n";
+    cin >> course;
+    cout << "Course " << prevName << " changed to " << course.getName() << '\n';
+}
+
 //iterates vector until person with same properties is found(Person::equals function is used for this), delete Person, remove it from vector 
 bool Secretary::removePerson(Person& p){
     for (auto i = myVec.begin(); i != myVec.end(); ++i){
@@ -224,7 +239,7 @@ void Secretary::addStudent(){
 
 
 void Secretary::addCourse(){
-    cout << "Enter Courses Semester: ";
+    cout << "Enter Course Semester: ";
     int semNum;
     cin >> semNum;
     if (semNum >= 1 && semNum <= 8){
@@ -237,6 +252,16 @@ void Secretary::addCourse(){
     else{
         std::cout << "Semester does not exist\n";
         return;
+    }
+}
+
+void Secretary::removeCourse(Course& course){
+    for (size_t i = 0; i < courses.size(); ++i){
+        if (courses[i] == course){
+            cout << "Erased " << course.getName() << '\n';
+            courses.erase(courses.begin() + i);
+            break;
+        }
     }
 }
 
@@ -365,9 +390,35 @@ void Secretary::SecretaryOperation(){
                     string name;
                     cout << "Enter Course name: ";
                     cin >> name;
-                    findCourse(name);
-                    //changeSemester();
+                    Course* course = findCourse(name);
+                    if (course != nullptr){
+                        changeSemester(*course);
+                    }
+                    else 
+                        cout << "Course not found!\n";
                 }
+                else if (op == 2){
+                    string name;
+                    cout << "Enter Course name: ";
+                    cin >> name;     
+                    Course* course = findCourse(name); 
+                    if (course != nullptr){
+                        modifyCourse(*course);
+                    }
+                    else   
+                        cout << "Course not found!\n";            
+                }
+            }
+            else if (op == 3){
+                string name;
+                cout << "Enter Course name: ";
+                cin >> name;     
+                Course* course = findCourse(name);
+                if (course != nullptr){
+                    removeCourse(*course);
+                } 
+                else
+                    cout << "Course not found!\n";
             }
 
         }

@@ -26,8 +26,10 @@ public:
     std::string getName() const;
 
     void setSemester(int semNum);
+    int getSemester();
 
     friend std::istream& operator>>(std::istream& is, Course& course);
+    bool operator==(const Course& other) const;
 };
 
 

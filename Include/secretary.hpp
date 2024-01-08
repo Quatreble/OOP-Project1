@@ -48,8 +48,11 @@ private:
     void addProfessor();
     void addStudent();
 
-    void addCourse();
+    void changeSemester(Course&  course);
+    void modifyCourse(Course& course);
 
+    void addCourse();
+    void removeCourse(Course& course);
     //bool startSemester();
 
     void printMenu();

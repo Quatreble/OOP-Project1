@@ -29,6 +29,9 @@ void Course::setSemester(int semNum){
     semester = semNum;
 }
 
+int Course::getSemester(){
+    return semester;
+}
 
 std::istream& operator>>(std::istream& is, Course& course) {
     std::cout << "Please enter course name: ";
@@ -59,5 +62,10 @@ std::istream& operator>>(std::istream& is, Course& course) {
 
     return is;
 }
+
+bool Course::operator==(const Course& other) const {
+    return name == other.name && academicPoints == other.academicPoints && semester == other.semester  && isMandatory == other.isMandatory;
+}
+
 
 
