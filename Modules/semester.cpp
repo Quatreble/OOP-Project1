@@ -1,4 +1,4 @@
-#include "Semester.hpp"
+#include "semester.hpp"
 
 Semester::Semester(int numIn) : num(numIn){
     //std::cout << num <<" semester constructed!\n";

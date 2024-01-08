@@ -1,6 +1,6 @@
 #include "person.hpp"
 #include "secretary.hpp"
-#include "Semester.hpp"
+#include "semester.hpp"
 
 //////Person class functions:
 Person::Person()                           
