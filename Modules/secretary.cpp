@@ -1,24 +1,17 @@
 #include "person.hpp"
 #include "secretary.hpp"
-#include "semester.hpp"
 #include <chrono>
 #include <thread>
 
 //////Secretary class functions
-Secretary::Secretary(const string& dep)
-: department(dep)
+Secretary::Secretary(const string& dep, int sem)
+: department(dep), semesters(sem)
 {
-    for (int i = 1; i <= 8; ++i){
-        semesters.push_back(Semester(i));
-    }
     //cout<<"Secretary " << department << " constructed!" <<endl;
     SecretaryOperation();
 }
 
 Secretary::Secretary(){
-    for (int i = 1; i <= 8; ++i){
-        semesters.push_back(Semester(i));
-    }
     //cout << "Secretary constructed!" << endl;
     SecretaryOperation();
 
@@ -33,15 +26,12 @@ Secretary::~Secretary(){
 }
 
 Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy 
-: department(sec.department)
+: department(sec.department), semesters(sec.semesters)
 {
     for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it) {
         addPerson(**it, false);
     }
 
-    for (const auto semesterInstance : sec.semesters) {
-        semesters.push_back(Semester(semesterInstance));
-    }
 }
 
 void Secretary::addPerson(Person& p, bool printStatement){
@@ -104,6 +94,16 @@ Person* Secretary::findPerson(Person& p){
         }
     }
     cout << "Person Not Found" << endl;
+    return nullptr;
+}
+
+Course* Secretary::findCourse(string name){
+    for (Course& course : courses){
+        if (course.getName() == name){
+            cout << "Found course \n";
+            return &course;
+        }
+    }
     return nullptr;
 }
 
@@ -222,15 +222,6 @@ void Secretary::addStudent(){
     addPerson(s);
 }
 
-Semester* Secretary::getSemester(int num){
-    if (1 <= num && num <= 8){
-        return &semesters[num-1];
-    }
-    else{
-        std::cout << "semester doesnt exist. Returned first semester\n";
-        return &semesters[0];
-    }
-}
 
 void Secretary::addCourse(){
     cout << "Enter Courses Semester: ";
@@ -241,7 +232,7 @@ void Secretary::addCourse(){
         cin >> course;
         course.setSemester(semNum);
         std::cout << course.getName() <<" added to " << department << " at semester " << semNum << '\n';
-        semesters[semNum-1].courses.push_back(course);
+        courses.push_back(course);
     }
     else{
         std::cout << "Semester does not exist\n";
@@ -249,10 +240,10 @@ void Secretary::addCourse(){
     }
 }
 
-bool Secretary::startSemester(){
-    SemesterStart = true;
-    return SemesterStart;
-}
+// bool Secretary::startSemester(){
+//     //SemesterStart = true;
+//     //return SemesterStart;
+// }
 
 void Secretary::printMenu(){
     cout << "\tECLASS\n";
@@ -365,6 +356,18 @@ void Secretary::SecretaryOperation(){
             cin >> op;
             if (op == 1){
                 addCourse();
+            }
+            else if (op == 2){
+                cout << "1. CHANGE SEMESTER\n";
+                cout << "2. MODIFY ATTRIBUTES\n";
+                cin >> op;
+                if (op == 1){
+                    string name;
+                    cout << "Enter Course name: ";
+                    cin >> name;
+                    findCourse(name);
+                    //changeSemester();
+                }
             }
 
         }

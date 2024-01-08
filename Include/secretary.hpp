@@ -3,20 +3,19 @@
 #include <vector>
 #include "course.hpp"
 class Person;
-class Semester;
 
 using namespace std;
 
 class Secretary {
 private:  
-    bool SemesterStart = false;
     string department;
+    int semesters;
     vector<Person *> myVec;  // we choose to use a vector instead of a map since we would like to be able 
                              // to search with all Person's properties using linear iteration. Since all takes place
                              // in memory there is no significant performance hit to go through every Person  ( O(n) )
-    vector<Semester> semesters;
+    vector<Course> courses;  
     public:
-    Secretary(const string& dep);
+    Secretary(const string& dep, int sem);
     Secretary();
     ~Secretary();
     Secretary(const Secretary& sec);
@@ -27,6 +26,8 @@ private:
     Person* findPersonByLastName(const string& name);
     Person* findPersonById(const string& id);
     Person* findPerson(Person& p);
+
+    Course* findCourse(string name);
 
     bool removePerson(Person& p);
 
@@ -47,11 +48,9 @@ private:
     void addProfessor();
     void addStudent();
 
-    Semester* getSemester(int num);
-
     void addCourse();
 
-    bool startSemester();
+    //bool startSemester();
 
     void printMenu();
 

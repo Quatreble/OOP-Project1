@@ -29,6 +29,7 @@ void Course::setSemester(int semNum){
     semester = semNum;
 }
 
+
 std::istream& operator>>(std::istream& is, Course& course) {
     std::cout << "Please enter course name: ";
     std::string name;

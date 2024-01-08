@@ -85,7 +85,7 @@ int main(){
     // sec1 + s2;
     // sec1.addCourse(firstCourse,2);
 
-    Secretary mySec("Department of Informatics and Telecomunications");
+    Secretary mySec("Department of Informatics and Telecomunications",8);
 
 }
 

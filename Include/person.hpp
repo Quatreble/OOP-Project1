@@ -4,7 +4,6 @@
 #include <string>
 #include "course.hpp"
 class Secretary;
-class Semester;
 
 using namespace std;
 
