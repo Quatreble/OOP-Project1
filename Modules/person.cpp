@@ -69,13 +69,13 @@ istream& operator>>(std::istream& is, Person& p){
 Student::Student()
 : Person()
 {
-    cout << "Constructed student!" << endl;
+    //cout << "Constructed student!" << endl;
 }
 
 Student::Student(string fName, string lName, string id)
 : Person(fName, lName, id)
 {
-    cout << "Constructed student!" << endl;
+    //cout << "Constructed student!" << endl;
 }
 
 //dynamically allocates and returns a copy of Student 
@@ -97,13 +97,13 @@ int Student::getSemesterCount() {
 Professor::Professor()
 : Person()
 {
-    cout << "Constructed Professor!" << endl;
+    //cout << "Constructed Professor!" << endl;
 }
 
 Professor::Professor(string fName, string lName, string id)
 : Person(fName, lName, id)
 {
-    cout << "Constructed Professor!" << endl;
+    //cout << "Constructed Professor!" << endl;
 }
 
 //dynamically allocates and returns a copy of Professor 

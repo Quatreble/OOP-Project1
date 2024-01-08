@@ -270,7 +270,7 @@ void Secretary::SecretaryOperation(){
         printMenu();
         cin >> op;
         if (op == 0){
-            cout << "GOODBYE <3";
+            cout << "GOODBYE";
             return;
         }
         else if (op < 0 || op > 10){
@@ -314,6 +314,15 @@ void Secretary::SecretaryOperation(){
                 } else {
                     cout << "The person with ID " << id << " is not a Professor.\n";
                 }
+            }
+        }
+        else if (op == 2){
+            cout << "1. ADD STUDENT\n";
+            cout << "2. MODIFY STUDENT\n";
+            cout << "3. REMOVE STUDENT\n";
+            cin >> op;
+            if (op == 1){
+                addStudent();
             }
         }
         else if (op == 10){
