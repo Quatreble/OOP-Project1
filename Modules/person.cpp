@@ -90,8 +90,9 @@ void Student::studAddCourse(Course& course){
             return;
         }
     }
-    studCourses.push_back(make_pair(course,-1));
     course.incRegistered();
+    studCourses.push_back(make_pair(course,-1));
+
     cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
 }
 
@@ -216,7 +217,7 @@ void Professor::prinStats(int sem){
     float perc;
     for(Course& c : profCourses){
         if(c.getSemester() == sem){
-            perc = c.passedNumber() / c.registeredNumber() * 100;
+            perc = c.passedNumber() / c.registeredNumber() * 100.0;
             cout << "Course name: " << c.getName() << endl;
             cout << "Course academic points: " << c.getAcademicPoints() << endl;
             cout << "Number of registered students for current semester: " << c.registeredNumber() << endl;

@@ -2,15 +2,16 @@
 #include <limits>
 #include "person.hpp"
 
-Course::Course(){};
+Course::Course() : registered(0)
+{}
 
 Course::Course(std::string nameIn, int academicPointsIn, bool isMandatoryIn, int semesterIn)
-    : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn), semester(semesterIn) {
+    : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn), semester(semesterIn), registered(0) {
     std::cout << "Course Created\n";
 }
 
 Course::Course(const Course& other)
-    : name(other.name), academicPoints(other.academicPoints), isMandatory(other.isMandatory), semester(other.semester) {
+    : name(other.name), academicPoints(other.academicPoints), isMandatory(other.isMandatory), semester(other.semester), registered(other.registered) {
     //std::cout << "Course Copied\n";
 }
 

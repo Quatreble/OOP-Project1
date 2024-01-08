@@ -14,7 +14,7 @@ private:
     bool isMandatory;
     int semester;
     std::vector<Student> studentsPassed;
-    int registered = 0;
+    int registered;
 
 public:
     Course();
