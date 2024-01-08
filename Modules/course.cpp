@@ -1,4 +1,5 @@
 #include "course.hpp"
+#include <limits>
 
 Course::Course(std::string nameIn, int academicPointsIn, bool isMandatoryIn)
     : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn) {
@@ -21,3 +22,36 @@ int Course::getAcademicPoints(){
 std::string Course::getName() const{
     return name;
 }
+
+void Course::setSemester(int semNum){
+    semester = semNum;
+}
+std::istream& operator>>(std::istream& is, Course& course) {
+    std::cout << "Please enter course name: ";
+    std::getline(is, course.name);
+
+    std::cout << "\nEnter course academic points: ";
+    is >> course.academicPoints;
+    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Clear newline after integer
+
+    std::string choice;
+    do {
+        std::cout << "Is the course mandatory? (y/n): ";
+        is >> choice;
+        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Clear any leftover characters
+
+        if (choice == "y" || choice == "Y") {
+            course.isMandatory = true;
+            break;
+        } else if (choice == "n" || choice == "N") {
+            course.isMandatory = false;
+            break;
+        } else {
+            std::cout << "Invalid input. Please enter 'y' or 'n'.\n";
+        }
+    } while (true);
+
+    return is;
+}
+
+

@@ -8,7 +8,7 @@
 class Course {
 private:
     std::string name;
-    int academicPoints;
+    int academicPoints,semester;
     bool isMandatory;
 
 public:
@@ -22,6 +22,10 @@ public:
     int getAcademicPoints();
 
     std::string getName() const;
+
+    void setSemester(int semNum);
+
+    friend std::istream& operator>>(std::istream& is, Course& course);
 };
 
 

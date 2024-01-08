@@ -49,7 +49,7 @@ private:
 
     Semester* getSemester(int num);
 
-    void addCourse(const Course& c, int semester);
+    void addCourse(Course& c, int semester);
 
     bool startSemester();
 
