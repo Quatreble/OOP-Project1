@@ -4,17 +4,23 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
+class Student;
 
 class Course {
 private:
     std::string name;
-    int academicPoints,semester;
+    int academicPoints;
     bool isMandatory;
+    int semester;
+    std::vector<Student> studentsPassed;
 
 public:
     Course();
 
-    Course(std::string nameIn, int academicPointsIn, bool isMandatoryIn);
+    Course(std::string nameIn, int academicPointsIn, bool isMandatoryIn, int semsterIn);
+
+    ~Course();
 
     Course(const Course& other);
 
@@ -26,7 +32,10 @@ public:
     std::string getName() const;
 
     void setSemester(int semNum);
-    int getSemester();
+    int getSemester() const;
+
+    void addStudentsWhoPassed(Student& stud);
+    void printStudentsWhoPassed();
 
     friend std::istream& operator>>(std::istream& is, Course& course);
     bool operator==(const Course& other) const;

@@ -4,6 +4,7 @@
 #include <string>
 #include "course.hpp"
 #include <vector>
+#include <utility>
 class Secretary;
 
 using namespace std;
@@ -48,6 +49,7 @@ class Student : public Person {
 private:
     //Semester* currSemester;
     int currSem;
+    vector<pair<Course, int>> studCourses;
 public:
     Student();
     Student(string fName, string lName, string id);
@@ -62,22 +64,27 @@ public:
     virtual bool equals(Student* s);
 
     int getSemesterCount();
+
+    void studAddCourse(Course& course);
+    void studentChangeGrade(Course& course);
 };
 
 class Professor : public Person {
 private:
+    std::vector<Course> profCourses;
 public:
     Professor();
     Professor(string fName, string lName, string id);
     Professor(const Person& p)
     : Person(p)
     {}
-    std::vector<Course> profCourses;
 
 
 
     virtual Professor* clone() override;
     void profAddCourse(Course& course);
+
+    bool teachesCourse(Course& course);
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Professor* f);

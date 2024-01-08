@@ -1,16 +1,21 @@
 #include "course.hpp"
 #include <limits>
+#include "person.hpp"
 
 Course::Course(){};
 
-Course::Course(std::string nameIn, int academicPointsIn, bool isMandatoryIn)
-    : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn) {
+Course::Course(std::string nameIn, int academicPointsIn, bool isMandatoryIn, int semesterIn)
+    : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn), semester(semesterIn) {
     std::cout << "Course Created\n";
 }
 
 Course::Course(const Course& other)
-    : name(other.name), academicPoints(other.academicPoints), isMandatory(other.isMandatory) {
+    : name(other.name), academicPoints(other.academicPoints), isMandatory(other.isMandatory), semester(other.semester) {
     //std::cout << "Course Copied\n";
+}
+
+Course::~Course(){
+   // std::cout << "Course Destroyed!\n";
 }
 
 std::unique_ptr<Course> Course::clone() const{
@@ -29,25 +34,43 @@ void Course::setSemester(int semNum){
     semester = semNum;
 }
 
-int Course::getSemester(){
+int Course::getSemester() const{
     return semester;
+}
+
+void Course::addStudentsWhoPassed(Student& stud){
+    studentsPassed.push_back(stud);
+}
+
+void Course::printStudentsWhoPassed(){
+    for (Student& student : studentsPassed){
+        std::cout << student;
+    }
 }
 
 std::istream& operator>>(std::istream& is, Course& course) {
     std::cout << "Please enter course name: ";
-    std::string name;
     is >> course.name;
     is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
+    do{
+    std::cout << "Enter Course Semester: ";
+    is >> course.semester;
+    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (course.semester < 1 || course.semester > 8){
+        std::cout << "Semester doesnt exist\n";
+    }
+    } while(course.semester < 1 || course.semester > 8);
+
     std::cout << "Enter course academic points: ";
     is >> course.academicPoints;
-    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Clear newline after integer
+    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  
 
     std::string choice;
     do {
         std::cout << "Is the course mandatory? (y/n): ";
         is >> choice;
-        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  // Clear any leftover characters
+        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
 
         if (choice == "y" || choice == "Y") {
             course.isMandatory = true;

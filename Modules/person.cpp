@@ -54,6 +54,22 @@ void Student::setSemester(){
     currSem = 1;
 }
 
+void Student::studAddCourse(Course& course){
+    if (course.getSemester() > currSem){
+        cout << "Student can't register. Lesson is at bigger semester\n";
+        return;
+    }
+    for (auto& element : studCourses){
+        const Course& vecCourse = element.first;
+        if (course == vecCourse){
+            cout << "Student already registered\n";
+            return;
+        }
+    }
+    studCourses.push_back(make_pair(course,-1));
+    cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
+}
+
 //overloaded operators <<, >> for input and output of Person objects
 ostream& operator<<(ostream& os, const Person& p) {
     return os << "Name: " << p.firstName << " " << p.lastName << ", " << "ID code: " << p.idCode << endl;
@@ -91,6 +107,38 @@ int Student::getSemesterCount() {
     return currSem;
 }
 
+void Student::studentChangeGrade(Course& course){
+    for (auto& element : studCourses){
+        Course& c = element.first;
+        if (c == course){
+            int grade;
+            bool error;
+            do {
+                error = false;
+                cout << "Enter desired grade: ";
+                cin >> grade;
+                if (grade < 0 || grade > 10){
+                    cout << "Wrong input";
+                    error = true;
+                }
+            }while (error);
+
+            if (element.second == -1){
+                if (grade >= 5){
+                    course.addStudentsWhoPassed(*this);
+                }
+                element.second = grade;
+                cout << "Grade was changed to " << element.second << '\n';
+            }
+            else{
+                cout << "Student already graded\n";
+            }
+            return;
+        }
+    }
+    cout << "Student not registered to course\n";
+
+}
 
 //////Professor class functions
 Professor::Professor()
@@ -116,7 +164,23 @@ bool Professor::equals(Professor* f) {
 }
 
 void Professor::profAddCourse(Course& course){
+    for (Course& c : profCourses){
+        if (c == course){
+            cout << "Professor " << lastName << " is already assigned to this course\n";
+            return;
+        }
+    }
     profCourses.push_back(course);
+    cout << "Professor " << firstName << " " << lastName << " now teaches " << course.getName() << '\n';
+}
+
+bool Professor::teachesCourse(Course& course){
+    for (Course& c : profCourses){
+        if (c == course){
+            return true;
+        }
+    }
+    return false;
 }
 
 // void courseRegister(){

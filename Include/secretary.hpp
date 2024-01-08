@@ -10,6 +10,7 @@ class Secretary {
 private:  
     string department;
     int semesters;
+    bool endSemester;
     vector<Person *> myVec;  // we choose to use a vector instead of a map since we would like to be able 
                              // to search with all Person's properties using linear iteration. Since all takes place
                              // in memory there is no significant performance hit to go through every Person  ( O(n) )
@@ -53,9 +54,12 @@ private:
 
     void addCourse();
     void removeCourse(Course& course);
-    //bool startSemester();
 
     void printMenu();
+    void printExamsMenu();
 
     void SecretaryOperation();
+
+    Student* readAndFindStudent();
+    Course* readAndFindCourse();
 };
