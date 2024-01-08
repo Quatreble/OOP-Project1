@@ -29,7 +29,7 @@ Secretary::~Secretary(){
         //cout << "Deleted " << (*it)->getFirstName() << endl;
         delete it;
     }
-    cout << "Deleted secretary " << department << endl;
+    //cout << "Deleted secretary " << department << endl;
 }
 
 Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy 
@@ -270,7 +270,7 @@ void Secretary::SecretaryOperation(){
         printMenu();
         cin >> op;
         if (op == 0){
-            cout << "GOODBYE";
+            cout << "\tGOODBYE\n";
             return;
         }
         else if (op < 0 || op > 10){
@@ -298,7 +298,7 @@ void Secretary::SecretaryOperation(){
                     cin >> *prof;
                     cout << "Professor " << prevName << " changed to " << prof->getFirstName() << " " << prof->getLastName() << '\n';
 
-                } else {
+                } else if (person != nullptr) {
                     cout << "The person with ID " << id << " is not a Professor.\n";
                 }
 
@@ -311,7 +311,7 @@ void Secretary::SecretaryOperation(){
                 Person* person = findPersonById(id);
                 if (isProfessor(person)) {
                     removePerson(*person);
-                } else {
+                } else if (person != nullptr) {
                     cout << "The person with ID " << id << " is not a Professor.\n";
                 }
             }
@@ -323,6 +323,33 @@ void Secretary::SecretaryOperation(){
             cin >> op;
             if (op == 1){
                 addStudent();
+            }
+            else if (op == 2){
+                cout << "INPUT STUDENT ID: ";
+                string id;
+                cin >> id;
+                Person* person = findPersonById(id);
+                if (isStudent(person)) {
+                    Student* stud = dynamic_cast<Student*>(person);
+                    string prevName = stud->getFirstName() + " " + stud->getLastName();
+                    cout << "Please enter the new attributes of the student\n";
+                    cin >> *stud;
+                    cout << "Student " << prevName << " changed to " << stud->getFirstName() << " " << stud->getLastName() << '\n';
+
+                } else if (person != nullptr) {
+                    cout << "The person with ID " << id << " is not a Student.\n";
+                }
+            }
+            else if (op == 3){
+                cout << "INPUT STUDENT ID: ";
+                string id;
+                cin >> id;
+                Person* person = findPersonById(id);
+                if (isStudent(person)) {
+                    removePerson(*person);
+                } else if (person != nullptr){
+                    cout << "The person with ID " << id << " is not a Student.\n";
+                }
             }
         }
         else if (op == 10){
