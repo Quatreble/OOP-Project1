@@ -1,6 +1,8 @@
 #include "person.hpp"
 #include "secretary.hpp"
 #include "Semester.hpp"
+#include <chrono>
+#include <thread>
 
 //////Secretary class functions
 Secretary::Secretary(const string& dep)
@@ -10,7 +12,7 @@ Secretary::Secretary(const string& dep)
         semesters.push_back(Semester(i));
     }
     //cout<<"Secretary " << department << " constructed!" <<endl;
-    printMenu();
+    SecretaryOperation();
 }
 
 Secretary::Secretary(){
@@ -18,7 +20,7 @@ Secretary::Secretary(){
         semesters.push_back(Semester(i));
     }
     //cout << "Secretary constructed!" << endl;
-    printMenu();
+    SecretaryOperation();
 
 }
 
@@ -44,15 +46,19 @@ Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy
 
 void Secretary::addPerson(Person& p, bool printStatement){
 
-    // // Check if the cast was successful
-    // if (isStudent(&p)) {
-    //     // Now that we know p is indeed a Student, we can call Student-specific methods
-    //     newS->setSemester();
-    // }
-
     Person *newP = p.clone();  // here we use the virtual function clone of the base class person instead of simply creating a 'new' person, 
 
-    myVec.push_back(newP);
+    if (isStudent(newP)) {
+        // Now that we know p is indeed a Student, we can call Student-specific methods
+        Student* studentPtr = dynamic_cast<Student*>(newP);
+        studentPtr->setSemester();
+        myVec.push_back(studentPtr);
+    }
+    else if (isProfessor(newP)) {
+        Professor* professorPtr = dynamic_cast<Professor*>(newP);
+        myVec.push_back(professorPtr);
+    }
+
     if (printStatement) cout << "Added " << newP->getFirstName() << " to " << department << "!" << endl;
 }
 
@@ -192,7 +198,7 @@ istream& operator>>(istream& is, Secretary& sec){
         }
         if(type == 'f'){
             Professor f;
-            //cout << "Enter Name, Surname and ID Code: " << endl;
+            cout << "Enter Name, Surname and ID Code: " << endl;
             is >> f;
             sec.addPerson(f);
         }
@@ -200,6 +206,20 @@ istream& operator>>(istream& is, Secretary& sec){
         is >> type;
     }
     return is;
+}
+
+void Secretary::addProfessor(){
+    Professor f;
+    //cout << "Enter Name, Surname and ID Code: " << endl;
+    cin >> f;
+    addPerson(f);
+}
+
+void Secretary::addStudent(){
+    Student s;
+    //cout << "Enter Name, Surname and ID Code: " << endl;
+    cin >> s;
+    addPerson(s);
 }
 
 Semester* Secretary::getSemester(int num){
@@ -239,19 +259,21 @@ void Secretary::printMenu(){
     cout << "7. GET COURSE STATS(PROF ONLY)\n";
     cout << "8. GET GRADES(STUDENT ONLY)\n";
     cout << "9. WHO GRADUATES?\n";
+    cout << "10. PRINT DEPARTMENT MEMBERS\n";
     cout << "TYPE 0 TO EXIT\n";
-    SecretaryOperation();
 }
 
 void Secretary::SecretaryOperation(){
     int op;
     while (true){
+        this_thread::sleep_for(chrono::seconds(1));
+        printMenu();
         cin >> op;
         if (op == 0){
             cout << "GOODBYE <3";
             return;
         }
-        else if (op < 0 || op > 9){
+        else if (op < 0 || op > 10){
             cout << "WRONG INPUT\n";
             cout << "INPUT AGAIN\n";
             continue;
@@ -262,21 +284,40 @@ void Secretary::SecretaryOperation(){
             cout << "3. REMOVE PROFESSOR\n";
             cin >> op;
             if (op == 1){
-                Professor peepee;
-                cin >> peepee;
-              //  addProfessor(peepee);
+                addProfessor();
             }
             else if (op == 2){
                 cout << "INPUT PROFESSOR ID: ";
                 string id;
                 cin >> id;
-                Professor prof = findPersonrById(id);
+                Person* person = findPersonById(id);
+                if (isProfessor(person)) {
+                    Professor* prof = dynamic_cast<Professor*>(person);
+                    string prevName = prof->getFirstName() + " " + prof->getLastName();
+                    cout << "Please enter the new attributes of the professor\n";
+                    cin >> *prof;
+                    cout << "Professor " << prevName << " changed to " << prof->getFirstName() << " " << prof->getLastName() << '\n';
+
+                } else {
+                    cout << "The person with ID " << id << " is not a Professor.\n";
+                }
 
                 
             }
             else if (op == 3){
-                
+                cout << "INPUT PROFESSOR ID: ";
+                string id;
+                cin >> id;
+                Person* person = findPersonById(id);
+                if (isProfessor(person)) {
+                    removePerson(*person);
+                } else {
+                    cout << "The person with ID " << id << " is not a Professor.\n";
+                }
             }
+        }
+        else if (op == 10){
+            cout << *this;
         }
     }
     

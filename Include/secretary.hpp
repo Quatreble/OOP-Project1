@@ -44,6 +44,9 @@ private:
     friend ostream& operator<<(ostream& os, Secretary& secretary);
     friend istream& operator>>(istream& is, Secretary& secretary);
 
+    void addProfessor();
+    void addStudent();
+
     Semester* getSemester(int num);
 
     void addCourse(const Course& c, int semester);
