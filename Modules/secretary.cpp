@@ -291,14 +291,14 @@ void Secretary::SecretaryOperation(){
                 string id;
                 cin >> id;
                 Person* person = findPersonById(id);
-                if (isProfessor(person)) {
+                if (isProfessor(person)) {  //Check if person is professor
                     Professor* prof = dynamic_cast<Professor*>(person);
                     string prevName = prof->getFirstName() + " " + prof->getLastName();
                     cout << "Please enter the new attributes of the professor\n";
                     cin >> *prof;
                     cout << "Professor " << prevName << " changed to " << prof->getFirstName() << " " << prof->getLastName() << '\n';
 
-                } else if (person != nullptr) {
+                } else if (person != nullptr) { //if person is found but isnt a professor
                     cout << "The person with ID " << id << " is not a Professor.\n";
                 }
 
@@ -309,7 +309,7 @@ void Secretary::SecretaryOperation(){
                 string id;
                 cin >> id;
                 Person* person = findPersonById(id);
-                if (isProfessor(person)) {
+                if (isProfessor(person)) {  //same as above
                     removePerson(*person);
                 } else if (person != nullptr) {
                     cout << "The person with ID " << id << " is not a Professor.\n";
@@ -329,14 +329,14 @@ void Secretary::SecretaryOperation(){
                 string id;
                 cin >> id;
                 Person* person = findPersonById(id);
-                if (isStudent(person)) {
+                if (isStudent(person)) { //check if person is student
                     Student* stud = dynamic_cast<Student*>(person);
                     string prevName = stud->getFirstName() + " " + stud->getLastName();
                     cout << "Please enter the new attributes of the student\n";
                     cin >> *stud;
                     cout << "Student " << prevName << " changed to " << stud->getFirstName() << " " << stud->getLastName() << '\n';
 
-                } else if (person != nullptr) {
+                } else if (person != nullptr) { //if person is found and isnt a student 
                     cout << "The person with ID " << id << " is not a Student.\n";
                 }
             }
@@ -345,12 +345,17 @@ void Secretary::SecretaryOperation(){
                 string id;
                 cin >> id;
                 Person* person = findPersonById(id);
-                if (isStudent(person)) {
+                if (isStudent(person)) {    //same as above
                     removePerson(*person);
                 } else if (person != nullptr){
                     cout << "The person with ID " << id << " is not a Student.\n";
                 }
             }
+        }
+        else if (op == 3){
+            cout << "1. ADD COURSE\n";
+            cout << "2. MODIFY COURSE\n";
+            cout << "3. REMOVE COURSE\n";
         }
         else if (op == 10){
             cout << *this;
