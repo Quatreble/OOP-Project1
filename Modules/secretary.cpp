@@ -455,12 +455,19 @@ void Secretary::SecretaryOperation(){
             Course* course = readAndFindCourse();
             course->printStudentsWhoPassed();
         }
+        else if(op == 8){
+            Student* stud = readAndFindStudent();
+            if (stud != nullptr){
+                stud->printGrades();
+            }
+        }
         else if (op == 10){
             cout << *this;
         }
         else if (op == 11){
             endSemester = true;
             while (endSemester == true){
+                this_thread::sleep_for(chrono::seconds(1));
                 printExamsMenu();
                 cin >> op;
                 if (op == 1){
@@ -485,6 +492,15 @@ void Secretary::SecretaryOperation(){
                         }
                     }
                 }
+                else if (op == 2){
+                    Student* stud = readAndFindStudent();
+                    if (stud != nullptr){
+                        stud->printGrades(true);
+                    }
+                }
+                else if (op == 4){
+                    endSemester = false;
+                }
             }
         }
     }
@@ -494,6 +510,8 @@ void Secretary::SecretaryOperation(){
 void Secretary::printExamsMenu(){
     cout << "\tSEMESTER END MENU\n";
     cout << "1. GRADE STUDENTS\n";
+    cout << "2. PRINT STUDENT'S GRADES\n";
+    cout << "4. START NEXT SEMESTER\n";
 }
 
 
@@ -519,4 +537,5 @@ Course* Secretary::readAndFindCourse(){
     if (course == nullptr){
         cout << "Course not found\n";
     }
+    return course;
 }

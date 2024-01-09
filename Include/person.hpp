@@ -64,6 +64,7 @@ public:
     virtual bool equals(Student* s);
 
     int getSemesterCount();
+    void printGrades(bool semesterOnly = false);
 
     void studAddCourse(Course& course);
     void studentChangeGrade(Course& course);

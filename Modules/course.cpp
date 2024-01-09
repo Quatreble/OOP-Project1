@@ -43,6 +43,9 @@ void Course::addStudentsWhoPassed(Student& stud){
 }
 
 void Course::printStudentsWhoPassed(){
+    if (studentsPassed.empty()){
+        std::cout << "No students have passed the course\n";
+    }   
     for (Student& student : studentsPassed){
         std::cout << student;
     }

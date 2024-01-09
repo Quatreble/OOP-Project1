@@ -54,6 +54,25 @@ void Student::setSemester(){
     currSem = 1;
 }
 
+void Student::printGrades(bool semesterOnly){
+    bool found = false;
+    for (auto& element : studCourses){
+        const Course& course = element.first;
+        int grade = element.second;
+        if (grade != -1 && !semesterOnly){
+            cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
+            found = true;
+        }
+        else if (grade != -1 && course.getSemester() == currSem){
+            cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
+            found = true;
+        }
+    }
+    if (found == false){
+        cout << "No Grades Found\n";
+    }
+}
+
 void Student::studAddCourse(Course& course){
     if (course.getSemester() > currSem){
         cout << "Student can't register. Lesson is at bigger semester\n";
