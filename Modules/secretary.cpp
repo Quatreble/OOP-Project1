@@ -468,7 +468,7 @@ void Secretary::SecretaryOperation(){
                 cout << "Enter semester for stats: ";
                 int sem;
                 cin >> sem;
-                prof->prinStats(sem);
+                prof->printStats(sem);
             }
         }
         else if(op == 8){

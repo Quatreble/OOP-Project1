@@ -224,7 +224,7 @@ bool Professor::teachesCourse(Course& course){
     return false;
 }
 
-void Professor::prinStats(int sem){
+void Professor::printStats(int sem){
     if(profCourses.empty()){
         cout << "The professor has no courses\n";
         return;
