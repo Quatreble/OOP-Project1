@@ -58,7 +58,7 @@ public:
     {}
 
     virtual Student* clone() override;
-    void setSemester();
+    void setSemester(bool next = false);
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Student* s);

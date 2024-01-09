@@ -499,7 +499,7 @@ void Secretary::SecretaryOperation(){
                     }
                 }
                 else if (op == 4){
-                    endSemester = false;
+                    nextSemester();
                 }
             }
         }
@@ -538,4 +538,14 @@ Course* Secretary::readAndFindCourse(){
         cout << "Course not found\n";
     }
     return course;
+}
+
+void Secretary::nextSemester(){
+    endSemester = false;
+    for (Person* person : myVec){
+        if (isStudent(person)){
+            Student* stud = dynamic_cast<Student*>(person);
+            stud->setSemester(true);
+        }
+    }
 }

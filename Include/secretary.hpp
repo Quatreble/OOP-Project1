@@ -62,4 +62,6 @@ private:
 
     Student* readAndFindStudent();
     Course* readAndFindCourse();
+
+    void nextSemester();
 };

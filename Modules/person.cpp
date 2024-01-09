@@ -50,8 +50,13 @@ int Person::getCount(){
     return pCount;
 }
 
-void Student::setSemester(){
-    currSem = 1;
+void Student::setSemester(bool next){
+    if (!next){
+        currSem = 1;
+    }
+    else{
+        currSem++;
+    }
 }
 
 void Student::printGrades(bool semesterOnly){
