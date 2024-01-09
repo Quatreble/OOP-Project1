@@ -15,6 +15,7 @@ private:
     int semester;
     std::vector<Student> studentsPassed;
     int registered;
+    static int semCount;
 
 public:
     Course();
@@ -30,9 +31,13 @@ public:
 
     int getAcademicPoints();
 
+    void setName(std::string name);
+    void setSemester(int sem);
+    void setAcademicPoints(int points);
+    void setMand(std::string c);
+
     std::string getName() const;
 
-    void setSemester(int semNum);
     int getSemester() const;
 
     void addStudentsWhoPassed(Student& stud);

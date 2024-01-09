@@ -1,6 +1,9 @@
 #include "course.hpp"
 #include <limits>
 #include "person.hpp"
+#include <fstream>
+
+int Course::semCount = 0;
 
 Course::Course() : registered(0)
 {}
@@ -31,10 +34,6 @@ std::string Course::getName() const{
     return name;
 }
 
-void Course::setSemester(int semNum){
-    semester = semNum;
-}
-
 int Course::getSemester() const{
     return semester;
 }
@@ -53,7 +52,26 @@ void Course::addStudentsWhoPassed(Student& stud){
 void Course::printStudentsWhoPassed(){
     if (studentsPassed.empty()){
         std::cout << "No students have passed the course\n";
+        return;
     }   
+
+    std::ofstream outFile("students-passed-"+getName()+"-"+to_string(getSemester())+".txt");
+
+    // Check if the file stream is open
+    if (outFile.is_open()) {
+        // Write to the file
+        for (Student& student : studentsPassed){
+            outFile << student;
+        }
+        // Close the file
+        outFile.close();
+
+        std::cout << "File created successfully." << std::endl;
+    } else {
+        // Error message if file couldn't be opened
+        std::cerr << "Unable to open file for writing." << std::endl;
+    }
+
     for (Student& student : studentsPassed){
         std::cout << student;
     }
@@ -95,6 +113,27 @@ std::istream& operator>>(std::istream& is, Course& course) {
     } while (true);
 
     return is;
+}
+
+void Course::setName(string name){
+    this->name = name;
+}
+
+void Course::setSemester(int semNum){
+    semester = semNum;
+}
+
+void Course::setAcademicPoints(int points){
+    academicPoints = points;
+}
+
+void Course::setMand(std::string c){
+    if ("y" == c || "Y" == c){
+        isMandatory = true;
+    }
+    else{
+        isMandatory = false;
+    }
 }
 
 void Course::incRegistered(){

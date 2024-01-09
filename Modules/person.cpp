@@ -50,13 +50,12 @@ int Person::getCount(){
     return pCount;
 }
 
-void Student::setSemester(bool next){
-    if (!next){
-        currSem = 1;
-    }
-    else{
+void Student::setSemester(int sem, bool next){
+    if (next){
         currSem++;
+        return;
     }
+     currSem = sem;
 }
 
 void Student::printGrades(bool semesterOnly){
@@ -102,9 +101,17 @@ ostream& operator<<(ostream& os, const Person& p) {
 }
 
 istream& operator>>(std::istream& is, Person& p){
+    if (dynamic_cast<Student *> (&p) != nullptr){
+        Student* stud = dynamic_cast<Student *> (&p);
+        cout << "Enter semester: ";
+        int sem;
+        cin >> sem;
+        stud->setSemester(sem);
+    }
     cout << "Enter first Name, last Name and ID code: " << endl;
     return is >> p.firstName >> p.lastName >> p.idCode;
 }
+
 
 //////Student class functions
 Student::Student()
@@ -166,6 +173,14 @@ void Student::studentChangeGrade(Course& course){
 
 }
 
+void Student::printGradesToto(){
+    for (auto& element : studCourses){
+        cout << "THE GRADE FOR COURSE " << element.first.getName()<< " IS " << element.second << endl;
+    }
+}
+
+
+
 //////Professor class functions
 Professor::Professor()
 : Person()
@@ -226,6 +241,7 @@ void Professor::prinStats(int sem){
         }
     }
 }
+
 
 // void courseRegister(){
 //     if (!currDepartment->startSemester()){

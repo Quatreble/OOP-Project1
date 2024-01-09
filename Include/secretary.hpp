@@ -65,4 +65,8 @@ private:
     Course* readAndFindCourse();
 
     void nextSemester();
+
+    void readStudentsFromFile();
+    void readProfessorsFromFile();
+    void readCourseFromFile();
 };

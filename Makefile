@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-Wall -IInclude
+CXXFLAGS=-Wall -IInclude -g 
 
 EXECUTABLE=myprogram
 
@@ -14,12 +14,6 @@ $(EXECUTABLE): $(OBJECTS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-SourceFiles/%.o: SourceFiles/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-main.o: main.cpp
-	$(CXX) $(CXXFLAGS) -c main.cpp -o main.o
 
 clean:
 	rm -f $(EXECUTABLE) $(OBJECTS)

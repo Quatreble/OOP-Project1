@@ -57,7 +57,8 @@ public:
     {}
 
     virtual Student* clone() override;
-    void setSemester(bool next = false);
+    void setSemester(int sem, bool next = false);
+
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Student* s);
@@ -67,6 +68,10 @@ public:
 
     void studAddCourse(Course& course);
     void studentChangeGrade(Course& course);
+
+    friend istream& operator>>(std::istream& is, Person& p);
+    
+    void printGradesToto();
 };
 
 class Professor : public Person {

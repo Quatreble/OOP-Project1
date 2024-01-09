@@ -2,16 +2,23 @@
 #include "secretary.hpp"
 #include <chrono>
 #include <thread>
+#include <fstream>
+#include <sstream>
 
 //////Secretary class functions
 Secretary::Secretary(const string& dep, int sem)
 : department(dep), semesters(sem), endSemester(false)
 {
+    readStudentsFromFile();
+    readProfessorsFromFile();
+    readCourseFromFile();
     SecretaryOperation();
     //cout<<"Secretary " << department << " constructed!" <<endl;
 }
 
 Secretary::Secretary(){
+    readStudentsFromFile();
+    readProfessorsFromFile();
     endSemester = false;
     SecretaryOperation();
     //cout << "Secretary constructed!" << endl;
@@ -42,7 +49,7 @@ void Secretary::addPerson(Person& p, bool printStatement){
     if (isStudent(newP)) {
         // Now that we know p is indeed a Student, we can call Student-specific methods
         Student* studentPtr = dynamic_cast<Student*>(newP);
-        studentPtr->setSemester();
+        //studentPtr->setSemester();
         myVec.push_back(studentPtr);
     }
     else if (isProfessor(newP)) {
@@ -494,6 +501,7 @@ void Secretary::SecretaryOperation(){
                             Student* stud = readAndFindStudent();
                             if (stud != nullptr){
                                 stud->studentChangeGrade(*course);
+                                stud->printGradesToto();
                             }
                         }
                         else{
@@ -568,7 +576,100 @@ void Secretary::nextSemester(){
     for (Person* person : myVec){
         if (isStudent(person)){
             Student* stud = dynamic_cast<Student*>(person);
-            stud->setSemester(true);
+            stud->setSemester(0,true);
         }
+    }
+}
+
+
+void Secretary::readStudentsFromFile(){
+    ifstream file("student-info.txt");
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            Student stud;
+            istringstream iss(line);
+            string word;
+            for (int i = 0; i <= 3; ++i) {
+                iss >> word;
+                if (i == 0){
+                    stud.setFirstName(word);
+                }
+                else if (i == 1){
+                    stud.setLastName(word);
+                }
+                else if (i == 2){
+                    stud.setIdCode(word);
+                }
+                else if (i == 3){
+                    stud.setSemester(stoi(word));
+                }
+            }
+            addPerson(stud, false);
+        }
+        file.close();
+    } else {
+        std::cerr << "Unable to open file" << std::endl;
+    }
+}
+
+void Secretary::readProfessorsFromFile(){
+    ifstream file("professor-info.txt");
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            Professor prof;
+            istringstream iss(line);
+            string word;
+            for (int i = 0; i <= 2; ++i) {
+                iss >> word;
+                if (i == 0){
+                    prof.setFirstName(word);
+                }
+                else if (i == 1){
+                    prof.setLastName(word);
+                }
+                else if (i == 2){
+                    prof.setIdCode(word);
+                }
+
+            }
+            addPerson(prof, false);
+        }
+        file.close();
+    } else {
+        std::cerr << "Unable to open file" << std::endl;
+    }
+}
+
+void Secretary::readCourseFromFile(){
+    ifstream file("course-info.txt");
+    if (file.is_open()) {
+        string line;
+        while (getline(file, line)) {
+            Course course;
+            istringstream iss(line);
+            string word;
+            for (int i = 0; i <= 3; ++i) {
+                iss >> word;
+                if (i == 0){
+                    course.setName(word);
+                }
+                else if (i == 1){
+                    course.setSemester(stoi(word));
+                }
+                else if (i == 2){
+                    course.setAcademicPoints(stoi(word));
+                }
+                else if (i == 3){
+                    course.setMand(word);
+                }
+
+            }
+            courses.push_back(course);
+        }
+        file.close();
+    } else {
+        std::cerr << "Unable to open file" << std::endl;
     }
 }
