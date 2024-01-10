@@ -22,6 +22,10 @@ Course::~Course(){
    // std::cout << "Course Destroyed!\n";
 }
 
+bool Course::getMand(){
+        return isMandatory;
+}
+
 std::unique_ptr<Course> Course::clone() const{
     return std::make_unique<Course>(*this);
 }

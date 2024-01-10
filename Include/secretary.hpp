@@ -15,8 +15,10 @@ private:
                              // to search with all Person's properties using linear iteration. Since all takes place
                              // in memory there is no significant performance hit to go through every Person  ( O(n) )
     vector<Course> courses;  
+    int requiredPoints;
+    int numOfMandatory = 0;
     public:
-    Secretary(const string& dep, int sem);
+    Secretary(const string& dep, int sem, int reqPoints);
     Secretary();
     ~Secretary();
     Secretary(const Secretary& sec);
@@ -35,6 +37,9 @@ private:
     void printSecSize();
     void setSecName(const string& dep);
     const string& getSecName();
+    int getNumOfMandatory(){
+        return numOfMandatory;
+    }
 
     static bool isStudent(Person *p);
     static bool isProfessor(Person *p);
@@ -57,6 +62,7 @@ private:
 
     void printMenu();
     void printExamsMenu();
+    void printGraduates();
 
     void SecretaryOperation();
 

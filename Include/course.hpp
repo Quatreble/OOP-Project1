@@ -37,6 +37,7 @@ public:
     void setMand(std::string c);
 
     std::string getName() const;
+    bool getMand();
 
     int getSemester() const;
 

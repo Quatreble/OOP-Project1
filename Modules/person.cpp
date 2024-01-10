@@ -95,6 +95,14 @@ void Student::studAddCourse(Course& course){
     cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
 }
 
+int Student::getAcademicPoints(){
+    return currPoints;
+}
+
+void Student::incAcademicPoints(int p){
+    currPoints += p;
+}
+
 //overloaded operators <<, >> for input and output of Person objects
 ostream& operator<<(ostream& os, const Person& p) {
     return os << "Name: " << p.firstName << " " << p.lastName << ", " << "ID code: " << p.idCode << endl;
@@ -159,6 +167,10 @@ void Student::studentChangeGrade(Course& course){
             if (element.second == -1){
                 if (grade >= 5){
                     course.addStudentsWhoPassed(*this);
+                    incAcademicPoints(course.getAcademicPoints());
+                    if(course.getMand()){
+                        ++mandatoryPassed;
+                    }
                 }
                 element.second = grade;
                 cout << "Grade was changed to " << element.second << '\n';

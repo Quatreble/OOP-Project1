@@ -49,6 +49,8 @@ private:
     //Semester* currSemester;
     int currSem;
     vector<pair<Course, int>> studCourses;
+    int currPoints = 0;
+    int mandatoryPassed = 0;
 public:
     Student();
     Student(string fName, string lName, string id);
@@ -64,7 +66,12 @@ public:
     virtual bool equals(Student* s);
 
     int getSemesterCount();
+    void incAcademicPoints(int p);
+    int getAcademicPoints();
     void printGrades(bool semesterOnly = false);
+    int getMandatoryPassed(){
+        return mandatoryPassed;
+    }
 
     void studAddCourse(Course& course);
     void studentChangeGrade(Course& course);

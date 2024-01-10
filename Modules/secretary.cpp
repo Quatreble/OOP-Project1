@@ -6,8 +6,8 @@
 #include <sstream>
 
 //////Secretary class functions
-Secretary::Secretary(const string& dep, int sem)
-: department(dep), semesters(sem), endSemester(false)
+Secretary::Secretary(const string& dep, int sem, int reqPoints)
+: department(dep), semesters(sem), endSemester(false), requiredPoints(reqPoints)//, numOfMandatory(0)
 {
     readStudentsFromFile();
     readProfessorsFromFile();
@@ -33,6 +33,7 @@ Secretary::~Secretary(){
     //cout << "Deleted secretary " << department << endl;
 }
 
+//NMZW O COPY D XREIAZETAI NA ASXOLOUMASTE ME TA INTS
 Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy 
 : department(sec.department), semesters(sec.semesters), endSemester(sec.endSemester)
 {
@@ -251,6 +252,9 @@ void Secretary::addCourse(){
     cin >> course;
     std::cout << course.getName() <<" added to " << department << " at semester " << course.getSemester() << '\n';
     courses.push_back(course);
+    if(course.getMand()){
+        ++numOfMandatory;
+    }
 }
 
 void Secretary::removeCourse(Course& course){
@@ -277,6 +281,7 @@ void Secretary::printMenu(){
     cout << "9. WHO GRADUATES?\n";
     cout << "10. PRINT DEPARTMENT MEMBERS\n";
     cout << "11. END SEMESTER\n";
+    cout << "12. PRINT DEPARTMENT INFO\n";
     cout << "TYPE 0 TO EXIT\n";
 }
 
@@ -290,7 +295,7 @@ void Secretary::SecretaryOperation(){
             cout << "\tGOODBYE\n";
             return;
         }
-        else if (op < 0 || op > 11){
+        else if (op < 0 || op > 12){
             cout << "WRONG INPUT\n";
             cout << "INPUT AGAIN\n";
             continue;
@@ -477,8 +482,17 @@ void Secretary::SecretaryOperation(){
                 stud->printGrades();
             }
         }
+        else if(op == 9){
+            printGraduates();
+        }
         else if (op == 10){
             cout << *this;
+        }
+        else if (op == 12){
+            cout << "Department name: " <<department << '\n';
+            cout << "Number of Semesters: " << semesters << '\n';
+            cout << "Required academic points for degree: " << requiredPoints << '\n';
+            cout << "Number of mandatory courses: " << numOfMandatory << '\n';
         }
         else if (op == 11){
             endSemester = true;
@@ -531,6 +545,16 @@ void Secretary::printExamsMenu(){
     cout << "4. START NEXT SEMESTER\n";
 }
 
+void Secretary::printGraduates(){
+    for (Person* person : myVec){
+        if (isStudent(person)){
+            Student* stud = dynamic_cast<Student*>(person);
+            if(stud->getSemesterCount() >= semesters && stud->getMandatoryPassed()==getNumOfMandatory() && stud->getAcademicPoints() >= requiredPoints){
+                cout << *stud;
+            }
+        }
+    }
+}
 
 Student* Secretary::readAndFindStudent(){
     cout << "Enter Student id: ";
@@ -667,6 +691,9 @@ void Secretary::readCourseFromFile(){
 
             }
             courses.push_back(course);
+            if(course.getMand()){
+                ++numOfMandatory;
+            }
         }
         file.close();
     } else {
