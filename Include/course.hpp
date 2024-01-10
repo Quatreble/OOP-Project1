@@ -1,55 +1,57 @@
-#ifndef COURSE_HPP
-#define COURSE_HPP
+#pragma once
 
+#include <limits>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "person.hpp"
+
+using namespace std;
+
 class Student;
 
 class Course {
 private:
-    std::string name;
+    string name;
     int academicPoints;
     bool isMandatory;
     int semester;
-    std::vector<Student> studentsPassed;
     int registered;
-    static int semCount;
+    vector<Student> studentsWhoPassed;
 
 public:
     Course();
 
-    Course(std::string nameIn, int academicPointsIn, bool isMandatoryIn, int semsterIn);
-
-    ~Course();
+    Course(string nameIn, int academicPointsIn, bool isMandatoryIn, int semsterIn);
 
     Course(const Course& other);
 
+    ~Course();
 
-    std::unique_ptr<Course> clone() const;
+    unique_ptr<Course> clone() const;
 
-    int getAcademicPoints();
-
-    void setName(std::string name);
-    void setSemester(int sem);
+    void setName(string name);
     void setAcademicPoints(int points);
-    void setMand(std::string c);
+    void setMand(string c);
+    void setSemester(int sem);
 
-    std::string getName() const;
-    bool getMand();
-
+    string getName() const;
+    int getAcademicPoints() const;
+    bool getMand() const;
     int getSemester() const;
 
     void addStudentsWhoPassed(Student& stud);
     void printStudentsWhoPassed();
-    void incRegistered();
     int passedNumber();
+
+    void incrRegistered();
     int registeredNumber();
 
-    friend std::istream& operator>>(std::istream& is, Course& course);
+    friend istream& operator>>(istream& is, Course& course);
+
     bool operator==(const Course& other) const;
 };
 
-
-#endif // COURSE_HPP

@@ -1,9 +1,10 @@
 #include "person.hpp"
-#include "secretary.hpp"
 
-//////Person class functions:
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////Person class functions///////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Person::Person()                           
-// : firstName(""), lastName(""), idCode("")
 {
     pCount++;
 }
@@ -19,9 +20,11 @@ Person::~Person() {}
 void Person::setFirstName(const string& name){
     firstName = name;
 }
+
 void Person::setLastName(const string& name){
     lastName = name;
 }
+
 void Person::setIdCode(const string& id){
     idCode = id;
 }
@@ -50,59 +53,6 @@ int Person::getCount(){
     return pCount;
 }
 
-void Student::setSemester(int sem, bool next){
-    if (next){
-        currSem++;
-        return;
-    }
-     currSem = sem;
-}
-
-void Student::printGrades(bool semesterOnly){
-    bool found = false;
-    for (auto& element : studCourses){
-        const Course& course = element.first;
-        int grade = element.second;
-        if (grade != -1 && !semesterOnly){
-            cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
-            found = true;
-        }
-        else if (grade != -1 && course.getSemester() == currSem){
-            cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
-            found = true;
-        }
-    }
-    if (found == false){
-        cout << "No Grades Found\n";
-    }
-}
-
-void Student::studAddCourse(Course& course){
-    if (course.getSemester() > currSem){
-        cout << "Student can't register. Lesson is at bigger semester\n";
-        return;
-    }
-    for (auto& element : studCourses){
-        const Course& vecCourse = element.first;
-        if (course == vecCourse){
-            cout << "Student already registered\n";
-            return;
-        }
-    }
-    course.incRegistered();
-    studCourses.push_back(make_pair(course,-1));
-
-    cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
-}
-
-int Student::getAcademicPoints(){
-    return currPoints;
-}
-
-void Student::incAcademicPoints(int p){
-    currPoints += p;
-}
-
 //overloaded operators <<, >> for input and output of Person objects
 ostream& operator<<(ostream& os, const Person& p) {
     return os << "Name: " << p.firstName << " " << p.lastName << ", " << "ID code: " << p.idCode << endl;
@@ -120,8 +70,10 @@ istream& operator>>(std::istream& is, Person& p){
     return is >> p.firstName >> p.lastName >> p.idCode;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////Student class functions///////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////Student class functions
 Student::Student()
 : Person()
 {
@@ -144,12 +96,46 @@ bool Student::equals(Student* s) {
     return Person::equals(s);
 }
 
+void Student::setSemester(int sem, bool next){
+    if (next){
+        currentSemester++;
+        return;
+    }
+     currentSemester = sem;
+}
+
 int Student::getSemesterCount() {
-    return currSem;
+    return currentSemester;
+}
+
+int Student::getAcademicPoints(){
+    return currentPoints;
+}
+
+void Student::incrAcademicPoints(int p){
+    currentPoints += p;
+}
+
+void Student::studAddCourse(Course& course){
+    if (course.getSemester() > currentSemester){
+        cout << "Student can't register. Lesson is at bigger semester\n";
+        return;
+    }
+    for (auto& element : coursesWithGrades){
+        const Course& vecCourse = element.first;
+        if (course == vecCourse){
+            cout << "Student already registered\n";
+            return;
+        }
+    }
+    course.incrRegistered();
+    coursesWithGrades.push_back(make_pair(course,-1));
+
+    cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
 }
 
 void Student::studentChangeGrade(Course& course){
-    for (auto& element : studCourses){
+    for (auto& element : coursesWithGrades){
         Course& c = element.first;
         if (c == course){
             int grade;
@@ -167,7 +153,7 @@ void Student::studentChangeGrade(Course& course){
             if (element.second == -1){
                 if (grade >= 5){
                     course.addStudentsWhoPassed(*this);
-                    incAcademicPoints(course.getAcademicPoints());
+                    incrAcademicPoints(course.getAcademicPoints());
                     if(course.getMand()){
                         ++mandatoryPassed;
                     }
@@ -185,15 +171,37 @@ void Student::studentChangeGrade(Course& course){
 
 }
 
+void Student::printGrades(bool semesterOnly){
+    bool found = false;
+    for (auto& element : coursesWithGrades){
+        const Course& course = element.first;
+        int grade = element.second;
+        if (grade != -1 && !semesterOnly){
+            cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
+            found = true;
+        }
+        else if (grade != -1 && course.getSemester() == currentSemester){
+            cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
+            found = true;
+        }
+    }
+    if (found == false){
+        cout << "No Grades Found\n";
+    }
+}
+
 void Student::printGradesToto(){
-    for (auto& element : studCourses){
+    for (auto& element : coursesWithGrades){
         cout << "THE GRADE FOR COURSE " << element.first.getName()<< " IS " << element.second << endl;
     }
 }
 
 
 
-//////Professor class functions
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////Professor class functions/////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Professor::Professor()
 : Person()
 {

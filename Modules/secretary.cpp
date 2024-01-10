@@ -1,19 +1,14 @@
-#include "person.hpp"
 #include "secretary.hpp"
-#include <chrono>
-#include <thread>
-#include <fstream>
-#include <sstream>
 
 //////Secretary class functions
 Secretary::Secretary(const string& dep, int sem, int reqPoints)
-: department(dep), semesters(sem), endSemester(false), requiredPoints(reqPoints)//, numOfMandatory(0)
+: depName(dep), depSemesters(sem), endSemester(false), pointsToGraduate(reqPoints)//, numOfMandatory(0)
 {
     readStudentsFromFile();
     readProfessorsFromFile();
     readCourseFromFile();
     SecretaryOperation();
-    //cout<<"Secretary " << department << " constructed!" <<endl;
+    //cout<<"Secretary " << depName << " constructed!" <<endl;
 }
 
 Secretary::Secretary(){
@@ -26,18 +21,18 @@ Secretary::Secretary(){
 }
 
 Secretary::~Secretary(){
-    for(Person* it : myVec){
+    for(Person* it : depMembers){
         //cout << "Deleted " << (*it)->getFirstName() << endl;
         delete it;
     }
-    //cout << "Deleted secretary " << department << endl;
+    //cout << "Deleted secretary " << depName << endl;
 }
 
 //NMZW O COPY D XREIAZETAI NA ASXOLOUMASTE ME TA INTS
 Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy 
-: department(sec.department), semesters(sec.semesters), endSemester(sec.endSemester)
+: depName(sec.depName), depSemesters(sec.depSemesters), endSemester(sec.endSemester)
 {
-    for (auto it = sec.myVec.begin(); it != sec.myVec.end(); ++it) {
+    for (auto it = sec.depMembers.begin(); it != sec.depMembers.end(); ++it) {
         addPerson(**it, false);
     }
 
@@ -51,19 +46,19 @@ void Secretary::addPerson(Person& p, bool printStatement){
         // Now that we know p is indeed a Student, we can call Student-specific methods
         Student* studentPtr = dynamic_cast<Student*>(newP);
         //studentPtr->setSemester();
-        myVec.push_back(studentPtr);
+        depMembers.push_back(studentPtr);
     }
     else if (isProfessor(newP)) {
         Professor* professorPtr = dynamic_cast<Professor*>(newP);
-        myVec.push_back(professorPtr);
+        depMembers.push_back(professorPtr);
     }
 
-    if (printStatement) cout << "Added " << newP->getFirstName() << " to " << department << "!" << endl;
+    if (printStatement) cout << "Added " << newP->getFirstName() << " to " << depName << "!" << endl;
 }
 
 //four different findPerson functions, each searching by a different property/Person&
 Person* Secretary::findPersonByFirstName(const string& name){
-    for(Person* i : myVec){
+    for(Person* i : depMembers){
         if(i->getFirstName() == name){
             cout << "Person Found" << endl;
             return i;
@@ -74,7 +69,7 @@ Person* Secretary::findPersonByFirstName(const string& name){
 }
 
 Person* Secretary::findPersonByLastName(const string& name) {
-    for(Person* i : myVec){
+    for(Person* i : depMembers){
         if(i->getLastName() == name){
             cout << "Person Found" << endl;
             return i;
@@ -85,7 +80,7 @@ Person* Secretary::findPersonByLastName(const string& name) {
 }
 
 Person* Secretary::findPersonById(const string& id){
-    for(Person* i : myVec){
+    for(Person* i : depMembers){
         if(i->getIdCode() == id){
             cout << "Person Found" << endl;
             return i;
@@ -96,7 +91,7 @@ Person* Secretary::findPersonById(const string& id){
 }
 
 Person* Secretary::findPerson(Person& p){
-    for (Person* i : myVec){
+    for (Person* i : depMembers){
         if(p.equals(i)){
             cout << "Person found" << endl;
             return i;
@@ -107,7 +102,7 @@ Person* Secretary::findPerson(Person& p){
 }
 
 Course* Secretary::findCourse(string name){
-    for (Course& course : courses){
+    for (Course& course : depCourses){
         if (course.getName() == name){
             cout << "Found course \n";
             return &course;
@@ -133,11 +128,11 @@ void Secretary::modifyCourse(Course& course){
 
 //iterates vector until person with same properties is found(Person::equals function is used for this), delete Person, remove it from vector 
 bool Secretary::removePerson(Person& p){
-    for (auto i = myVec.begin(); i != myVec.end(); ++i){
+    for (auto i = depMembers.begin(); i != depMembers.end(); ++i){
         if(p.equals(*i)){
-            cout << "Removed " << (*i)->getIdCode() << " from " << department << endl;
+            cout << "Removed " << (*i)->getIdCode() << " from " << depName << endl;
             delete *i;
-            myVec.erase(i);       
+            depMembers.erase(i);       
             return true;
         }
     }
@@ -145,15 +140,15 @@ bool Secretary::removePerson(Person& p){
 }
 
 void Secretary::printSecSize(){
-    cout << "People in secretary: " << myVec.size() << endl;
+    cout << "People in secretary: " << depMembers.size() << endl;
 }
 
 void Secretary::setSecName(const string& dep){
-    department = dep;
+    depName = dep;
 }
 
 const string& Secretary::getSecName(){
-    return department;
+    return depName;
 }
 
 
@@ -175,7 +170,7 @@ Secretary& Secretary::operator+(Person& p){
 
 //Overloaded operator += to add members of a secretary to the end of another// merges the two secretaries 
 Secretary& Secretary::operator+=(const Secretary& sec){
-    for (Person* it : sec.myVec){
+    for (Person* it : sec.depMembers){
         addPerson(*it);
     }
     return *this;
@@ -184,12 +179,12 @@ Secretary& Secretary::operator+=(const Secretary& sec){
 //the member of a secretary are added to another, after it is cleared of its previous members
 Secretary& Secretary::operator=(const Secretary& sec){
     if (this != &sec) {
-        department = sec.department;
-        for (Person* it : myVec) {
+        depName = sec.depName;
+        for (Person* it : depMembers) {
             delete it;
         }
-        myVec.clear();
-        for (Person* it : sec.myVec) {
+        depMembers.clear();
+        for (Person* it : sec.depMembers) {
             addPerson(*it,false);
         }
     }
@@ -198,8 +193,8 @@ Secretary& Secretary::operator=(const Secretary& sec){
 
 //overloaded operator << for output of a Secretary object
 ostream& operator<<(ostream& os,Secretary& secretary){
-    os << "Secretary " << secretary.department << ":" << endl;
-    for (Person* it : secretary.myVec){
+    os << "Secretary " << secretary.depName << ":" << endl;
+    for (Person* it : secretary.depMembers){
         os << (*it); 
     }
     os << endl;
@@ -210,7 +205,7 @@ ostream& operator<<(ostream& os,Secretary& secretary){
 istream& operator>>(istream& is, Secretary& sec){
     char type;
     cout << "Enter Department name: ";
-    is >> sec.department;
+    is >> sec.depName;
     cout << "Enter s for student, f for Professor, 0 to stop adding people:" << endl;
     is >> type;
     while(type !='0'){
@@ -250,18 +245,18 @@ void Secretary::addStudent(){
 void Secretary::addCourse(){
     Course course;
     cin >> course;
-    std::cout << course.getName() <<" added to " << department << " at semester " << course.getSemester() << '\n';
-    courses.push_back(course);
+    cout << course.getName() <<" added to " << depName << " at semester " << course.getSemester() << '\n';
+    depCourses.push_back(course);
     if(course.getMand()){
         ++numOfMandatory;
     }
 }
 
 void Secretary::removeCourse(Course& course){
-    for (size_t i = 0; i < courses.size(); ++i){
-        if (courses[i] == course){
+    for (size_t i = 0; i < depCourses.size(); ++i){
+        if (depCourses[i] == course){
             cout << "Erased " << course.getName() << '\n';
-            courses.erase(courses.begin() + i);
+            depCourses.erase(depCourses.begin() + i);
             break;
         }
     }
@@ -489,9 +484,9 @@ void Secretary::SecretaryOperation(){
             cout << *this;
         }
         else if (op == 12){
-            cout << "Department name: " <<department << '\n';
-            cout << "Number of Semesters: " << semesters << '\n';
-            cout << "Required academic points for degree: " << requiredPoints << '\n';
+            cout << "Department name: " <<depName << '\n';
+            cout << "Number of Semesters: " << depSemesters << '\n';
+            cout << "Required academic points for degree: " << pointsToGraduate << '\n';
             cout << "Number of mandatory courses: " << numOfMandatory << '\n';
         }
         else if (op == 11){
@@ -546,10 +541,10 @@ void Secretary::printExamsMenu(){
 }
 
 void Secretary::printGraduates(){
-    for (Person* person : myVec){
+    for (Person* person : depMembers){
         if (isStudent(person)){
             Student* stud = dynamic_cast<Student*>(person);
-            if(stud->getSemesterCount() >= semesters && stud->getMandatoryPassed()==getNumOfMandatory() && stud->getAcademicPoints() >= requiredPoints){
+            if(stud->getSemesterCount() >= depSemesters && stud->getMandatoryPassed()==getNumOfMandatory() && stud->getAcademicPoints() >= pointsToGraduate){
                 cout << *stud;
             }
         }
@@ -597,7 +592,7 @@ Course* Secretary::readAndFindCourse(){
 
 void Secretary::nextSemester(){
     endSemester = false;
-    for (Person* person : myVec){
+    for (Person* person : depMembers){
         if (isStudent(person)){
             Student* stud = dynamic_cast<Student*>(person);
             stud->setSemester(0,true);
@@ -633,7 +628,7 @@ void Secretary::readStudentsFromFile(){
         }
         file.close();
     } else {
-        std::cerr << "Unable to open file" << std::endl;
+        cerr << "Unable to open file" << endl;
     }
 }
 
@@ -662,7 +657,7 @@ void Secretary::readProfessorsFromFile(){
         }
         file.close();
     } else {
-        std::cerr << "Unable to open file" << std::endl;
+        cerr << "Unable to open file" << endl;
     }
 }
 
@@ -690,13 +685,13 @@ void Secretary::readCourseFromFile(){
                 }
 
             }
-            courses.push_back(course);
+            depCourses.push_back(course);
             if(course.getMand()){
                 ++numOfMandatory;
             }
         }
         file.close();
     } else {
-        std::cerr << "Unable to open file" << std::endl;
+        cerr << "Unable to open file" << endl;
     }
 }

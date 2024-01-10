@@ -2,10 +2,11 @@
 
 #include <iostream>
 #include <string>
-#include "course.hpp"
 #include <vector>
 #include <utility>
-class Secretary;
+
+#include "course.hpp"
+class Course;
 
 using namespace std;
 
@@ -40,17 +41,19 @@ public:
     //sub-classes should implement that so we can dynamically create copies
     virtual Person* clone() = 0;
 
-    friend ostream& operator<<(std::ostream& os, const Person& p); 
-    friend istream& operator>>(std::istream& is, Person& p);
+    friend ostream& operator<<(ostream& os, const Person& p); 
+    friend istream& operator>>(istream& is, Person& p);
 };
 
 class Student : public Person {
 private:
-    //Semester* currSemester;
-    int currSem;
-    vector<pair<Course, int>> studCourses;
-    int currPoints = 0;
+    //Semester* currentSemester;
+    int currentSemester;
+    int yearEntered;
+    int currentPoints = 0;
     int mandatoryPassed = 0;
+    vector<pair<Course, int>> coursesWithGrades;
+
 public:
     Student();
     Student(string fName, string lName, string id);
@@ -59,31 +62,32 @@ public:
     {}
 
     virtual Student* clone() override;
-    void setSemester(int sem, bool next = false);
-
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Student* s);
 
+    void setSemester(int sem, bool next = false);
+
+
     int getSemesterCount();
-    void incAcademicPoints(int p);
     int getAcademicPoints();
-    void printGrades(bool semesterOnly = false);
     int getMandatoryPassed(){
         return mandatoryPassed;
     }
 
+    void incrAcademicPoints(int p);
+
     void studAddCourse(Course& course);
     void studentChangeGrade(Course& course);
 
-    friend istream& operator>>(std::istream& is, Person& p);
-    
+    void printGrades(bool semesterOnly = false);
     void printGradesToto();
 };
 
 class Professor : public Person {
 private:
-    std::vector<Course> profCourses;
+    vector<Course> profCourses;
+
 public:
     Professor();
     Professor(string fName, string lName, string id);
@@ -91,14 +95,13 @@ public:
     : Person(p)
     {}
 
-
-
     virtual Professor* clone() override;
-    void profAddCourse(Course& course);
-
-    bool teachesCourse(Course& course);
-    void printStats(int sem);
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Professor* f);
+
+    void profAddCourse(Course& course);
+    bool teachesCourse(Course& course);
+
+    void printStats(int sem);
 };
