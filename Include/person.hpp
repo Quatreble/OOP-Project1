@@ -4,10 +4,12 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include "json.hpp"
 
 #include "course.hpp"
 class Course;
 
+using json = nlohmann::json;
 using namespace std;
 
 class Person {
@@ -49,14 +51,21 @@ class Student : public Person {
 private:
     //Semester* currentSemester;
     int currentSemester;
-    int yearEntered;
+    int registrationYear;
     int currentPoints = 0;
     int mandatoryPassed = 0;
     vector<pair<Course, int>> coursesWithGrades;
 
 public:
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Student,
+                                   firstName,
+                                   lastName,
+                                   idCode,
+                                   registrationYear)
+
     Student();
-    Student(string fName, string lName, string id);
+    Student(string fName, string lName, string id, int regYear);
     Student(const Person& p)
     : Person(p)
     {}
@@ -67,9 +76,14 @@ public:
     virtual bool equals(Student* s);
 
     void setSemester(int sem, bool next = false);
-
+    void setReg(int regYear){
+        registrationYear = regYear;
+    }
 
     int getSemesterCount();
+    int getReg(){
+        return registrationYear;
+    }
     int getAcademicPoints();
     int getMandatoryPassed(){
         return mandatoryPassed;
@@ -89,6 +103,11 @@ private:
     vector<Course> profCourses;
 
 public:
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Professor,
+                                   firstName,
+                                   lastName,
+                                   idCode)
+
     Professor();
     Professor(string fName, string lName, string id);
     Professor(const Person& p)

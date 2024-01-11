@@ -600,65 +600,38 @@ void Secretary::nextSemester(){
     }
 }
 
-
 void Secretary::readStudentsFromFile(){
-    ifstream file("student-info.txt");
-    if (file.is_open()) {
-        string line;
-        while (getline(file, line)) {
-            Student stud;
-            istringstream iss(line);
-            string word;
-            for (int i = 0; i <= 3; ++i) {
-                iss >> word;
-                if (i == 0){
-                    stud.setFirstName(word);
-                }
-                else if (i == 1){
-                    stud.setLastName(word);
-                }
-                else if (i == 2){
-                    stud.setIdCode(word);
-                }
-                else if (i == 3){
-                    stud.setSemester(stoi(word));
-                }
-            }
+    ifstream f("studentinfo.json");
+    if(f.is_open()){
+        json j = json::parse(f);
+        Student stud;
+        for(auto& item: j){
+            item.get_to(stud);
+            //cout << stud;
             addPerson(stud, false);
         }
-        file.close();
-    } else {
-        cerr << "Unable to open file" << endl;
+        f.close();
+    }
+    else{
+        cerr << "Unable to open file\n"; 
     }
 }
 
 void Secretary::readProfessorsFromFile(){
-    ifstream file("professor-info.txt");
-    if (file.is_open()) {
-        string line;
-        while (getline(file, line)) {
-            Professor prof;
-            istringstream iss(line);
-            string word;
-            for (int i = 0; i <= 2; ++i) {
-                iss >> word;
-                if (i == 0){
-                    prof.setFirstName(word);
-                }
-                else if (i == 1){
-                    prof.setLastName(word);
-                }
-                else if (i == 2){
-                    prof.setIdCode(word);
-                }
-
-            }
+    ifstream f("profinfo.json");
+    if(f.is_open()){
+        json j = json::parse(f);
+        Professor prof;
+        for(auto& item: j){
+            item.get_to(prof);
+            //cout << prof;
             addPerson(prof, false);
         }
-        file.close();
-    } else {
-        cerr << "Unable to open file" << endl;
+        f.close();
     }
+    else{
+        cerr << "Unable to open file\n"; 
+    }   
 }
 
 void Secretary::readCourseFromFile(){

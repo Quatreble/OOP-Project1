@@ -2,7 +2,14 @@
 #include "secretary.hpp"
 #include "course.hpp"
 
+#include "json.hpp"
+
+//for convenience
+using json = nlohmann::json;
+
 using namespace std;
+
+
 
 // there are three ways to create a Secretary object: 1) by calling an empty constructor and 
 // then later setting the name and adding people, 2) by calling a constructor and giving the name of the department and
@@ -85,7 +92,15 @@ int main(){
     // sec1 + s2;
     // sec1.addCourse(firstCourse,2);
 
+    // void from_json(const json& j, Student& s){
+    //     j.at("firstname").get_to(s.firstName);
+    //     j.at("lastname").get_to(s.lastName);
+    //     j.at("studentid").get_to(s.idCode);
+    //     j.at("registrationYear").get_to(s.registrationYear);
+    // }
     Secretary mySec("Department of Informatics and Telecomunications", 8, 58);
+    cout << mySec;
+
 
 }
 

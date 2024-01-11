@@ -55,19 +55,26 @@ int Person::getCount(){
 
 //overloaded operators <<, >> for input and output of Person objects
 ostream& operator<<(ostream& os, const Person& p) {
-    return os << "Name: " << p.firstName << " " << p.lastName << ", " << "ID code: " << p.idCode << endl;
+    os << "Name: " << p.firstName << " " << p.lastName << ", " << "ID code: " << p.idCode;
+    // Student* stud = dynamic_cast<Student *> (&p);
+    // if (stud != nullptr){
+    //     os << ", year of registration: " << stud->getReg();
+    // }
+    os << endl;
+    return os;
 }
 
 istream& operator>>(std::istream& is, Person& p){
-    if (dynamic_cast<Student *> (&p) != nullptr){
-        Student* stud = dynamic_cast<Student *> (&p);
-        cout << "Enter semester: ";
-        int sem;
-        cin >> sem;
-        stud->setSemester(sem);
-    }
     cout << "Enter first Name, last Name and ID code: " << endl;
-    return is >> p.firstName >> p.lastName >> p.idCode;
+    is >> p.firstName >> p.lastName >> p.idCode;
+    Student* stud = dynamic_cast<Student *> (&p);
+    if (stud != nullptr){
+        cout << "Enter year of registration: ";
+        int reg;
+        cin >> reg;
+        stud->setReg(reg);
+    }
+    return is;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,8 +87,8 @@ Student::Student()
     //cout << "Constructed student!" << endl;
 }
 
-Student::Student(string fName, string lName, string id)
-: Person(fName, lName, id)
+Student::Student(string fName, string lName, string id, int regYear)
+: Person(fName, lName, id), registrationYear(regYear)
 {
     //cout << "Constructed student!" << endl;
 }
