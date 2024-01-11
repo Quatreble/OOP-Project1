@@ -7,9 +7,11 @@
 #include <string>
 #include <vector>
 
+#include "json.hpp"
 #include "person.hpp"
 
 using namespace std;
+
 
 class Student;
 
@@ -18,11 +20,18 @@ private:
     string name;
     int academicPoints;
     bool isMandatory;
-    int semester;
+    string code;
     int registered;
-    vector<Student> studentsWhoPassed;
+   // vector<Student> studentsWhoPassed;
 
 public:
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Course,
+                                   name,
+                                   isMandatory,
+                                   code,
+                                   registered)
+
     Course();
 
     Course(string nameIn, int academicPointsIn, bool isMandatoryIn, int semsterIn);
@@ -36,12 +45,11 @@ public:
     void setName(string name);
     void setAcademicPoints(int points);
     void setMand(string c);
-    void setSemester(int sem);
 
     string getName() const;
     int getAcademicPoints() const;
     bool getMand() const;
-    int getSemester() const;
+
 
     void addStudentsWhoPassed(Student& stud);
     void printStudentsWhoPassed();

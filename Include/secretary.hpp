@@ -27,8 +27,12 @@ private:
     vector<Professor*> depProfessors; 
     vector<Student*> depStudents; 
     vector<Course*> depCourses;  
+    vector<Semester*> semesters;
     int pointsToGraduate;
     int numOfMandatory = 0;
+    json jCourses;
+    json jProfessors;
+    json jStudents;
 
 public:
     Secretary(const string& dep, int sem, int reqPoints);
@@ -87,20 +91,33 @@ public:
     void addCourse(Course& course);
     void removeCourse(Course& course);
 
+    void createSemester();
+    void addSemester(Semester* toAdd);
+
     void printMenu();
     void printExamsMenu();
     void printGraduates();
+    void printRegistrationMenu();
+
+    void courseRegistration();
 
     void SecretaryOperation();
 
-    Student* readAndFindStudent();
-    Professor* readAndFindProfessor();
-    Course* readAndFindCourse();
+    Student* readAndValidateStudent();
+    Professor* readAndValidateProfessor();
+    Course* readAndValidateCourse();
+    Semester* readAndValidateSemester();
+
 
     void readStudentsFromFile();
     void readProfessorsFromFile();
-  //  void readCourseFromFile();
+    void readCourseFromFile();
 
     void printStudentToFile(Student& student);
     void printProfessorToFile(Professor& professor);
+    void printCourseToFile(Course& course);
+
+    void jsonModifyProf(Professor& prof);
+    void jsonModifyStud(Student& stud);
+    void jsonModifyCourse(Course& course);
 };

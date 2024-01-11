@@ -4,7 +4,7 @@ Course::Course() : registered(0)
 {}
 
 Course::Course(string nameIn, int academicPointsIn, bool isMandatoryIn, int semesterIn)
-    : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn), semester(semesterIn), registered(0) {
+    : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn), registered(0) {
     cout << "Course Created\n";
 }
 
@@ -23,10 +23,6 @@ unique_ptr<Course> Course::clone() const{
 
 void Course::setName(string name){
     this->name = name;
-}
-
-void Course::setSemester(int semNum){
-    semester = semNum;
 }
 
 void Course::setAcademicPoints(int points){
@@ -50,17 +46,13 @@ int Course::getAcademicPoints() const{
     return academicPoints;
 }
 
-int Course::getSemester() const{
-    return semester;
-}
-
 bool Course::getMand() const{
         return isMandatory;
 }
 
-int Course::passedNumber(){
-    return studentsWhoPassed.size();
-}
+// int Course::passedNumber(){
+//     return studentsWhoPassed.size();
+// }
 int Course::registeredNumber(){
     return registered;
 }
@@ -69,52 +61,42 @@ void Course::incrRegistered(){
     ++registered;
 }
 
-void Course::addStudentsWhoPassed(Student& stud){
-    studentsWhoPassed.push_back(stud);
-}
+// void Course::addStudentsWhoPassed(Student& stud){
+//     studentsWhoPassed.push_back(stud);
+// }
 
-void Course::printStudentsWhoPassed(){
-    if (studentsWhoPassed.empty()){
-        cout << "No students have passed the course\n";
-        return;
-    }   
+// void Course::printStudentsWhoPassed(){
+//     if (studentsWhoPassed.empty()){
+//         cout << "No students have passed the course\n";
+//         return;
+//     }   
 
-    ofstream outFile("students-passed-"+getName()+"-"+to_string(getSemester())+".txt");
+//     ofstream outFile("students-passed-"+getName()+"-"+to_string(getSemester())+".txt");
 
-    // Check if the file stream is open
-    if (outFile.is_open()) {
-        // Write to the file
-        for (Student& student : studentsWhoPassed){
-            outFile << student;
-        }
-        // Close the file
-        outFile.close();
+//     // Check if the file stream is open
+//     if (outFile.is_open()) {
+//         // Write to the file
+//         for (Student& student : studentsWhoPassed){
+//             outFile << student;
+//         }
+//         // Close the file
+//         outFile.close();
 
-        cout << "File created successfully." << endl;
-    } else {
-        // Error message if file couldn't be opened
-        cerr << "Unable to open file for writing." << endl;
-    }
+//         cout << "File created successfully." << endl;
+//     } else {
+//         // Error message if file couldn't be opened
+//         cerr << "Unable to open file for writing." << endl;
+//     }
 
-    for (Student& student : studentsWhoPassed){
-        cout << student;
-    }
-}
+//     for (Student& student : studentsWhoPassed){
+//         cout << student;
+//     }
+// }
 
 istream& operator>>(istream& is, Course& course) {
     cout << "Please enter course name: ";
     is >> course.name;
     is.ignore(numeric_limits<streamsize>::max(), '\n');
-
-    do{
-    cout << "Enter Course Semester: ";
-    is >> course.semester;
-    is.ignore(numeric_limits<streamsize>::max(), '\n');
-    if (course.semester < 1 || course.semester > 8){
-        cout << "Semester doesnt exist\n";
-    }
-    } while(course.semester < 1 || course.semester > 8);
-
     cout << "Enter course academic points: ";
     is >> course.academicPoints;
     is.ignore(numeric_limits<streamsize>::max(), '\n');  
@@ -140,7 +122,7 @@ istream& operator>>(istream& is, Course& course) {
 }
 
 bool Course::operator==(const Course& other) const {
-    return name == other.name && academicPoints == other.academicPoints && semester == other.semester  && isMandatory == other.isMandatory;
+    return name == other.name && academicPoints == other.academicPoints && code == other.code  && isMandatory == other.isMandatory && registered == other.registered;
 }
 
 

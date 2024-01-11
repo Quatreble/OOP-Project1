@@ -268,11 +268,13 @@ istream& operator>>(istream& is, Secretary& sec){
     return is;
 }
 
+
 void Secretary::addProfessor(){
     Professor f;
     //cout << "Enter Name, Surname and ID Code: " << endl;
     cin >> f;
     addPerson(f);
+    printProfessorToFile(f);
 }
 
 void Secretary::addStudent(){
@@ -282,6 +284,7 @@ void Secretary::addStudent(){
     addPerson(s);
     printStudentToFile(s);
 }
+
 
 
 void Secretary::addCourse(Course& c){
@@ -317,6 +320,7 @@ void Secretary::modifyProfessor(){
         string prevName = prof->getFirstName() + " " + prof->getLastName();
         cout << "Please enter the new attributes of the professor\n";
         cin >> *prof;
+        jsonModifyProf(*prof);
         cout << "Professor " << prevName << " changed to " << prof->getFirstName() << " " << prof->getLastName() << '\n';
 
     } else if (person != nullptr) { //if person is found but isnt a professor
@@ -334,12 +338,15 @@ void Secretary::modifyStudent(){
         string prevName = stud->getFirstName() + " " + stud->getLastName();
         cout << "Please enter the new attributes of the student\n";
         cin >> *stud;
+        jsonModifyStud(*stud);
         cout << "Student " << prevName << " changed to " << stud->getFirstName() << " " << stud->getLastName() << '\n';
 
     } else if (person != nullptr) { //if person is found but isnt a professor
         cout << "The person with ID " << id << " is not a Student.\n";
     }
 }
+
+
 
 void Secretary::deleteProfessor(){
     cout << "INPUT PROFESSOR ID: ";
@@ -373,7 +380,11 @@ void Secretary::modifyCourse(){
     cin >> name;     
     Course* course = findCourse(name); 
     if (course != nullptr){
-        modifyCourse(*course);
+        string prevName = course->getName();
+        cout << "Please enter new attributes\n";
+        cin >> *course;
+        cout << "Course was changed\n";
+        jsonModifyCourse(*course);
     }
     else   
         cout << "Course not found!\n";     
@@ -396,15 +407,19 @@ void Secretary::printMenu(){
     cout << "1. PROFESSOR OPTIONS\n";
     cout << "2. STUDENT OPTIONS\n";
     cout << "3. COURSE OPTIONS\n";
-    cout << "4. SET COURSE PROFESSOR\n";
-    cout << "5. REGISTER TO COURSE(STUDENT ONLY)\n";
-    cout << "6. STUDENTS WHO PASSED A COURSE\n";
-    cout << "7. GET COURSE STATS(PROF ONLY)\n";
-    cout << "8. GET GRADES(STUDENT ONLY)\n";
-    cout << "9. WHO GRADUATES?\n";
-    cout << "10. PRINT DEPARTMENT MEMBERS\n";
-    cout << "11. END SEMESTER\n";
-    cout << "12. PRINT DEPARTMENT INFO\n";
+    cout << "4. LOG SEMESTER\n";
+    cout << "5. REGISTER COURSE TO SEMESTER\n";
+    cout << "6. REGISTER STUDENT TO COURSE\n";
+    cout << "7. SET COURSE PROFESSOR\n";
+    // cout << "4. SET COURSE PROFESSOR\n";
+    // cout << "5. REGISTER TO COURSE(STUDENT ONLY)\n";
+    // cout << "6. STUDENTS WHO PASSED A COURSE\n";
+    // cout << "7. GET COURSE STATS(PROF ONLY)\n";
+    // cout << "8. GET GRADES(STUDENT ONLY)\n";
+    // cout << "9. WHO GRADUATES?\n";
+    // cout << "10. PRINT DEPARTMENT MEMBERS\n";
+    // cout << "11. END SEMESTER\n";
+    // cout << "12. PRINT DEPARTMENT INFO\n";
     cout << "TYPE 0 TO EXIT\n";
 }
 
@@ -471,6 +486,13 @@ void Secretary::SecretaryOperation(){
             }
 
         }
+        else if(op == 4){
+            createSemester();
+            //printRegistrationMenu();
+        }
+        else if (op == 5){
+            courseRegistration();
+        }
         // else if (op == 4){
         //     cout << "Enter the course name: \n";
         //     string name;
@@ -513,11 +535,11 @@ void Secretary::SecretaryOperation(){
         //         cout << "Course not found!\n";
         // }
         // else if(op == 6){
-        //     Course* course = readAndFindCourse();
+        //     Course* course = readAndValidateCourse();
         //     course->printStudentsWhoPassed();
         // }
         // else if(op == 7){
-        //     Professor* prof = readAndFindProfessor();
+        //     Professor* prof = readAndValidateProfessor();
         //     if(prof != nullptr){
         //         cout << "Enter semester for stats: ";
         //         int sem;
@@ -526,7 +548,7 @@ void Secretary::SecretaryOperation(){
         //     }
         // }
         // else if(op == 8){
-        //     Student* stud = readAndFindStudent();
+        //     Student* stud = readAndValidateStudent();
         //     if (stud != nullptr){
         //         stud->printGrades();
         //     }
@@ -561,7 +583,7 @@ void Secretary::SecretaryOperation(){
         //                 Person* person = findPersonById(id);
         //                 Professor* prof = dynamic_cast<Professor*>(person);
         //                 if (isProfessor(person) && prof->teachesCourse(*course)){
-        //                     Student* stud = readAndFindStudent();
+        //                     Student* stud = readAndValidateStudent();
         //                     if (stud != nullptr){
         //                         stud->studentChangeGrade(*course);
         //                         stud->printGradesToto();
@@ -573,7 +595,7 @@ void Secretary::SecretaryOperation(){
         //             }
         //         }
         //         else if (op == 2){
-        //             Student* stud = readAndFindStudent();
+        //             Student* stud = readAndValidateStudent();
         //             if (stud != nullptr){
         //                 stud->printGrades(true);
         //             }
@@ -587,12 +609,78 @@ void Secretary::SecretaryOperation(){
     
 }
 
+void Secretary::courseRegistration(){
+    Semester* sem = readAndValidateSemester();
+    Course* course = readAndValidateCourse();
+    if(sem == nullptr || course == nullptr){
+        return;
+    }
+    sem->addCourse(course);
+    cout << "COURSE REGISTERED SUCCESSFULLY\n";
+}
+
+Semester* Secretary::readAndValidateSemester(){
+    cout << "Enter year of Semester: ";
+    int year;
+    cin >> year;
+    cout << "Enter W for winter semester, S for summer: ";
+    char sem;
+    bool winter;
+    cin >> sem;
+    if(sem == 'W' || sem == 'w'){
+        winter = true;
+    }
+    else{
+        winter = false;
+    }
+    for(auto semptr : semesters){
+        if(semptr->getYear() == year && semptr->getSeason() == winter){
+            return semptr;
+        }
+    }
+    cout << "SEMESTER HAS NOT BEEN LOGGED\n";
+    return nullptr;
+}
+
+void Secretary::createSemester(){
+    cout << "Enter year of semester you want to log: ";
+    int year;
+    cin>> year;
+    cout << "Enter W for winter semester, S for summer: ";
+    char sem;
+    bool winter;
+    cin >> sem;
+    if(sem == 'W' || sem == 'w'){
+        winter = true;
+    }
+    else{
+        winter = false;
+    }
+    Semester* semester = new Semester(year, winter);
+    semester->printSem();
+    addSemester(semester);
+}
+
+void Secretary::addSemester(Semester* toAdd){
+    semesters.push_back(toAdd);
+}
+
 void Secretary::printExamsMenu(){
     cout << "\tSEMESTER END MENU\n";
     cout << "1. GRADE STUDENTS\n";
     cout << "2. PRINT STUDENT'S GRADES\n";
     cout << "4. START NEXT SEMESTER\n";
 }
+
+// void Secretary::printRegistrationMenu(){
+//     cout << "WOULD YOU LIKE TO REGISTER COURSES TO SEMESTER?(y/n)\n";
+//     char answ;
+//     cin >> answ;
+//     if(answ=='n' || answ=='N') return;
+//     courseRegistration();
+
+// }
+
 
 void Secretary::printGraduates(){
     for (Student* stud : depStudents){
@@ -602,7 +690,7 @@ void Secretary::printGraduates(){
     }
 }
 
-Student* Secretary::readAndFindStudent(){
+Student* Secretary::readAndValidateStudent(){
     cout << "Enter Student id: ";
     string id;
     cin >> id;
@@ -616,7 +704,7 @@ Student* Secretary::readAndFindStudent(){
     }
 }
 
-Professor* Secretary::readAndFindProfessor(){
+Professor* Secretary::readAndValidateProfessor(){
     cout << "Enter Professor id: ";
     string id;
     cin >> id;
@@ -630,8 +718,8 @@ Professor* Secretary::readAndFindProfessor(){
     }
 }
 
-Course* Secretary::readAndFindCourse(){
-    cout << "Enter the course name: \n";
+Course* Secretary::readAndValidateCourse(){
+    cout << "Enter the course name: ";
     string name;
     cin >> name;
     Course* course = findCourse(name);
@@ -654,9 +742,9 @@ Course* Secretary::readAndFindCourse(){
 void Secretary::readStudentsFromFile(){
     ifstream f("studentinfo.json");
     if(f.is_open()){
-        json j = json::parse(f);
+        jStudents = json::parse(f);
         Student stud;
-        for(auto& item: j){
+        for(auto& item: jStudents){
             item.get_to(stud);
             //cout << stud;
             addPerson(stud, false);
@@ -671,9 +759,9 @@ void Secretary::readStudentsFromFile(){
 void Secretary::readProfessorsFromFile(){
     ifstream f("profinfo.json");
     if(f.is_open()){
-        json j = json::parse(f);
+        jProfessors = json::parse(f);
         Professor prof;
-        for(auto& item: j){
+        for(auto& item: jProfessors){
             item.get_to(prof);
             //cout << prof;
             addPerson(prof, false);
@@ -739,10 +827,10 @@ void Secretary::readProfessorsFromFile(){
 // }
 
 void Secretary::printStudentToFile(Student& student){
-    json j = student;
-    ofstream f("studentinfo.json",ios::app);
+    jStudents.push_back(student);
+    ofstream f("studentinfo.json");
     if(f.is_open()){
-        f << j.dump(4);
+        f << jStudents.dump(4);
         f.close();
     }
     else{
@@ -751,10 +839,10 @@ void Secretary::printStudentToFile(Student& student){
 }
 
 void Secretary::printProfessorToFile(Professor& professor){
-    json j = professor;
-    ofstream f("profinfo.json",ios::app);
+    jProfessors.push_back(professor);
+    ofstream f("profinfo.json");
     if(f.is_open()){
-        f << j.dump(4);
+        f << jProfessors.dump(4);
         f.close();
     }
     else{
@@ -773,3 +861,94 @@ void Secretary::printProfessorToFile(Professor& professor){
 //         cerr << "Could not open file for writing\n";
 //     }
 // }
+
+void Secretary::readCourseFromFile(){
+    ifstream f("courseinfo.json");
+    if(f.is_open()){
+        jCourses = json::parse(f);
+        Course course;
+        for(auto& item: jCourses){
+            item.get_to(course);
+            addCourse(course);
+            if (course.getMand()){
+                numOfMandatory++;
+            }
+        }
+        f.close();
+    }
+    else{
+        cerr << "Unable to open file\n"; 
+    }
+}
+
+void Secretary::printCourseToFile(Course& course){
+    jCourses.push_back(course);
+    ofstream f("courseinfo.json");
+    if(f.is_open()){
+        f << jCourses.dump(4);
+        f.close();
+    }
+    else{
+        cerr << "Could not open file for writing\n";
+    }
+}
+
+void Secretary::jsonModifyProf(Professor& prof){
+    int pos;
+    for (uint i = 0; i < depProfessors.size(); ++i){
+        if (depProfessors[i]->getIdCode() == prof.getIdCode()){
+            pos = i;
+            break;
+        }
+    }
+    jProfessors[pos] = prof;
+        
+    ofstream f("profinfo.json");
+    if(f.is_open()){
+        f << jProfessors.dump(4);            // Writes the JSON array to the file
+        f.close();
+    }
+    else{
+        cerr << "Could not open file for writing\n";
+    }
+}
+
+void Secretary::jsonModifyStud(Student& stud){
+    int pos;
+    for (uint i = 0; i < depStudents.size(); ++i){
+        if (depStudents[i]->getIdCode() == stud.getIdCode()){
+            pos = i;
+            break;
+        }
+    }
+    jStudents[pos] = stud;
+        
+    ofstream f("studentinfo.json");
+    if(f.is_open()){
+        f << jStudents.dump(4);            // Writes the JSON array to the file
+        f.close();
+    }
+    else{
+        cerr << "Could not open file for writing\n";
+    }
+}
+
+void Secretary::jsonModifyCourse(Course& course){
+    int pos;
+    for (uint i = 0; i < depCourses.size(); ++i){
+        if (*depCourses[i] == course){
+            pos = i;
+            break;
+        }
+    }
+    jCourses[pos] = course;
+        
+    ofstream f("courseinfo.json");
+    if(f.is_open()){
+        f << jCourses.dump(4);            // Writes the JSON array to the file
+        f.close();
+    }
+    else{
+        cerr << "Could not open file for writing\n";
+    }
+}

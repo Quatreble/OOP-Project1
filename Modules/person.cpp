@@ -124,10 +124,10 @@ void Student::incrAcademicPoints(int p){
 }
 
 void Student::studAddCourse(Course& course){
-    if (course.getSemester() > currentSemester){
-        cout << "Student can't register. Lesson is at bigger semester\n";
-        return;
-    }
+    // if (course.getSemester() > currentSemester){
+    //     cout << "Student can't register. Lesson is at bigger semester\n";
+    //     return;
+    // }
     for (auto& element : coursesWithGrades){
         const Course& vecCourse = element.first;
         if (course == vecCourse){
@@ -141,42 +141,42 @@ void Student::studAddCourse(Course& course){
     cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
 }
 
-void Student::studentChangeGrade(Course& course){
-    for (auto& element : coursesWithGrades){
-        Course& c = element.first;
-        if (c == course){
-            int grade;
-            bool error;
-            do {
-                error = false;
-                cout << "Enter desired grade: ";
-                cin >> grade;
-                if (grade < 0 || grade > 10){
-                    cout << "Wrong input";
-                    error = true;
-                }
-            }while (error);
+// void Student::studentChangeGrade(Course& course){
+//     for (auto& element : coursesWithGrades){
+//         Course& c = element.first;
+//         if (c == course){
+//             int grade;
+//             bool error;
+//             do {
+//                 error = false;
+//                 cout << "Enter desired grade: ";
+//                 cin >> grade;
+//                 if (grade < 0 || grade > 10){
+//                     cout << "Wrong input";
+//                     error = true;
+//                 }
+//             }while (error);
 
-            if (element.second == -1){
-                if (grade >= 5){
-                    course.addStudentsWhoPassed(*this);
-                    incrAcademicPoints(course.getAcademicPoints());
-                    if(course.getMand()){
-                        ++mandatoryPassed;
-                    }
-                }
-                element.second = grade;
-                cout << "Grade was changed to " << element.second << '\n';
-            }
-            else{
-                cout << "Student already graded\n";
-            }
-            return;
-        }
-    }
-    cout << "Student not registered to course\n";
+//             if (element.second == -1){
+//                 if (grade >= 5){
+//                     course.addStudentsWhoPassed(*this);
+//                     incrAcademicPoints(course.getAcademicPoints());
+//                     if(course.getMand()){
+//                         ++mandatoryPassed;
+//                     }
+//                 }
+//                 element.second = grade;
+//                 cout << "Grade was changed to " << element.second << '\n';
+//             }
+//             else{
+//                 cout << "Student already graded\n";
+//             }
+//             return;
+//         }
+//     }
+//     cout << "Student not registered to course\n";
 
-}
+// }
 
 void Student::printGrades(bool semesterOnly){
     bool found = false;
@@ -187,7 +187,7 @@ void Student::printGrades(bool semesterOnly){
             cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
             found = true;
         }
-        else if (grade != -1 && course.getSemester() == currentSemester){
+        else if (grade != -1){
             cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
             found = true;
         }
@@ -256,17 +256,17 @@ void Professor::printStats(int sem){
         cout << "The professor has no courses\n";
         return;
     }
-    float perc;
-    for(Course& c : profCourses){
-        if(c.getSemester() == sem){
-            perc = c.passedNumber() / c.registeredNumber() * 100.0;
-            cout << "Course name: " << c.getName() << endl;
-            cout << "Course academic points: " << c.getAcademicPoints() << endl;
-            cout << "Number of registered students for current semester: " << c.registeredNumber() << endl;
-            cout << "Number of students who passed for current semester: " << c.passedNumber() << endl;
-            cout << "Percentage of students who passed: " << perc << "%" << '\n';
-        }
-    }
+    // float perc;
+    // for(Course& c : profCourses){
+    //     // if(c.getSemester() == sem){
+    //     //     perc = c.passedNumber() / c.registeredNumber() * 100.0;
+    //     //     cout << "Course name: " << c.getName() << endl;
+    //     //     cout << "Course academic points: " << c.getAcademicPoints() << endl;
+    //     //     cout << "Number of registered students for current semester: " << c.registeredNumber() << endl;
+    //     //     cout << "Number of students who passed for current semester: " << c.passedNumber() << endl;
+    //     //     cout << "Percentage of students who passed: " << perc << "%" << '\n';
+    //     // }
+    // }
 }
 
 
