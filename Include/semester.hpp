@@ -1,5 +1,6 @@
 #include<iostream>
 #include <vector>
+#include <unordered_map>
 
 #include "course.hpp"
 
@@ -8,6 +9,7 @@ private:
     int year;
     bool winterOrSummer;
     vector<Course* > courses;
+    unordered_map<string, vector<Professor*>> courseProfs;
 
 public:
     Semester(int y, bool season)
@@ -21,6 +23,17 @@ public:
     int getYear(){
         return year;
     }
+
+    bool courseBelongs(Course& course){
+        for(auto c: courses){
+            if(*c == course){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void addProfToCourse(Course* c, Professor* p);
 
     bool getSeason(){
         return winterOrSummer;

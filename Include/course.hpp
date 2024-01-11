@@ -48,7 +48,9 @@ public:
     string getName() const;
     int getAcademicPoints() const;
     bool getMand() const;
-
+    string getCode(){
+        return code;
+    }
 
     void addStudentsWhoPassed(Student& stud);
     void printStudentsWhoPassed();

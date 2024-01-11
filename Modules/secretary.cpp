@@ -358,6 +358,7 @@ void Secretary::deleteProfessor(){
     Person* person = findPersonById(id);
     Professor* prof = isProfessor(person);
     if (prof != nullptr) {  //same as above
+        jsonRemoveProfessor(*prof);
         removePerson(*prof);
     } else if (person != nullptr) {
         cout << "The person with ID " << id << " is not a Professor.\n";
@@ -371,6 +372,7 @@ void Secretary::deleteStudent(){
     Person* person = findPersonById(id);
     Student* stud = isStudent(person);
     if (stud != nullptr) {  //same as above
+        jsonRemoveStudent(*stud);
         removePerson(*stud);
     } else if (person != nullptr) {
         cout << "The person with ID " << id << " is not a student.\n";
@@ -393,12 +395,13 @@ void Secretary::modifyCourse(){
         cout << "Course not found!\n";     
 }
 
-void Secretary::readAndRemoveCourse(){
+void Secretary::deleteCourse(){
     string name;
     cout << "Enter Course name: ";
     cin >> name;     
     Course* course = findCourse(name);
     if (course != nullptr){
+        jsonRemoveCourse(*course);
         removeCourse(*course);
     } 
     else
@@ -485,7 +488,7 @@ void Secretary::SecretaryOperation(){
                 modifyCourse();
             }
             else if (op == 3){
-                readAndRemoveCourse();
+                deleteCourse();
             }
 
         }
@@ -495,6 +498,12 @@ void Secretary::SecretaryOperation(){
         }
         else if (op == 5){
             courseRegistration();
+        }
+        else if (op == 6){
+            //registerStudentToCourse();
+        }
+        else if (op == 7){
+            setCourseProf();
         }
         // else if (op == 4){
         //     cout << "Enter the course name: \n";
@@ -612,6 +621,15 @@ void Secretary::SecretaryOperation(){
     
 }
 
+Course* Secretary::findCourseByCode(Course& course){
+    for(auto courseptr: depCourses){
+        if(course.getCode() == courseptr->getCode()){
+            return courseptr;
+        }
+    }
+    return nullptr;
+}
+
 void Secretary::courseRegistration(){
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
@@ -643,6 +661,15 @@ Semester* Secretary::readAndValidateSemester(){
     }
     cout << "SEMESTER HAS NOT BEEN LOGGED\n";
     return nullptr;
+}
+
+void Secretary::setCourseProf(){
+    Semester* sem = readAndValidateSemester();
+    Course* course = readAndValidateCourse();
+    if(sem != nullptr && course != nullptr && sem->courseBelongs(*course)){
+        Professor* prof = readAndValidateProfessor();
+        sem->addProfToCourse(course, prof);
+    }
 }
 
 void Secretary::createSemester(){
@@ -946,6 +973,65 @@ void Secretary::jsonModifyCourse(Course& course){
     }
     jCourses[pos] = course;
         
+    ofstream f("courseinfo.json");
+    if(f.is_open()){
+        f << jCourses.dump(4);            // Writes the JSON array to the file
+        f.close();
+    }
+    else{
+        cerr << "Could not open file for writing\n";
+    }
+}
+
+void Secretary::jsonRemoveProfessor(Professor& prof){
+    int pos = -1;
+    for (uint i = 0; i < depProfessors.size(); ++i){
+        if (depProfessors[i]->getIdCode() == prof.getIdCode()){
+            pos = i;
+            break;
+        }
+    }
+    if (pos != -1){
+        jProfessors.erase(jProfessors.begin() + pos);
+    }
+    ofstream f("profinfo.json");
+    if(f.is_open()){
+        f << jProfessors.dump(4);            // Writes the JSON array to the file
+        f.close();
+    }
+    else{
+        cerr << "Could not open file for writing\n";
+    }
+}
+
+void Secretary::jsonRemoveStudent(Student& stud){
+    int pos;
+    for (uint i = 0; i < depStudents.size(); ++i){
+        if (depStudents[i]->getIdCode() == stud.getIdCode()){
+            pos = i;
+            break;
+        }
+    }
+    jStudents.erase(jStudents.begin() + pos);
+    ofstream f("studentinfo.json");
+    if(f.is_open()){
+        f << jStudents.dump(4);            // Writes the JSON array to the file
+        f.close();
+    }
+    else{
+        cerr << "Could not open file for writing\n";
+    }
+}
+
+void Secretary::jsonRemoveCourse(Course& course){
+    int pos;
+    for (uint i = 0; i < depCourses.size(); ++i){
+        if (*depCourses[i] == course){
+            pos = i;
+            break;
+        }
+    }
+    jCourses.erase(jCourses.begin() + pos);
     ofstream f("courseinfo.json");
     if(f.is_open()){
         f << jCourses.dump(4);            // Writes the JSON array to the file

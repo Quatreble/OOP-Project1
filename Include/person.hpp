@@ -98,6 +98,11 @@ public:
     void printGradesToto();
 };
 
+struct studentCourseInstance{
+    Student* stud;
+    int grade;
+};
+
 class Professor : public Person {
 private:
     vector<Course> profCourses;

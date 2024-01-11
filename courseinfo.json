@@ -3,5 +3,10 @@
         "code": "",
         "isMandatory": true,
         "name": "cs"
+    },
+    {
+        "code": "123",
+        "isMandatory": true,
+        "name": "math"
     }
 ]

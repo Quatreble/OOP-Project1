@@ -55,7 +55,7 @@ public:
     void deleteStudent();
 
     void modifyCourse();
-    void readAndRemoveCourse();
+    void deleteCourse();
 
     Person* findPersonByFirstName(const string& name);
     Person* findPersonByLastName(const string& name);
@@ -63,7 +63,7 @@ public:
     Person* findPerson(Person& p);
 
     Course* findCourse(string name);
-
+    Course* findCourseByCode(Course& course);
 
     void printSecSize();
     void setSecName(const string& dep);
@@ -94,6 +94,10 @@ public:
     void createSemester();
     void addSemester(Semester* toAdd);
 
+    void setCourseProf();
+
+    Course* findCourseByCode();
+
     void printMenu();
     void printExamsMenu();
     void printGraduates();
@@ -120,4 +124,9 @@ public:
     void jsonModifyProf(Professor& prof);
     void jsonModifyStud(Student& stud);
     void jsonModifyCourse(Course& course);
+
+    void jsonRemoveProfessor(Professor& prof);
+    void jsonRemoveStudent(Student& stud);
+    void jsonRemoveCourse(Course& course);
+
 };
