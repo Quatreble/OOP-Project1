@@ -44,6 +44,15 @@ public:
     void addProfessor();
     void addStudent();
 
+    void modifyProfessor();
+    void modifyStudent();
+
+    void deleteProfessor();
+    void deleteStudent();
+
+    void modifyCourse();
+    void readAndRemoveCourse();
+
     Person* findPersonByFirstName(const string& name);
     Person* findPersonByLastName(const string& name);
     Person* findPersonById(const string& id);
@@ -75,7 +84,7 @@ public:
     void modifyCourse(Course& course);
     // void nextSemester();
 
-    void addCourse();
+    void addCourse(Course& course);
     void removeCourse(Course& course);
 
     void printMenu();
@@ -90,5 +99,8 @@ public:
 
     void readStudentsFromFile();
     void readProfessorsFromFile();
-    void readCourseFromFile();
+  //  void readCourseFromFile();
+
+    void printStudentToFile(Student& student);
+    void printProfessorToFile(Professor& professor);
 };

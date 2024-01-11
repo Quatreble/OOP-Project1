@@ -6,7 +6,7 @@ Secretary::Secretary(const string& dep, int sem, int reqPoints)
 {
     readStudentsFromFile();
     readProfessorsFromFile();
-    readCourseFromFile();
+  //  readCourseFromFile();
     SecretaryOperation();
     //cout<<"Secretary " << depName << " constructed!" <<endl;
 }
@@ -37,7 +37,7 @@ Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy
         addPerson(*professor, false);
     }
     for (auto& course : depCourses) {
-        depCourses.push_back(course);
+        addCourse(*course);
     }
 }
 
@@ -166,7 +166,7 @@ bool Secretary::removePerson(Professor& p){
 }
 
 void Secretary::printSecSize(){
-    cout << "People in secretary: " << depMembers.size() << endl;
+    cout << "People in secretary: " << depStudents.size() + depProfessors.size() << endl;
 }
 
 void Secretary::setSecName(const string& dep){
@@ -196,7 +196,10 @@ Secretary& Secretary::operator+(Person& p){
 
 //Overloaded operator += to add members of a secretary to the end of another// merges the two secretaries 
 Secretary& Secretary::operator+=(const Secretary& sec){
-    for (Person* it : sec.depMembers){
+    for (Student* it : sec.depStudents){
+        addPerson(*it);
+    }
+    for (Professor* it : sec.depProfessors){
         addPerson(*it);
     }
     return *this;
@@ -206,13 +209,22 @@ Secretary& Secretary::operator+=(const Secretary& sec){
 Secretary& Secretary::operator=(const Secretary& sec){
     if (this != &sec) {
         depName = sec.depName;
-        for (Person* it : depMembers) {
+        for (Student* it : depStudents) {
             delete it;
         }
-        depMembers.clear();
-        for (Person* it : sec.depMembers) {
+        depProfessors.clear();
+
+        for (Professor* it : depProfessors) {
+            delete it;
+        }
+        depProfessors.clear();
+        for (Student* it : sec.depStudents) {
             addPerson(*it,false);
         }
+        for (Professor* it : sec.depProfessors) {
+            addPerson(*it,false);
+        }
+        
     }
     return *this;
 }
@@ -220,8 +232,11 @@ Secretary& Secretary::operator=(const Secretary& sec){
 //overloaded operator << for output of a Secretary object
 ostream& operator<<(ostream& os,Secretary& secretary){
     os << "Secretary " << secretary.depName << ":" << endl;
-    for (Person* it : secretary.depMembers){
-        os << (*it); 
+    for (Student* it : secretary.depStudents){
+        os << "Student:" << (*it); 
+    }
+    for (Professor* it : secretary.depProfessors){
+        os << "Professor:" << (*it); 
     }
     os << endl;
     return os;
@@ -265,29 +280,116 @@ void Secretary::addStudent(){
     //cout << "Enter Name, Surname and ID Code: " << endl;
     cin >> s;
     addPerson(s);
+    printStudentToFile(s);
 }
 
 
-void Secretary::addCourse(){
-    Course course;
-    cin >> course;
-    cout << course.getName() <<" added to " << depName << " at semester " << course.getSemester() << '\n';
-    depCourses.push_back(course);
-    if(course.getMand()){
+void Secretary::addCourse(Course& c){
+    // Course course;
+    // cin >> course;
+    // cout << course.getName() <<" added to " << depName << " at semester " << course.getSemester() << '\n'modifyProfessor;
+    Course* courseptr = new Course(c);
+    depCourses.push_back(courseptr);
+    if(courseptr->getMand()){
         ++numOfMandatory;
     }
 }
 
 void Secretary::removeCourse(Course& course){
     for (size_t i = 0; i < depCourses.size(); ++i){
-        if (depCourses[i] == course){
+        if (*depCourses[i] == course){
             cout << "Erased " << course.getName() << '\n';
+            delete depCourses[i];
             depCourses.erase(depCourses.begin() + i);
-            break;
+            return;
         }
     }
 }
 
+
+void Secretary::modifyProfessor(){
+    cout << "INPUT PROFESSOR ID: ";
+    string id;
+    cin >> id;
+    Person* person = findPersonById(id);
+    Professor* prof = isProfessor(person);
+    if (prof!=nullptr) {  //Check if person is professor
+        string prevName = prof->getFirstName() + " " + prof->getLastName();
+        cout << "Please enter the new attributes of the professor\n";
+        cin >> *prof;
+        cout << "Professor " << prevName << " changed to " << prof->getFirstName() << " " << prof->getLastName() << '\n';
+
+    } else if (person != nullptr) { //if person is found but isnt a professor
+        cout << "The person with ID " << id << " is not a Professor.\n";
+    }
+}
+
+void Secretary::modifyStudent(){
+    cout << "INPUT STUDENT ID: ";
+    string id;
+    cin >> id;
+    Person* person = findPersonById(id);
+    Student* stud = isStudent(person);
+    if (stud!=nullptr) {  //Check if person is student
+        string prevName = stud->getFirstName() + " " + stud->getLastName();
+        cout << "Please enter the new attributes of the student\n";
+        cin >> *stud;
+        cout << "Student " << prevName << " changed to " << stud->getFirstName() << " " << stud->getLastName() << '\n';
+
+    } else if (person != nullptr) { //if person is found but isnt a professor
+        cout << "The person with ID " << id << " is not a Student.\n";
+    }
+}
+
+void Secretary::deleteProfessor(){
+    cout << "INPUT PROFESSOR ID: ";
+    string id;
+    cin >> id;
+    Person* person = findPersonById(id);
+    Professor* prof = isProfessor(person);
+    if (prof != nullptr) {  //same as above
+        removePerson(*prof);
+    } else if (person != nullptr) {
+        cout << "The person with ID " << id << " is not a Professor.\n";
+    }
+}
+
+void Secretary::deleteStudent(){
+    cout << "INPUT STUDENT ID: ";
+    string id;
+    cin >> id;
+    Person* person = findPersonById(id);
+    Student* stud = isStudent(person);
+    if (stud != nullptr) {  //same as above
+        removePerson(*stud);
+    } else if (person != nullptr) {
+        cout << "The person with ID " << id << " is not a student.\n";
+    }
+}
+
+void Secretary::modifyCourse(){
+    string name;
+    cout << "Enter Course name: ";
+    cin >> name;     
+    Course* course = findCourse(name); 
+    if (course != nullptr){
+        modifyCourse(*course);
+    }
+    else   
+        cout << "Course not found!\n";     
+}
+
+void Secretary::readAndRemoveCourse(){
+    string name;
+    cout << "Enter Course name: ";
+    cin >> name;     
+    Course* course = findCourse(name);
+    if (course != nullptr){
+        removeCourse(*course);
+    } 
+    else
+        cout << "Course not found!\n";
+}
 
 void Secretary::printMenu(){
     cout << "\tECLASS\n";
@@ -330,33 +432,10 @@ void Secretary::SecretaryOperation(){
                 addProfessor();
             }
             else if (op == 2){
-                cout << "INPUT PROFESSOR ID: ";
-                string id;
-                cin >> id;
-                Person* person = findPersonById(id);
-                if (isProfessor(person)) {  //Check if person is professor
-                    Professor* prof = dynamic_cast<Professor*>(person);
-                    string prevName = prof->getFirstName() + " " + prof->getLastName();
-                    cout << "Please enter the new attributes of the professor\n";
-                    cin >> *prof;
-                    cout << "Professor " << prevName << " changed to " << prof->getFirstName() << " " << prof->getLastName() << '\n';
-
-                } else if (person != nullptr) { //if person is found but isnt a professor
-                    cout << "The person with ID " << id << " is not a Professor.\n";
-                }
-
-                
+                modifyProfessor();
             }
             else if (op == 3){
-                cout << "INPUT PROFESSOR ID: ";
-                string id;
-                cin >> id;
-                Person* person = findPersonById(id);
-                if (isProfessor(person)) {  //same as above
-                    removePerson(*person);
-                } else if (person != nullptr) {
-                    cout << "The person with ID " << id << " is not a Professor.\n";
-                }
+                deleteProfessor();
             }
         }
         else if (op == 2){
@@ -368,31 +447,10 @@ void Secretary::SecretaryOperation(){
                 addStudent();
             }
             else if (op == 2){
-                cout << "INPUT STUDENT ID: ";
-                string id;
-                cin >> id;
-                Person* person = findPersonById(id);
-                if (isStudent(person)) { //check if person is student
-                    Student* stud = dynamic_cast<Student*>(person);
-                    string prevName = stud->getFirstName() + " " + stud->getLastName();
-                    cout << "Please enter the new attributes of the student\n";
-                    cin >> *stud;
-                    cout << "Student " << prevName << " changed to " << stud->getFirstName() << " " << stud->getLastName() << '\n';
-
-                } else if (person != nullptr) { //if person is found and isnt a student 
-                    cout << "The person with ID " << id << " is not a Student.\n";
-                }
+                modifyStudent();
             }
             else if (op == 3){
-                cout << "INPUT STUDENT ID: ";
-                string id;
-                cin >> id;
-                Person* person = findPersonById(id);
-                if (isStudent(person)) {    //same as above
-                    removePerson(*person);
-                } else if (person != nullptr){
-                    cout << "The person with ID " << id << " is not a Student.\n";
-                }
+                deleteStudent();
             }
         }
         else if (op == 3){
@@ -401,160 +459,130 @@ void Secretary::SecretaryOperation(){
             cout << "3. REMOVE COURSE\n";
             cin >> op;
             if (op == 1){
-                addCourse();
+                Course course;
+                cin >> course;
+                addCourse(course);
             }
             else if (op == 2){
-                cout << "1. CHANGE SEMESTER\n";
-                cout << "2. MODIFY ALL ATTRIBUTES\n";
-                cin >> op;
-                if (op == 1){
-                    string name;
-                    cout << "Enter Course name: ";
-                    cin >> name;
-                    Course* course = findCourse(name);
-                    if (course != nullptr){
-                        changeSemester(*course);
-                    }
-                    else 
-                        cout << "Course not found!\n";
-                }
-                else if (op == 2){
-                    string name;
-                    cout << "Enter Course name: ";
-                    cin >> name;     
-                    Course* course = findCourse(name); 
-                    if (course != nullptr){
-                        modifyCourse(*course);
-                    }
-                    else   
-                        cout << "Course not found!\n";            
-                }
+                modifyCourse();
             }
             else if (op == 3){
-                string name;
-                cout << "Enter Course name: ";
-                cin >> name;     
-                Course* course = findCourse(name);
-                if (course != nullptr){
-                    removeCourse(*course);
-                } 
-                else
-                    cout << "Course not found!\n";
+                readAndRemoveCourse();
             }
 
         }
-        else if (op == 4){
-            cout << "Enter the course name: \n";
-            string name;
-            cin >> name;
-            Course* course = findCourse(name);
-            if (course != nullptr){
-                cout << "Enter professor id: ";
-                string id;
-                cin >> id;
-                Person* person = findPersonById(id);
-                if (isProfessor(person)){
-                    Professor* prof = dynamic_cast<Professor*>(person);
-                    prof->profAddCourse(*course);
-                }
-                else
-                    cout << "The person with ID " << id << " is not a Professor.\n";
-            }
-            else
-                cout << "Course not found!\n";
-        }
-        else if (op == 5){
-            cout << "Enter the course name: \n";
-            string name;
-            cin >> name;
-            Course* course = findCourse(name);
-            if (course != nullptr){
-                cout << "Enter Student id: ";
-                string id;
-                cin >> id;
-                Person* person = findPersonById(id);
-                if (isStudent(person)){
-                    Student* stud = dynamic_cast<Student*>(person);
-                    stud->studAddCourse(*course);
-                }
-                else{
-                    cout << "The person with ID " << id << " is not a Student.\n";
-                }
-            }
-            else
-                cout << "Course not found!\n";
-        }
-        else if(op == 6){
-            Course* course = readAndFindCourse();
-            course->printStudentsWhoPassed();
-        }
-        else if(op == 7){
-            Professor* prof = readAndFindProfessor();
-            if(prof != nullptr){
-                cout << "Enter semester for stats: ";
-                int sem;
-                cin >> sem;
-                prof->printStats(sem);
-            }
-        }
-        else if(op == 8){
-            Student* stud = readAndFindStudent();
-            if (stud != nullptr){
-                stud->printGrades();
-            }
-        }
-        else if(op == 9){
-            printGraduates();
-        }
-        else if (op == 10){
-            cout << *this;
-        }
-        else if (op == 12){
-            cout << "Department name: " <<depName << '\n';
-            cout << "Number of Semesters: " << depSemesters << '\n';
-            cout << "Required academic points for degree: " << pointsToGraduate << '\n';
-            cout << "Number of mandatory courses: " << numOfMandatory << '\n';
-        }
-        else if (op == 11){
-            endSemester = true;
-            while (endSemester == true){
-                this_thread::sleep_for(chrono::seconds(1));
-                printExamsMenu();
-                cin >> op;
-                if (op == 1){
-                    cout << "Enter the course name: \n";
-                    string name;
-                    cin >> name;
-                    Course* course = findCourse(name);
-                    if (course != nullptr){
-                        cout << "Enter professor id: ";
-                        string id;
-                        cin >> id;
-                        Person* person = findPersonById(id);
-                        Professor* prof = dynamic_cast<Professor*>(person);
-                        if (isProfessor(person) && prof->teachesCourse(*course)){
-                            Student* stud = readAndFindStudent();
-                            if (stud != nullptr){
-                                stud->studentChangeGrade(*course);
-                                stud->printGradesToto();
-                            }
-                        }
-                        else{
-                            cout << "Incorrect search\n";
-                        }
-                    }
-                }
-                else if (op == 2){
-                    Student* stud = readAndFindStudent();
-                    if (stud != nullptr){
-                        stud->printGrades(true);
-                    }
-                }
-                else if (op == 4){
-                    // nextSemester();
-                }
-            }
-        }
+        // else if (op == 4){
+        //     cout << "Enter the course name: \n";
+        //     string name;
+        //     cin >> name;
+        //     Course* course = findCourse(name);
+        //     if (course != nullptr){
+        //         cout << "Enter professor id: ";
+        //         string id;
+        //         cin >> id;
+        //         Person* person = findPersonById(id);
+        //         if (isProfessor(person)){
+        //             Professor* prof = dynamic_cast<Professor*>(person);
+        //             prof->profAddCourse(*course);
+        //         }
+        //         else
+        //             cout << "The person with ID " << id << " is not a Professor.\n";
+        //     }
+        //     else
+        //         cout << "Course not found!\n";
+        // }
+        // else if (op == 5){
+        //     cout << "Enter the course name: \n";
+        //     string name;
+        //     cin >> name;
+        //     Course* course = findCourse(name);
+        //     if (course != nullptr){
+        //         cout << "Enter Student id: ";
+        //         string id;
+        //         cin >> id;
+        //         Person* person = findPersonById(id);
+        //         if (isStudent(person)){
+        //             Student* stud = dynamic_cast<Student*>(person);
+        //             stud->studAddCourse(*course);
+        //         }
+        //         else{
+        //             cout << "The person with ID " << id << " is not a Student.\n";
+        //         }
+        //     }
+        //     else
+        //         cout << "Course not found!\n";
+        // }
+        // else if(op == 6){
+        //     Course* course = readAndFindCourse();
+        //     course->printStudentsWhoPassed();
+        // }
+        // else if(op == 7){
+        //     Professor* prof = readAndFindProfessor();
+        //     if(prof != nullptr){
+        //         cout << "Enter semester for stats: ";
+        //         int sem;
+        //         cin >> sem;
+        //         prof->printStats(sem);
+        //     }
+        // }
+        // else if(op == 8){
+        //     Student* stud = readAndFindStudent();
+        //     if (stud != nullptr){
+        //         stud->printGrades();
+        //     }
+        // }
+        // else if(op == 9){
+        //     printGraduates();
+        // }
+        // else if (op == 10){
+        //     cout << *this;
+        // }
+        // else if (op == 12){
+        //     cout << "Department name: " <<depName << '\n';
+        //     cout << "Number of Semesters: " << depSemesters << '\n';
+        //     cout << "Required academic points for degree: " << pointsToGraduate << '\n';
+        //     cout << "Number of mandatory courses: " << numOfMandatory << '\n';
+        // }
+        // else if (op == 11){
+        //     endSemester = true;
+        //     while (endSemester == true){
+        //         this_thread::sleep_for(chrono::seconds(1));
+        //         printExamsMenu();
+        //         cin >> op;
+        //         if (op == 1){
+        //             cout << "Enter the course name: \n";
+        //             string name;
+        //             cin >> name;
+        //             Course* course = findCourse(name);
+        //             if (course != nullptr){
+        //                 cout << "Enter professor id: ";
+        //                 string id;
+        //                 cin >> id;
+        //                 Person* person = findPersonById(id);
+        //                 Professor* prof = dynamic_cast<Professor*>(person);
+        //                 if (isProfessor(person) && prof->teachesCourse(*course)){
+        //                     Student* stud = readAndFindStudent();
+        //                     if (stud != nullptr){
+        //                         stud->studentChangeGrade(*course);
+        //                         stud->printGradesToto();
+        //                     }
+        //                 }
+        //                 else{
+        //                     cout << "Incorrect search\n";
+        //                 }
+        //             }
+        //         }
+        //         else if (op == 2){
+        //             Student* stud = readAndFindStudent();
+        //             if (stud != nullptr){
+        //                 stud->printGrades(true);
+        //             }
+        //         }
+        //         else if (op == 4){
+        //             // nextSemester();
+        //         }
+        //     }
+        // }
     }
     
 }
@@ -567,12 +595,9 @@ void Secretary::printExamsMenu(){
 }
 
 void Secretary::printGraduates(){
-    for (Person* person : depMembers){
-        if (isStudent(person)){
-            Student* stud = dynamic_cast<Student*>(person);
-            if(stud->getSemesterCount() >= depSemesters && stud->getMandatoryPassed()==getNumOfMandatory() && stud->getAcademicPoints() >= pointsToGraduate){
-                cout << *stud;
-            }
+    for (Student* stud : depStudents){
+        if(stud->getSemesterCount() >= depSemesters && stud->getMandatoryPassed()==getNumOfMandatory() && stud->getAcademicPoints() >= pointsToGraduate){
+            cout << *stud;
         }
     }
 }
@@ -660,55 +685,91 @@ void Secretary::readProfessorsFromFile(){
     }   
 }
 
-void Secretary::readCourseFromFile(){
-    ifstream file("course-info.txt");
-    if (file.is_open()) {
-        string line;
-        while (getline(file, line)) {
-            Course course;
-            istringstream iss(line);
-            string word;
-            for (int i = 0; i <= 3; ++i) {
-                iss >> word;
-                if (i == 0){
-                    course.setName(word);
-                }
-                else if (i == 1){
-                    course.setSemester(stoi(word));
-                }
-                else if (i == 2){
-                    course.setAcademicPoints(stoi(word));
-                }
-                else if (i == 3){
-                    course.setMand(word);
-                }
+// void Secretary::readCourseFromFile(){
+//     ifstream file("course-info.txt");
+//     if (file.is_open()) {
+//         string line;
+//         while (getline(file, line)) {
+//             Course course;
+//             istringstream iss(line);
+//             string word;
+//             for (int i = 0; i <= 3; ++i) {
+//                 iss >> word;
+//                 if (i == 0){
+//                     course.setName(word);
+//                 }
+//                 else if (i == 1){
+//                     course.setSemester(stoi(word));
+//                 }
+//                 else if (i == 2){
+//                     course.setAcademicPoints(stoi(word));
+//                 }
+//                 else if (i == 3){
+//                     course.setMand(word);
+//                 }
 
-            }
-            depCourses.push_back(course);
-            if(course.getMand()){
-                ++numOfMandatory;
-            }
-        }
-        file.close();
-    } else {
-        cerr << "Unable to open file" << endl;
+//             }
+//             depCourses.push_back(course);
+//             if(course.getMand()){
+//                 ++numOfMandatory;
+//             }
+//         }
+//         file.close();
+//     } else {
+//         cerr << "Unable to open file" << endl;
+//     }
+
+//     // ifstream f("courseinfo.json");
+//     // if(f.is_open()){
+//     //     json j = json::parse(f);
+//     //     Course course;
+//     //     for(auto& item: j){
+//     //         item.get_to(course);
+//     //         //cout << prof;
+//     //         depCourses.push_back(course);
+//     //         if(course.getMand()){
+//     //             ++numOfMandatory;
+//     //         }
+//     //     }
+//     //     f.close();
+//     // }
+//     // else{
+//     //     cerr << "Unable to open file\n"; 
+//     // }   
+// }
+
+void Secretary::printStudentToFile(Student& student){
+    json j = student;
+    ofstream f("studentinfo.json",ios::app);
+    if(f.is_open()){
+        f << j.dump(4);
+        f.close();
     }
-
-    // ifstream f("courseinfo.json");
-    // if(f.is_open()){
-    //     json j = json::parse(f);
-    //     Course course;
-    //     for(auto& item: j){
-    //         item.get_to(course);
-    //         //cout << prof;
-    //         depCourses.push_back(course);
-    //         if(course.getMand()){
-    //             ++numOfMandatory;
-    //         }
-    //     }
-    //     f.close();
-    // }
-    // else{
-    //     cerr << "Unable to open file\n"; 
-    // }   
+    else{
+        cerr << "Could not open file for writing\n";
+    }
 }
+
+void Secretary::printProfessorToFile(Professor& professor){
+    json j = professor;
+    ofstream f("profinfo.json",ios::app);
+    if(f.is_open()){
+        f << j.dump(4);
+        f.close();
+    }
+    else{
+        cerr << "Could not open file for writing\n";
+    }
+}
+
+// void Secretary::printCourseToFile(Course& course){
+//     json j = course;
+//     ofstream f("courseinfo.json");
+//     if(f.is_open()){
+//         f << j.dump(4);
+//         f.close();
+//     }
+//     else{
+//         cerr << "Could not open file for writing\n";
+//     }
+// }
