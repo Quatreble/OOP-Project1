@@ -24,14 +24,7 @@ public:
         return year;
     }
 
-    bool courseBelongs(Course& course){
-        for(auto c: courses){
-            if(*c == course){
-                return true;
-            }
-        }
-        return false;
-    }
+    bool courseBelongs(Course& course);
 
     void addProfToCourse(Course* c, Professor* p);
 
@@ -41,7 +34,4 @@ public:
 
     void addCourse(Course* toAdd);
 
-    
-
-    
 };

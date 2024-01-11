@@ -1,12 +1,14 @@
 [
     {
-        "code": "",
-        "isMandatory": true,
-        "name": "cs"
-    },
-    {
+        "academicPoints": 5,
         "code": "123",
         "isMandatory": true,
-        "name": "math"
+        "name": "Math"
+    },
+    {
+        "academicPoints": 7,
+        "code": "543",
+        "isMandatory": true,
+        "name": "OOP"
     }
 ]
