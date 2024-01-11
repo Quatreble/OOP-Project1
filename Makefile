@@ -3,7 +3,7 @@ CXXFLAGS=-Wall -IInclude -g
 
 EXECUTABLE=myprogram
 
-SOURCES=main.cpp Modules/person.cpp Modules/secretary.cpp Modules/course.cpp
+SOURCES=main.cpp Modules/person.cpp Modules/secretary.cpp Modules/course.cpp Modules/semester.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o)
 

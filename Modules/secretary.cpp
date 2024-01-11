@@ -2,7 +2,7 @@
 
 //////Secretary class functions
 Secretary::Secretary(const string& dep, int sem, int reqPoints)
-: depName(dep), depSemesters(sem), endSemester(false), pointsToGraduate(reqPoints)//, numOfMandatory(0)
+: depName(dep), depSemesters(sem), pointsToGraduate(reqPoints)
 {
     readStudentsFromFile();
     readProfessorsFromFile();
@@ -14,73 +14,81 @@ Secretary::Secretary(const string& dep, int sem, int reqPoints)
 Secretary::Secretary(){
     readStudentsFromFile();
     readProfessorsFromFile();
-    endSemester = false;
     SecretaryOperation();
     //cout << "Secretary constructed!" << endl;
 
 }
 
 Secretary::~Secretary(){
-    for(Person* it : depMembers){
-        //cout << "Deleted " << (*it)->getFirstName() << endl;
-        delete it;
-    }
+    // for(Person* it : depMembers){
+    //     delete it;
+    // }
     //cout << "Deleted secretary " << depName << endl;
 }
 
 //NMZW O COPY D XREIAZETAI NA ASXOLOUMASTE ME TA INTS
 Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy 
-: depName(sec.depName), depSemesters(sec.depSemesters), endSemester(sec.endSemester)
+: depName(sec.depName), depSemesters(sec.depSemesters), pointsToGraduate(sec.pointsToGraduate), numOfMandatory(sec.numOfMandatory)
 {
-    for (auto it = sec.depMembers.begin(); it != sec.depMembers.end(); ++it) {
-        addPerson(**it, false);
+    for (auto& student : depStudents) {
+        addPerson(*student, false);
     }
-
+    for (auto& professor : depProfessors) {
+        addPerson(*professor, false);
+    }
+    for (auto& course : depCourses) {
+        depCourses.push_back(course);
+    }
 }
 
 void Secretary::addPerson(Person& p, bool printStatement){
 
     Person *newP = p.clone();  // here we use the virtual function clone of the base class person instead of simply creating a 'new' person, 
-
-    if (isStudent(newP)) {
+    Student* stud = isStudent(newP);
+    if (stud!=nullptr) {
         // Now that we know p is indeed a Student, we can call Student-specific methods
-        Student* studentPtr = dynamic_cast<Student*>(newP);
         //studentPtr->setSemester();
-        depMembers.push_back(studentPtr);
+        depStudents.push_back(stud);
     }
-    else if (isProfessor(newP)) {
-        Professor* professorPtr = dynamic_cast<Professor*>(newP);
-        depMembers.push_back(professorPtr);
+    else{
+        Professor* prof = dynamic_cast<Professor*>(newP);
+        depProfessors.push_back(prof);
     }
 
     if (printStatement) cout << "Added " << newP->getFirstName() << " to " << depName << "!" << endl;
 }
 
-//four different findPerson functions, each searching by a different property/Person&
-Person* Secretary::findPersonByFirstName(const string& name){
-    for(Person* i : depMembers){
-        if(i->getFirstName() == name){
-            cout << "Person Found" << endl;
-            return i;
-        }
-    }
-    cout << "Person Not Found" << endl;
-    return nullptr;
-}
+// //four different findPerson functions, each searching by a different property/Person&
+// Person* Secretary::findPersonByFirstName(const string& name){
+//     for(Person* i : depMembers){
+//         if(i->getFirstName() == name){
+//             cout << "Person Found" << endl;
+//             return i;
+//         }
+//     }
+//     cout << "Person Not Found" << endl;
+//     return nullptr;
+// }
 
-Person* Secretary::findPersonByLastName(const string& name) {
-    for(Person* i : depMembers){
-        if(i->getLastName() == name){
-            cout << "Person Found" << endl;
-            return i;
-        }
-    }
-    cout << "Person Not Found" << endl;
-    return nullptr;
-}
+// Person* Secretary::findPersonByLastName(const string& name) {
+//     for(Person* i : depMembers){
+//         if(i->getLastName() == name){
+//             cout << "Person Found" << endl;
+//             return i;
+//         }
+//     }
+//     cout << "Person Not Found" << endl;
+//     return nullptr;
+// }
 
 Person* Secretary::findPersonById(const string& id){
-    for(Person* i : depMembers){
+    for(auto i : depStudents){
+        if(i->getIdCode() == id){
+            cout << "Person Found" << endl;
+            return i;
+        }
+    }
+    for(auto i : depProfessors){
         if(i->getIdCode() == id){
             cout << "Person Found" << endl;
             return i;
@@ -91,7 +99,13 @@ Person* Secretary::findPersonById(const string& id){
 }
 
 Person* Secretary::findPerson(Person& p){
-    for (Person* i : depMembers){
+    for (Person* i : depStudents){
+        if(p.equals(i)){
+            cout << "Person found" << endl;
+            return i;
+        }
+    }
+    for (Person* i : depProfessors){
         if(p.equals(i)){
             cout << "Person found" << endl;
             return i;
@@ -102,37 +116,49 @@ Person* Secretary::findPerson(Person& p){
 }
 
 Course* Secretary::findCourse(string name){
-    for (Course& course : depCourses){
-        if (course.getName() == name){
+    for (auto course : depCourses){
+        if (course->getName() == name){
             cout << "Found course \n";
-            return &course;
+            return course;
         }
     }
     return nullptr;
 }
 
-void Secretary::changeSemester(Course&  course){
-    cout << "Enter new semester: ";
-    int sem;
-    cin >> sem;
-    course.setSemester(sem);
-    cout << course.getName() << " semester changed to " << course.getSemester() << '\n';
-}
+// void Secretary::changeSemester(Course&  course){
+//     cout << "Enter new semester: ";
+//     int sem;
+//     cin >> sem;
+//     course.setSemester(sem);
+//     cout << course.getName() << " semester changed to " << course.getSemester() << '\n';
+// }
 
 void Secretary::modifyCourse(Course& course){
     string prevName = course.getName();
     cout << "Please enter new attributes\n";
     cin >> course;
-    cout << "Course " << prevName << " changed to " << course.getName() << '\n';
+    cout << "Course was changed\n";
 }
 
 //iterates vector until person with same properties is found(Person::equals function is used for this), delete Person, remove it from vector 
-bool Secretary::removePerson(Person& p){
-    for (auto i = depMembers.begin(); i != depMembers.end(); ++i){
+bool Secretary::removePerson(Student& s){
+    for (auto i = depStudents.begin(); i != depStudents.end(); ++i){
+        if(s.equals(*i)){
+            cout << "Removed " << (*i)->getIdCode() << " from " << depName << endl;
+            delete *i;
+            depStudents.erase(i);       
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Secretary::removePerson(Professor& p){
+    for (auto i = depProfessors.begin(); i != depProfessors.end(); ++i){
         if(p.equals(*i)){
             cout << "Removed " << (*i)->getIdCode() << " from " << depName << endl;
             delete *i;
-            depMembers.erase(i);       
+            depProfessors.erase(i);       
             return true;
         }
     }
@@ -153,13 +179,13 @@ const string& Secretary::getSecName(){
 
 
 //uses a dynamic cast to Student pointer to check if Person* is a Student*
-bool Secretary::isStudent(Person *p){
-    return dynamic_cast<Student *> (p) != nullptr;
+Student* Secretary::isStudent(Person *p){
+    return dynamic_cast<Student *> (p);
 }
 
 //as above but for Professor
-bool Secretary::isProfessor(Person *p){
-    return dynamic_cast<Professor *> (p) != nullptr;
+Professor* Secretary::isProfessor(Person *p){
+    return dynamic_cast<Professor *> (p);
 }
 
 //Overloaded operator + to add a Person to a Secretary 
@@ -525,7 +551,7 @@ void Secretary::SecretaryOperation(){
                     }
                 }
                 else if (op == 4){
-                    nextSemester();
+                    // nextSemester();
                 }
             }
         }
@@ -590,15 +616,15 @@ Course* Secretary::readAndFindCourse(){
     return course;
 }
 
-void Secretary::nextSemester(){
-    endSemester = false;
-    for (Person* person : depMembers){
-        if (isStudent(person)){
-            Student* stud = dynamic_cast<Student*>(person);
-            stud->setSemester(0,true);
-        }
-    }
-}
+// void Secretary::nextSemester(){
+//     endSemester = false;
+//     for (Person* person : depMembers){
+//         if (isStudent(person)){
+//             Student* stud = dynamic_cast<Student*>(person);
+//             stud->setSemester(0,true);
+//         }
+//     }
+// }
 
 void Secretary::readStudentsFromFile(){
     ifstream f("studentinfo.json");
@@ -667,4 +693,22 @@ void Secretary::readCourseFromFile(){
     } else {
         cerr << "Unable to open file" << endl;
     }
+
+    // ifstream f("courseinfo.json");
+    // if(f.is_open()){
+    //     json j = json::parse(f);
+    //     Course course;
+    //     for(auto& item: j){
+    //         item.get_to(course);
+    //         //cout << prof;
+    //         depCourses.push_back(course);
+    //         if(course.getMand()){
+    //             ++numOfMandatory;
+    //         }
+    //     }
+    //     f.close();
+    // }
+    // else{
+    //     cerr << "Unable to open file\n"; 
+    // }   
 }

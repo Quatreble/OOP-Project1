@@ -8,10 +8,10 @@ Course::Course(string nameIn, int academicPointsIn, bool isMandatoryIn, int seme
     cout << "Course Created\n";
 }
 
-Course::Course(const Course& other)
-    : name(other.name), academicPoints(other.academicPoints), isMandatory(other.isMandatory), semester(other.semester), registered(other.registered) {
-    //cout << "Course Copied\n";
-}
+// Course::Course(const Course& other)
+//     : name(other.name), academicPoints(other.academicPoints), isMandatory(other.isMandatory), semester(other.semester), registered(other.registered) {
+//     //cout << "Course Copied\n";
+// }
 
 Course::~Course(){
    // cout << "Course Destroyed!\n";

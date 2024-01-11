@@ -27,7 +27,7 @@ public:
 
     Course(string nameIn, int academicPointsIn, bool isMandatoryIn, int semsterIn);
 
-    Course(const Course& other);
+    // Course(const Course& other);
 
     ~Course();
 

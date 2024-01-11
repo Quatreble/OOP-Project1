@@ -1,13 +1,19 @@
 #pragma once
 
+// we choose to use a vector instead of a map since we would like to be able 
+                                  // to search with all Person's properties using linear iteration. Since all takes place
+                                  // in memory there is no significant performance hit to go through every Person  ( O(n) )
+
 #include <vector>
 #include <chrono>
 #include <thread>
 #include <fstream>
 #include <sstream>
+#include <memory>
 
 #include "person.hpp"
 #include "course.hpp"
+#include "semester.hpp"
 
 class Person;
 
@@ -17,11 +23,10 @@ class Secretary {
 private:  
     string depName;
     int depSemesters;
-    bool endSemester;
-    vector<Person *> depMembers;  // we choose to use a vector instead of a map since we would like to be able 
-                             // to search with all Person's properties using linear iteration. Since all takes place
-                             // in memory there is no significant performance hit to go through every Person  ( O(n) )
-    vector<Course> depCourses;  
+    //bool endSemester;
+    vector<Professor*> depProfessors; 
+    vector<Student*> depStudents; 
+    vector<Course*> depCourses;  
     int pointsToGraduate;
     int numOfMandatory = 0;
 
@@ -32,7 +37,9 @@ public:
     Secretary(const Secretary& sec);
 
     void addPerson(Person& p, bool printStatement = true);
-    bool removePerson(Person& p);
+    bool removePerson(Student& s);
+    bool removePerson(Professor& p);
+    
 
     void addProfessor();
     void addStudent();
@@ -53,8 +60,8 @@ public:
         return numOfMandatory;
     }
 
-    static bool isStudent(Person *p);
-    static bool isProfessor(Person *p);
+    static Student* isStudent(Person *p);
+    static Professor* isProfessor(Person *p);
 
     Secretary& operator+(Person& p);
     Secretary& operator+=(const Secretary& sec);
@@ -64,9 +71,9 @@ public:
     friend istream& operator>>(istream& is, Secretary& secretary);
 
 
-    void changeSemester(Course&  course);
+    // void changeSemester(Course&  course);
     void modifyCourse(Course& course);
-    void nextSemester();
+    // void nextSemester();
 
     void addCourse();
     void removeCourse(Course& course);
