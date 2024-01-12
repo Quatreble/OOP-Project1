@@ -29,6 +29,7 @@ public:
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(Course,
                                    name,
                                    isMandatory,
+                                   academicPoints,
                                    code)
 
     Course();
