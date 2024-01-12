@@ -97,6 +97,11 @@ istream& operator>>(istream& is, Course& course) {
     cout << "Please enter course name: ";
     is >> course.name;
     is.ignore(numeric_limits<streamsize>::max(), '\n');
+    
+    cout << "Please enter course code: ";
+    is >> course.code;
+    is.ignore(numeric_limits<streamsize>::max(), '\n');
+
     cout << "Enter course academic points: ";
     is >> course.academicPoints;
     is.ignore(numeric_limits<streamsize>::max(), '\n');  

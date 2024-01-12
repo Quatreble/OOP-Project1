@@ -6,7 +6,7 @@ Secretary::Secretary(const string& dep, int sem, int reqPoints)
 {
     readStudentsFromFile();
     readProfessorsFromFile();
-  //  readCourseFromFile();
+    readCourseFromFile();
     SecretaryOperation();
     //cout<<"Secretary " << depName << " constructed!" <<endl;
 }
@@ -287,7 +287,7 @@ void Secretary::addStudent(){
 
 
 
-void Secretary::addCourse(Course& c){
+void Secretary::addCourse(Course& c,bool read){
     // Course course;
     // cin >> course;
     // cout << course.getName() <<" added to " << depName << " at semester " << course.getSemester() << '\n'modifyProfessor;
@@ -295,6 +295,9 @@ void Secretary::addCourse(Course& c){
     depCourses.push_back(courseptr);
     if(courseptr->getMand()){
         ++numOfMandatory;
+    }
+    if (!read){
+        printCourseToFile(*courseptr);
     }
 }
 
@@ -869,7 +872,7 @@ void Secretary::readCourseFromFile(){
         Course course;
         for(auto& item: jCourses){
             item.get_to(course);
-            addCourse(course);
+            addCourse(course,true);
             if (course.getMand()){
                 numOfMandatory++;
             }

@@ -88,7 +88,7 @@ public:
     void modifyCourse(Course& course);
     // void nextSemester();
 
-    void addCourse(Course& course);
+    void addCourse(Course& course,bool read = false);
     void removeCourse(Course& course);
 
     void createSemester();
