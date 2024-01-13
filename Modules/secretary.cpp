@@ -500,7 +500,7 @@ void Secretary::SecretaryOperation(){
             courseRegistration();
         }
         else if (op == 6){
-            //registerStudentToCourse();
+            registerStudentToCourse();
         }
         else if (op == 7){
             setCourseProf();
@@ -621,6 +621,17 @@ void Secretary::SecretaryOperation(){
     
 }
 
+void Secretary::registerStudentToCourse(){
+    Student* stud = readAndValidateStudent();
+    Semester* sem = readAndValidateSemester();
+    Course* course = readAndValidateCourse();
+    if(sem->getYear() < stud->getReg() || (sem->getYear() - stud->getReg()) < sem->getCourseYear(*course)){
+        cout << "STUDENT CAN'T REGISTER TO THIS COURSE\n";
+    }
+    
+}
+
+
 Course* Secretary::findCourseByCode(Course& course){
     for(auto courseptr: depCourses){
         if(course.getCode() == courseptr->getCode()){
@@ -668,6 +679,7 @@ void Secretary::setCourseProf(){
     Course* course = readAndValidateCourse();
     if(sem != nullptr && course != nullptr && sem->courseBelongs(*course)){
         Professor* prof = readAndValidateProfessor();
+        if(prof==nullptr) return;
         sem->addProfToCourse(course, prof);
     }
 }

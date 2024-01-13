@@ -15,6 +15,8 @@
 #include "course.hpp"
 #include "semester.hpp"
 
+#define CURR_SEM std::pair<int, char>(2023, 'W')
+
 class Person;
 
 using namespace std;
@@ -95,6 +97,7 @@ public:
     void addSemester(Semester* toAdd);
 
     void setCourseProf();
+    void registerStudentToCourse();
 
     Course* findCourseByCode();
 

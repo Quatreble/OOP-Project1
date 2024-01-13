@@ -1,21 +1,23 @@
 #include "semester.hpp"
 
 void Semester::addCourse(Course* toAdd){
-    courses.push_back(toAdd);
+    cout << "Enter academic year of course: ";
+    int year;
+    cin >> year;
+    courses.push_back(make_pair(toAdd, year));
 }
 
 void Semester::addProfToCourse(Course* c, Professor* p){
-    string key = c->getCode();
-    if(courseProfs.find(key) == courseProfs.end()){
-        courseProfs[key] = vector<Professor*>();
+    if(courseProfs.find(c) == courseProfs.end()){
+        courseProfs[c] = vector<Professor*>();
     }
-    courseProfs[key].push_back(p);
+    courseProfs[c].push_back(p);
     cout << *p << "is now professor of " << c->getName() << '\n';
 }
 
 bool Semester::courseBelongs(Course& course){
-    for(auto c: courses){
-        if(*c == course){
+    for(auto pair: courses){
+        if(*(pair.first) == course){
             return true;
         }
     }

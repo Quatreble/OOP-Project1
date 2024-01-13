@@ -98,7 +98,7 @@ public:
     void printGradesToto();
 };
 
-struct studentCourseInstance{
+struct StudentCourseInstance{
     Student* stud;
     int grade;
 };

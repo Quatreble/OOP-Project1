@@ -8,9 +8,9 @@ class Semester{
 private:
     int year;
     bool winterOrSummer;
-    vector<Course* > courses;
-    unordered_map<string, vector<Professor*>> courseProfs;
-
+    vector<pair<Course*,int> > courses;
+    unordered_map<Course* , vector<Professor* > > courseProfs;
+    unordered_map<Course* , vector<StudentCourseInstance* > > courseStuds;
 public:
     Semester(int y, bool season)
     :year(y), winterOrSummer(season)
@@ -22,6 +22,14 @@ public:
 
     int getYear(){
         return year;
+    }
+
+    int getCourseYear(Course& course){
+        for (auto& element : courses){
+            if (*(element.first) == course){
+                return element.second;
+            }
+        }
     }
 
     bool courseBelongs(Course& course);

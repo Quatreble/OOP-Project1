@@ -12,7 +12,6 @@
 
 using namespace std;
 
-
 class Student;
 
 class Course {
