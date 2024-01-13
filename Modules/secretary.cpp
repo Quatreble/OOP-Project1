@@ -30,96 +30,65 @@ Secretary::~Secretary(){
 Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy 
 : depName(sec.depName), depSemesters(sec.depSemesters), pointsToGraduate(sec.pointsToGraduate), numOfMandatory(sec.numOfMandatory)
 {
-    for (auto& student : depStudents) {
-        addPerson(*student, false);
+    for (auto& element : depStudents) {
+        addPerson(*element.second, false);
     }
-    for (auto& professor : depProfessors) {
-        addPerson(*professor, false);
+    for (auto& element : depProfessors) {
+        addPerson(*element.second, false);
     }
-    for (auto& course : depCourses) {
-        addCourse(*course);
+    for (auto& element : depCourses) {
+        addCourse(*element.second);
     }
 }
 
-void Secretary::addPerson(Person& p, bool printStatement){
+void Secretary::addPerson(Person& p, bool printStatement,bool manualAdd){
 
     Person *newP = p.clone();  // here we use the virtual function clone of the base class person instead of simply creating a 'new' person, 
     Student* stud = isStudent(newP);
     if (stud!=nullptr) {
-        // Now that we know p is indeed a Student, we can call Student-specific methods
-        //studentPtr->setSemester();
-        depStudents.push_back(stud);
+        auto check = depStudents.emplace(stud->getIdCode(),stud);
+        if (check.second && manualAdd){
+            printStudentToFile(*stud);
+        }
+        else if (!check.second && manualAdd){
+            cout << "ID already exists\n";
+            printStatement = false;
+        }
     }
     else{
         Professor* prof = dynamic_cast<Professor*>(newP);
-        depProfessors.push_back(prof);
+        auto check = depProfessors.emplace(prof->getIdCode(),prof);
+        if (check.second && manualAdd){
+            printProfessorToFile(*prof);
+        }
+        else if (!check.second && manualAdd){
+            cout << "ID already exists\n";
+            printStatement = false;
+        }
     }
-
     if (printStatement) cout << "Added " << newP->getFirstName() << " to " << depName << "!" << endl;
 }
 
-// //four different findPerson functions, each searching by a different property/Person&
-// Person* Secretary::findPersonByFirstName(const string& name){
-//     for(Person* i : depMembers){
-//         if(i->getFirstName() == name){
-//             cout << "Person Found" << endl;
-//             return i;
-//         }
-//     }
-//     cout << "Person Not Found" << endl;
-//     return nullptr;
-// }
-
-// Person* Secretary::findPersonByLastName(const string& name) {
-//     for(Person* i : depMembers){
-//         if(i->getLastName() == name){
-//             cout << "Person Found" << endl;
-//             return i;
-//         }
-//     }
-//     cout << "Person Not Found" << endl;
-//     return nullptr;
-// }
-
 Person* Secretary::findPersonById(const string& id){
-    for(auto i : depStudents){
-        if(i->getIdCode() == id){
-            cout << "Person Found" << endl;
-            return i;
-        }
+    auto itStud = depStudents.find(id);
+    auto itProf = depProfessors.find(id);
+    if (itStud != depStudents.end()){
+        cout << "Student found" << endl;
+        return itStud->second;
     }
-    for(auto i : depProfessors){
-        if(i->getIdCode() == id){
-            cout << "Person Found" << endl;
-            return i;
-        }
+    else if (itProf != depProfessors.end()){
+        cout << "Professor found" << endl;
+        return itProf->second;
     }
     cout << "Person Not Found" << endl;
     return nullptr;
 }
 
-Person* Secretary::findPerson(Person& p){
-    for (Person* i : depStudents){
-        if(p.equals(i)){
-            cout << "Person found" << endl;
-            return i;
-        }
-    }
-    for (Person* i : depProfessors){
-        if(p.equals(i)){
-            cout << "Person found" << endl;
-            return i;
-        }
-    }
-    cout << "Person Not Found" << endl;
-    return nullptr;
-}
-
-Course* Secretary::findCourse(string name){
-    for (auto course : depCourses){
-        if (course->getName() == name){
+Course* Secretary::findCourse(string code){
+    for (auto& element : depCourses){
+        if (element.second->getCode() == code){
             cout << "Found course \n";
-            return course;
+            return element.second;
         }
     }
     return nullptr;
@@ -133,36 +102,39 @@ Course* Secretary::findCourse(string name){
 //     cout << course.getName() << " semester changed to " << course.getSemester() << '\n';
 // }
 
-void Secretary::modifyCourse(Course& course){
-    string prevName = course.getName();
-    cout << "Please enter new attributes\n";
-    cin >> course;
-    cout << "Course was changed\n";
-}
 
 //iterates vector until person with same properties is found(Person::equals function is used for this), delete Person, remove it from vector 
 bool Secretary::removePerson(Student& s){
-    for (auto i = depStudents.begin(); i != depStudents.end(); ++i){
-        if(s.equals(*i)){
-            cout << "Removed " << (*i)->getIdCode() << " from " << depName << endl;
-            delete *i;
-            depStudents.erase(i);       
-            return true;
-        }
+    auto it = depStudents.find(s.getIdCode());
+    if(it != depStudents.end()){
+        cout << "Removed " << it->first << " from " << depName << endl;
+        delete it->second;
+        depStudents.erase(it);       
+        return true;
     }
     return false;
 }
 
 bool Secretary::removePerson(Professor& p){
-    for (auto i = depProfessors.begin(); i != depProfessors.end(); ++i){
-        if(p.equals(*i)){
-            cout << "Removed " << (*i)->getIdCode() << " from " << depName << endl;
-            delete *i;
-            depProfessors.erase(i);       
-            return true;
-        }
+    auto it = depProfessors.find(p.getIdCode());
+    if(it != depProfessors.end()){
+        cout << "Removed " << it->first << " from " << depName << endl;
+        delete it->second;
+        depProfessors.erase(it);       
+        return true;
     }
     return false;
+}
+
+void Secretary::removeCourse(Course& course){
+    auto it = depCourses.find(course.getCode());
+    if(it != depCourses.end()){
+        cout << "Erased " << course.getName() << '\n';
+        delete it->second;
+        depCourses.erase(it);
+        return;
+    }
+    
 }
 
 void Secretary::printSecSize(){
@@ -196,11 +168,11 @@ Secretary& Secretary::operator+(Person& p){
 
 //Overloaded operator += to add members of a secretary to the end of another// merges the two secretaries 
 Secretary& Secretary::operator+=(const Secretary& sec){
-    for (Student* it : sec.depStudents){
-        addPerson(*it);
+    for (const auto& element : sec.depStudents){
+        addPerson(*element.second);
     }
-    for (Professor* it : sec.depProfessors){
-        addPerson(*it);
+    for (const auto& element : sec.depProfessors){
+        addPerson(*element.second);
     }
     return *this;
 }
@@ -209,20 +181,26 @@ Secretary& Secretary::operator+=(const Secretary& sec){
 Secretary& Secretary::operator=(const Secretary& sec){
     if (this != &sec) {
         depName = sec.depName;
-        for (Student* it : depStudents) {
-            delete it;
-        }
-        depProfessors.clear();
+        depSemesters = sec.depSemesters;
+        pointsToGraduate = sec.pointsToGraduate;
+        numOfMandatory = sec.numOfMandatory;
+        jCourses = sec.jCourses;
+        jProfessors = sec.jProfessors;
+        jStudents = sec.jStudents;
 
-        for (Professor* it : depProfessors) {
-            delete it;
+        for (auto& element : depStudents) {
+            delete element.second;
+        }
+        depStudents.clear();
+        for (auto& element : depProfessors) {
+            delete element.second;
         }
         depProfessors.clear();
-        for (Student* it : sec.depStudents) {
-            addPerson(*it,false);
+        for (auto& element : sec.depStudents) {
+            addPerson(*element.second,false);
         }
-        for (Professor* it : sec.depProfessors) {
-            addPerson(*it,false);
+        for (auto& element : sec.depProfessors) {
+            addPerson(*element.second,false);
         }
         
     }
@@ -232,11 +210,11 @@ Secretary& Secretary::operator=(const Secretary& sec){
 //overloaded operator << for output of a Secretary object
 ostream& operator<<(ostream& os,Secretary& secretary){
     os << "Secretary " << secretary.depName << ":" << endl;
-    for (Student* it : secretary.depStudents){
-        os << "Student:" << (*it); 
+    for (const auto& element : secretary.depStudents){
+        os << "Student:" << (*element.second); 
     }
-    for (Professor* it : secretary.depProfessors){
-        os << "Professor:" << (*it); 
+    for (const auto& element : secretary.depProfessors){
+        os << "Professor:" << (*element.second); 
     }
     os << endl;
     return os;
@@ -273,45 +251,31 @@ void Secretary::addProfessor(){
     Professor f;
     //cout << "Enter Name, Surname and ID Code: " << endl;
     cin >> f;
-    addPerson(f);
-    printProfessorToFile(f);
+    addPerson(f,true);
 }
 
 void Secretary::addStudent(){
     Student s;
     //cout << "Enter Name, Surname and ID Code: " << endl;
     cin >> s;
-    addPerson(s);
-    printStudentToFile(s);
+    addPerson(s,true);
 }
 
 
 
-void Secretary::addCourse(Course& c,bool read){
-    // Course course;
-    // cin >> course;
-    // cout << course.getName() <<" added to " << depName << " at semester " << course.getSemester() << '\n'modifyProfessor;
+void Secretary::addCourse(Course& c,bool manualAdd){
     Course* courseptr = new Course(c);
-    depCourses.push_back(courseptr);
+    auto check = depCourses.emplace(courseptr->getCode(),courseptr);
+    if (check.second && manualAdd){
+        printCourseToFile(*courseptr);
+    }
+    else if (!check.second && manualAdd){
+        cout << "Code already exists\n";
+    }
     if(courseptr->getMand()){
         ++numOfMandatory;
     }
-    if (!read){
-        printCourseToFile(*courseptr);
-    }
 }
-
-void Secretary::removeCourse(Course& course){
-    for (size_t i = 0; i < depCourses.size(); ++i){
-        if (*depCourses[i] == course){
-            cout << "Erased " << course.getName() << '\n';
-            delete depCourses[i];
-            depCourses.erase(depCourses.begin() + i);
-            return;
-        }
-    }
-}
-
 
 void Secretary::modifyProfessor(){
     cout << "INPUT PROFESSOR ID: ";
@@ -321,9 +285,13 @@ void Secretary::modifyProfessor(){
     Professor* prof = isProfessor(person);
     if (prof!=nullptr) {  //Check if person is professor
         string prevName = prof->getFirstName() + " " + prof->getLastName();
+        string prevId = prof->getIdCode();
+        auto it = depProfessors.find(prof->getIdCode());
+        depProfessors.erase(it);
         cout << "Please enter the new attributes of the professor\n";
         cin >> *prof;
-        jsonModifyProf(*prof);
+        depProfessors[prof->getIdCode()] = prof;
+        jsonModifyProf(*prof,prevId);
         cout << "Professor " << prevName << " changed to " << prof->getFirstName() << " " << prof->getLastName() << '\n';
 
     } else if (person != nullptr) { //if person is found but isnt a professor
@@ -339,9 +307,13 @@ void Secretary::modifyStudent(){
     Student* stud = isStudent(person);
     if (stud!=nullptr) {  //Check if person is student
         string prevName = stud->getFirstName() + " " + stud->getLastName();
+        string prevId = stud->getIdCode();
+        auto it = depStudents.find(stud->getIdCode());
+        depStudents.erase(it);
         cout << "Please enter the new attributes of the student\n";
         cin >> *stud;
-        jsonModifyStud(*stud);
+        depStudents[stud->getIdCode()] = stud;
+        jsonModifyStud(*stud,prevId);
         cout << "Student " << prevName << " changed to " << stud->getFirstName() << " " << stud->getLastName() << '\n';
 
     } else if (person != nullptr) { //if person is found but isnt a professor
@@ -349,7 +321,25 @@ void Secretary::modifyStudent(){
     }
 }
 
-
+void Secretary::modifyCourse(){
+    string code;
+    cout << "Enter course code: ";
+    cin >> code;     
+    Course* course = findCourse(code); 
+    if (course != nullptr){
+        string prevName = course->getName();
+        string prevCode = course->getCode();
+        auto it = depCourses.find(course->getCode());
+        depCourses.erase(it);
+        cout << "Please enter new attributes\n";
+        cin >> *course;
+        cout << "Course was changed\n";
+        depCourses[course->getCode()] = course;
+        jsonModifyCourse(*course,prevCode);
+    }
+    else   
+        cout << "Course not found!\n";     
+}
 
 void Secretary::deleteProfessor(){
     cout << "INPUT PROFESSOR ID: ";
@@ -379,25 +369,10 @@ void Secretary::deleteStudent(){
     }
 }
 
-void Secretary::modifyCourse(){
-    string name;
-    cout << "Enter Course name: ";
-    cin >> name;     
-    Course* course = findCourse(name); 
-    if (course != nullptr){
-        string prevName = course->getName();
-        cout << "Please enter new attributes\n";
-        cin >> *course;
-        cout << "Course was changed\n";
-        jsonModifyCourse(*course);
-    }
-    else   
-        cout << "Course not found!\n";     
-}
 
 void Secretary::deleteCourse(){
     string name;
-    cout << "Enter Course name: ";
+    cout << "Enter Course code: ";
     cin >> name;     
     Course* course = findCourse(name);
     if (course != nullptr){
@@ -631,16 +606,6 @@ void Secretary::registerStudentToCourse(){
     
 }
 
-
-Course* Secretary::findCourseByCode(Course& course){
-    for(auto courseptr: depCourses){
-        if(course.getCode() == courseptr->getCode()){
-            return courseptr;
-        }
-    }
-    return nullptr;
-}
-
 void Secretary::courseRegistration(){
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
@@ -725,7 +690,8 @@ void Secretary::printExamsMenu(){
 
 
 void Secretary::printGraduates(){
-    for (Student* stud : depStudents){
+    for (auto& element : depStudents){
+        Student* stud = element.second;
         if(stud->getSemesterCount() >= depSemesters && stud->getMandatoryPassed()==getNumOfMandatory() && stud->getAcademicPoints() >= pointsToGraduate){
             cout << *stud;
         }
@@ -761,10 +727,10 @@ Professor* Secretary::readAndValidateProfessor(){
 }
 
 Course* Secretary::readAndValidateCourse(){
-    cout << "Enter the course name: ";
-    string name;
-    cin >> name;
-    Course* course = findCourse(name);
+    cout << "Enter the course code: ";
+    string code;
+    cin >> code;
+    Course* course = findCourse(code);
     if (course == nullptr){
         cout << "Course not found\n";
     }
@@ -789,7 +755,7 @@ void Secretary::readStudentsFromFile(){
         for(auto& item: jStudents){
             item.get_to(stud);
             //cout << stud;
-            addPerson(stud, false);
+            addPerson(stud, false, false);
         }
         f.close();
     }
@@ -806,7 +772,7 @@ void Secretary::readProfessorsFromFile(){
         for(auto& item: jProfessors){
             item.get_to(prof);
             //cout << prof;
-            addPerson(prof, false);
+            addPerson(prof, false, false);
         }
         f.close();
     }
@@ -911,7 +877,7 @@ void Secretary::readCourseFromFile(){
         Course course;
         for(auto& item: jCourses){
             item.get_to(course);
-            addCourse(course,true);
+            addCourse(course, false);
             if (course.getMand()){
                 numOfMandatory++;
             }
@@ -935,15 +901,13 @@ void Secretary::printCourseToFile(Course& course){
     }
 }
 
-void Secretary::jsonModifyProf(Professor& prof){
-    int pos;
-    for (uint i = 0; i < depProfessors.size(); ++i){
-        if (depProfessors[i]->getIdCode() == prof.getIdCode()){
-            pos = i;
+void Secretary::jsonModifyProf(Professor& prof, string id){
+    for (auto& element : jProfessors){
+        if (element["idCode"] == id){
+            element = prof;
             break;
         }
     }
-    jProfessors[pos] = prof;
         
     ofstream f("profinfo.json");
     if(f.is_open()){
@@ -955,15 +919,13 @@ void Secretary::jsonModifyProf(Professor& prof){
     }
 }
 
-void Secretary::jsonModifyStud(Student& stud){
-    int pos;
-    for (uint i = 0; i < depStudents.size(); ++i){
-        if (depStudents[i]->getIdCode() == stud.getIdCode()){
-            pos = i;
+void Secretary::jsonModifyStud(Student& stud, string id){
+    for (auto& element : jStudents){
+        if (element["idCode"] == id){
+            element = stud;
             break;
         }
     }
-    jStudents[pos] = stud;
         
     ofstream f("studentinfo.json");
     if(f.is_open()){
@@ -975,15 +937,13 @@ void Secretary::jsonModifyStud(Student& stud){
     }
 }
 
-void Secretary::jsonModifyCourse(Course& course){
-    int pos;
-    for (uint i = 0; i < depCourses.size(); ++i){
-        if (*depCourses[i] == course){
-            pos = i;
+void Secretary::jsonModifyCourse(Course& course, string code){
+    for (auto& element : jCourses){
+        if (element["code"] == code){
+            element = course;
             break;
         }
     }
-    jCourses[pos] = course;
         
     ofstream f("courseinfo.json");
     if(f.is_open()){
@@ -996,16 +956,13 @@ void Secretary::jsonModifyCourse(Course& course){
 }
 
 void Secretary::jsonRemoveProfessor(Professor& prof){
-    int pos = -1;
-    for (uint i = 0; i < depProfessors.size(); ++i){
-        if (depProfessors[i]->getIdCode() == prof.getIdCode()){
-            pos = i;
+    for (auto it = jProfessors.begin(); it != jProfessors.end(); ++it) {
+        if ((*it)["idCode"] == prof.getIdCode()) {
+            it = jProfessors.erase(it);
             break;
         }
     }
-    if (pos != -1){
-        jProfessors.erase(jProfessors.begin() + pos);
-    }
+
     ofstream f("profinfo.json");
     if(f.is_open()){
         f << jProfessors.dump(4);            // Writes the JSON array to the file
@@ -1014,17 +971,17 @@ void Secretary::jsonRemoveProfessor(Professor& prof){
     else{
         cerr << "Could not open file for writing\n";
     }
+
 }
 
 void Secretary::jsonRemoveStudent(Student& stud){
-    int pos;
-    for (uint i = 0; i < depStudents.size(); ++i){
-        if (depStudents[i]->getIdCode() == stud.getIdCode()){
-            pos = i;
+    for (auto it = jStudents.begin(); it != jStudents.end(); ++it) {
+        if ((*it)["idCode"] == stud.getIdCode()) {
+            it = jStudents.erase(it);
             break;
         }
     }
-    jStudents.erase(jStudents.begin() + pos);
+
     ofstream f("studentinfo.json");
     if(f.is_open()){
         f << jStudents.dump(4);            // Writes the JSON array to the file
@@ -1036,14 +993,13 @@ void Secretary::jsonRemoveStudent(Student& stud){
 }
 
 void Secretary::jsonRemoveCourse(Course& course){
-    int pos;
-    for (uint i = 0; i < depCourses.size(); ++i){
-        if (*depCourses[i] == course){
-            pos = i;
+    for (auto it = jCourses.begin(); it != jCourses.end(); ++it) {
+        if ((*it)["code"] == course.getCode()) {
+            it = jCourses.erase(it);
             break;
         }
     }
-    jCourses.erase(jCourses.begin() + pos);
+
     ofstream f("courseinfo.json");
     if(f.is_open()){
         f << jCourses.dump(4);            // Writes the JSON array to the file

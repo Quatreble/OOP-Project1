@@ -26,9 +26,9 @@ private:
     string depName;
     int depSemesters;
     //bool endSemester;
-    vector<Professor*> depProfessors; 
-    vector<Student*> depStudents; 
-    vector<Course*> depCourses;  
+    unordered_map<string, Professor*> depProfessors; 
+    unordered_map<string, Student*> depStudents; 
+    unordered_map<string, Course*> depCourses;  
     vector<Semester*> semesters;
     int pointsToGraduate;
     int numOfMandatory = 0;
@@ -42,7 +42,7 @@ public:
     ~Secretary();
     Secretary(const Secretary& sec);
 
-    void addPerson(Person& p, bool printStatement = true);
+    void addPerson(Person& p, bool printStatement = true, bool manualAdd = true);
     bool removePerson(Student& s);
     bool removePerson(Professor& p);
     
@@ -59,13 +59,9 @@ public:
     void modifyCourse();
     void deleteCourse();
 
-    Person* findPersonByFirstName(const string& name);
-    Person* findPersonByLastName(const string& name);
     Person* findPersonById(const string& id);
-    Person* findPerson(Person& p);
 
-    Course* findCourse(string name);
-    Course* findCourseByCode(Course& course);
+    Course* findCourse(string code);
 
     void printSecSize();
     void setSecName(const string& dep);
@@ -85,12 +81,7 @@ public:
     friend ostream& operator<<(ostream& os, Secretary& secretary);
     friend istream& operator>>(istream& is, Secretary& secretary);
 
-
-    // void changeSemester(Course&  course);
-    void modifyCourse(Course& course);
-    // void nextSemester();
-
-    void addCourse(Course& course,bool read = false);
+    void addCourse(Course& course,bool manualAdd = true);
     void removeCourse(Course& course);
 
     void createSemester();
@@ -98,8 +89,6 @@ public:
 
     void setCourseProf();
     void registerStudentToCourse();
-
-    Course* findCourseByCode();
 
     void printMenu();
     void printExamsMenu();
@@ -124,9 +113,9 @@ public:
     void printProfessorToFile(Professor& professor);
     void printCourseToFile(Course& course);
 
-    void jsonModifyProf(Professor& prof);
-    void jsonModifyStud(Student& stud);
-    void jsonModifyCourse(Course& course);
+    void jsonModifyProf(Professor& prof, string id);
+    void jsonModifyStud(Student& stud, string id);
+    void jsonModifyCourse(Course& course, string code);
 
     void jsonRemoveProfessor(Professor& prof);
     void jsonRemoveStudent(Student& stud);

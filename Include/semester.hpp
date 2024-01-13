@@ -30,6 +30,7 @@ public:
                 return element.second;
             }
         }
+        return -1;
     }
 
     bool courseBelongs(Course& course);
