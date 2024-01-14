@@ -13,11 +13,14 @@ void Semester::addProfToCourse(Course* c, Professor* p){
     cout << *p << "is now professor of " << c->getName() << '\n';
 }
 
-// void Semester::addStudToCourse(Course* c, Student* s){
-//     courseStuds.emplace(c,vector<Student*>());
-//     courseStuds[c].push_back(s);
-//     cout << *s << "is now registered to " << c->getName() << '\n';
-// }
+void Semester::addStudToCourse(Course* c, Student* s){
+    courseStuds.emplace(c,vector<StudentCourseInstance*>());
+    StudentCourseInstance* sci = new StudentCourseInstance;
+    sci->stud = s;
+    sci->grade = -1;
+    courseStuds[c].push_back(sci);
+    cout << *s << "is now registered to " << c->getName() << '\n';
+}
 
 bool Semester::courseBelongs(Course& course){
     for(auto& pair: courses){

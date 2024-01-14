@@ -405,6 +405,7 @@ void Secretary::setCourseProf(){
 
 void Secretary::registerStudentToCourse(){
     Student* stud = readAndValidateStudent();
+    
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
     if(sem->getYear() < stud->getReg() || (sem->getYear() - stud->getReg()) < sem->getCourseYear(*course)){
