@@ -43,33 +43,31 @@ public:
     Secretary(const Secretary& sec);
 
     void addPerson(Person& p, bool printStatement = true, bool manualAdd = true);
-    bool removePerson(Student& s);
-    bool removePerson(Professor& p);
-    
-
     void addProfessor();
     void addStudent();
-
+    void addCourse(Course& course,bool manualAdd = true);
+    
     void modifyProfessor();
     void modifyStudent();
+    void modifyCourse();
+
+    bool removePerson(Student& s);
+    bool removePerson(Professor& p);
+    void removeCourse(Course& course);
 
     void deleteProfessor();
     void deleteStudent();
-
-    void modifyCourse();
     void deleteCourse();
 
-    Person* findPersonById(const string& id);
-
+    Person* findPerson(const string& id);
     Course* findCourse(string code);
 
     void printSecSize();
-    void setSecName(const string& dep);
 
+    void setSecName(const string& dep);
     const string& getSecName();
-    int getNumOfMandatory(){
-        return numOfMandatory;
-    }
+
+    int getNumOfMandatory() { return numOfMandatory; }
 
     static Student* isStudent(Person *p);
     static Professor* isProfessor(Person *p);
@@ -81,9 +79,6 @@ public:
     friend ostream& operator<<(ostream& os, Secretary& secretary);
     friend istream& operator>>(istream& is, Secretary& secretary);
 
-    void addCourse(Course& course,bool manualAdd = true);
-    void removeCourse(Course& course);
-
     void createSemester();
     void addSemester(Semester* toAdd);
 
@@ -91,13 +86,11 @@ public:
     void registerStudentToCourse();
 
     void printMenu();
-    void printExamsMenu();
+    void SecretaryOperation();
+
     void printGraduates();
-    void printRegistrationMenu();
 
     void courseRegistration();
-
-    void SecretaryOperation();
 
     Student* readAndValidateStudent();
     Professor* readAndValidateProfessor();
