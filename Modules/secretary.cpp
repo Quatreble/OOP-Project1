@@ -410,6 +410,7 @@ void Secretary::registerStudentToCourse(){
     if(sem->getYear() < stud->getReg() || (sem->getYear() - stud->getReg()) < sem->getCourseYear(*course)){
         cout << "STUDENT CAN'T REGISTER TO THIS COURSE\n";
     }
+
     
 }
 

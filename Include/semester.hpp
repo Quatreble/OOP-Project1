@@ -8,7 +8,7 @@ class Semester{
 private:
     int year;
     bool winterOrSummer;
-    vector<pair<Course*,int> > courses;
+    unordered_map<Course*,int> courses;
     unordered_map<Course* , vector<Professor* > > courseProfs;
     unordered_map<Course* , vector<StudentCourseInstance* > > courseStuds;
 public:
@@ -36,6 +36,8 @@ public:
     bool courseBelongs(Course& course);
 
     void addProfToCourse(Course* c, Professor* p);
+
+    void addStudToCourse(Course* c, Student* s);
 
     bool getSeason(){
         return winterOrSummer;
