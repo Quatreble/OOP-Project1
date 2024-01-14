@@ -19,7 +19,7 @@ void Semester::addStudToCourse(Course* c, Student* s){
     sci->stud = s;
     sci->grade = -1;
     courseStuds[c].push_back(sci);
-    cout << *s << "is now registered to " << c->getName() << '\n';
+    cout << s->getFirstName() << " " << s->getLastName() << " is now registered to " << c->getName() << '\n';
 }
 
 bool Semester::courseBelongs(Course& course){

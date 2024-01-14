@@ -38,10 +38,6 @@ void Course::setMand(string c){
     }
 }
 
-void Course::setYear(int yearIn){
-    year = yearIn;
-}
-
 string Course::getName() const{
     return name;
 }
