@@ -35,6 +35,7 @@ private:
     json jCourses;
     json jProfessors;
     json jStudents;
+    json jSemesters;
 
 public:
     Secretary(const string& dep, int sem, int reqPoints);
@@ -80,17 +81,17 @@ public:
     friend istream& operator>>(istream& is, Secretary& secretary);
 
     void createSemester();
-    void addSemester(Semester* toAdd);
+    Semester* addSemester(Semester& toAdd);
 
     void setCourseProf();
     void registerStudentToCourse();
+    void gradeStudents();
+    void printStudentsWhoPassed();
 
     void printMenu();
     void SecretaryOperation();
 
     void printGraduates();
-
-    void courseRegistration();
 
     Student* readAndValidateStudent();
     Professor* readAndValidateProfessor();
@@ -101,10 +102,12 @@ public:
     void readStudentsFromFile();
     void readProfessorsFromFile();
     void readCourseFromFile();
+    void readSemesterFromFile();
 
     void printStudentToFile(Student& student);
     void printProfessorToFile(Professor& professor);
     void printCourseToFile(Course& course);
+    void printSemesterToFile(Semester& semester);
 
     void jsonModifyProf(Professor& prof, string id);
     void jsonModifyStud(Student& stud, string id);

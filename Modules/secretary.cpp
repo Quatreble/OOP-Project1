@@ -371,32 +371,23 @@ istream& operator>>(istream& is, Secretary& sec){
 }
 
 void Secretary::createSemester(){
-    cout << "Enter year of semester you want to log: ";
-    int year;
-    cin>> year;
-    cout << "Enter W for winter semester, S for summer: ";
-    char sem;
-    bool winter;
+    Semester sem;
     cin >> sem;
-    if(sem == 'W' || sem == 'w'){
-        winter = true;
-    }
-    else{
-        winter = false;
-    }
-    Semester* semester = new Semester(year, winter);
-    semester->printSem();
-    addSemester(semester);
+    sem.printSem();
+    addSemester(sem);
 }
 
-void Secretary::addSemester(Semester* toAdd){
-    semesters.push_back(toAdd);
+Semester* Secretary::addSemester(Semester& toAdd){
+    Semester* semptr = new Semester(toAdd);
+    semesters.push_back(semptr);
+    printSemesterToFile(toAdd);
+    return semptr;
 }
 
 void Secretary::setCourseProf(){
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
-    if(sem != nullptr && course != nullptr && sem->courseBelongs(*course)){
+    if(course != nullptr){
         Professor* prof = readAndValidateProfessor();
         if(prof==nullptr) return;
         sem->addProfToCourse(course, prof);
@@ -405,16 +396,52 @@ void Secretary::setCourseProf(){
 
 void Secretary::registerStudentToCourse(){
     Student* stud = readAndValidateStudent();
+    if (stud == nullptr) return;
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
-    if(sem->getYear() < stud->getReg() || (sem->getYear() - stud->getReg()) < sem->getCourseYear(*course)){
+    if (course == nullptr) return;
+    if((sem->getYear() - stud->getReg()) < course->getYear()){
         cout << "STUDENT CAN'T REGISTER TO THIS COURSE\n";
+        return;
     }
-    else{
-        sem->addStudToCourse(course, stud);
+    if (stud->getCourseGrade(course) >= 5){
+        cout << "Student has already passed this course\n";
+        return;
+    }
+    sem->addStudToCourse(course, stud);
+}
+
+void Secretary::gradeStudents(){
+    StudentCourseInstance* sci = nullptr;
+    Semester* sem  = nullptr;
+    Student* stud = readAndValidateStudent();
+    if (stud == nullptr) return;
+    Course* course = readAndValidateCourse();
+    if (course == nullptr) return;
+    for (Semester* sem : semesters){
+        StudentCourseInstance* sciTemp = sem->isRegistered(course, stud);
+        if (sciTemp != nullptr && sciTemp->grade == -1){
+            sci = sciTemp;
+        }
+    }
+    if (sci != nullptr){
+        sem->gradeStud(sci);
+        stud->addCourseWithGrade(course, sci->grade);
+        return;
+    }
+    if (sem == nullptr){
+        cout << "Student not registered to that course or is already graded\n";
+        return;
     }
 
     
+}
+
+void Secretary::printStudentsWhoPassed(){
+    Semester* sem = readAndValidateSemester();
+    Course* course = readAndValidateCourse();
+    if (course == nullptr) return;
+    sem->printPassed(course);
 }
 
 void Secretary::printMenu(){
@@ -422,10 +449,10 @@ void Secretary::printMenu(){
     cout << "1. PROFESSOR OPTIONS\n";
     cout << "2. STUDENT OPTIONS\n";
     cout << "3. COURSE OPTIONS\n";
-    cout << "4. LOG SEMESTER\n";
-    cout << "5. REGISTER COURSE TO SEMESTER\n";
-    cout << "6. REGISTER STUDENT TO COURSE\n";
-    cout << "7. SET COURSE PROFESSOR\n";
+    cout << "4. REGISTER STUDENT TO COURSE\n";
+    cout << "5. SET PROFESSOR TO COURSE\n";
+    cout << "6. GRADE STUDENTS\n";
+    cout << "7. PRINT STUDENTS WHO PASSED A COURSE\n";
     // cout << "4. SET COURSE PROFESSOR\n";
     // cout << "5. REGISTER TO COURSE(STUDENT ONLY)\n";
     // cout << "6. STUDENTS WHO PASSED A COURSE\n";
@@ -502,17 +529,16 @@ void Secretary::SecretaryOperation(){
 
         }
         else if(op == 4){
-            createSemester();
-            //printRegistrationMenu();
-        }
-        else if (op == 5){
-            courseRegistration();
-        }
-        else if (op == 6){
             registerStudentToCourse();
         }
-        else if (op == 7){
+        else if (op == 5){
             setCourseProf();
+        }
+        else if (op == 6){
+            gradeStudents();
+        }
+        else if (op == 7){
+            printStudentsWhoPassed();
         }
         // else if (op == 4){
         //     cout << "Enter the course name: \n";
@@ -639,17 +665,6 @@ void Secretary::printGraduates(){
     }
 }
 
-
-void Secretary::courseRegistration(){
-    Semester* sem = readAndValidateSemester();
-    Course* course = readAndValidateCourse();
-    if(sem == nullptr || course == nullptr){
-        return;
-    }
-    sem->addCourse(course);
-    cout << "COURSE REGISTERED SUCCESSFULLY\n";
-}
-
 Student* Secretary::readAndValidateStudent(){
     cout << "Enter Student id: ";
     string id;
@@ -690,26 +705,14 @@ Course* Secretary::readAndValidateCourse(){
 }
 
 Semester* Secretary::readAndValidateSemester(){
-    cout << "Enter year of Semester: ";
-    int year;
-    cin >> year;
-    cout << "Enter W for winter semester, S for summer: ";
-    char sem;
-    bool winter;
+    Semester sem;
     cin >> sem;
-    if(sem == 'W' || sem == 'w'){
-        winter = true;
-    }
-    else{
-        winter = false;
-    }
     for(auto semptr : semesters){
-        if(semptr->getYear() == year && semptr->getSeason() == winter){
+        if(semptr->getYear() == sem.getYear() && semptr->getSeason() == sem.getSeason()){
             return semptr;
         }
     }
-    cout << "SEMESTER HAS NOT BEEN LOGGED\n";
-    return nullptr;
+    return addSemester(sem);
 }
 
 void Secretary::readStudentsFromFile(){
@@ -765,6 +768,7 @@ void Secretary::readCourseFromFile(){
     }
 }
 
+
 void Secretary::printStudentToFile(Student& student){
     jStudents.push_back(student);
     ofstream f("studentinfo.json");
@@ -794,6 +798,18 @@ void Secretary::printCourseToFile(Course& course){
     ofstream f("courseinfo.json");
     if(f.is_open()){
         f << jCourses.dump(4);
+        f.close();
+    }
+    else{
+        cerr << "Could not open file for writing\n";
+    }
+}
+
+void Secretary::printSemesterToFile(Semester& sem){
+    jSemesters.push_back(sem);
+    ofstream f("semesterinfo.json");
+    if(f.is_open()){
+        f << jSemesters.dump(4);
         f.close();
     }
     else{

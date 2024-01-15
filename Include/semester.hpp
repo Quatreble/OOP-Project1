@@ -8,13 +8,22 @@ class Semester{
 private:
     int year;
     bool winterOrSummer;
-    unordered_map<Course*,int> courses;
     unordered_map<Course* , vector<Professor* > > courseProfs;
-    unordered_map<Course* , vector<StudentCourseInstance* > > courseStuds;
+    unordered_map<Course*, vector<StudentCourseInstance*> > courseStuds;
 public:
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Semester,
+                                   year,
+                                   winterOrSummer)
+
     Semester(int y, bool season)
     :year(y), winterOrSummer(season)
     {}
+
+    Semester(){}
+
+    Semester(const Semester& other)
+    : year(other.year), winterOrSummer(other.winterOrSummer) {}
 
     void printSem(){
         cout << "Year: " << year << endl << "Semester: " << (winterOrSummer?"winter":"summer") << endl;
@@ -24,17 +33,6 @@ public:
         return year;
     }
 
-    int getCourseYear(Course& course){
-        for (auto& element : courses){
-            if (*(element.first) == course){
-                return element.second;
-            }
-        }
-        return -1;
-    }
-
-    bool courseBelongs(Course& course);
-
     void addProfToCourse(Course* c, Professor* p);
 
     void addStudToCourse(Course* c, Student* s);
@@ -43,6 +41,12 @@ public:
         return winterOrSummer;
     }
 
-    void addCourse(Course* toAdd);
+    friend istream& operator>>(istream& is, Semester& semester);
+
+    StudentCourseInstance* isRegistered(Course* course, Student* stud);
+
+    bool gradeStud(StudentCourseInstance* sci);
+    
+    void printPassed(Course* course);
 
 };

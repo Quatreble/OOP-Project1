@@ -3,12 +3,14 @@
         "academicPoints": 5,
         "code": "123",
         "isMandatory": true,
-        "name": "Math"
+        "name": "Math",
+        "year": 1
     },
     {
         "academicPoints": 7,
         "code": "543",
         "isMandatory": true,
-        "name": "OOP"
+        "name": "OOP",
+        "year": 2
     }
 ]

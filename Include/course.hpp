@@ -21,6 +21,7 @@ private:
     bool isMandatory;
     string code;
     int registered;
+    int year;
    // vector<Student> studentsWhoPassed;
 
 public:
@@ -29,7 +30,8 @@ public:
                                    name,
                                    isMandatory,
                                    academicPoints,
-                                   code)
+                                   code,
+                                   year)
 
     Course();
 
@@ -48,9 +50,8 @@ public:
     string getName() const;
     int getAcademicPoints() const;
     bool getMand() const;
-    string getCode(){
-        return code;
-    }
+    string getCode(){ return code;  }
+    int getYear(){  return year; }
 
     void addStudentsWhoPassed(Student& stud);
     void printStudentsWhoPassed();

@@ -123,23 +123,23 @@ void Student::incrAcademicPoints(int p){
     currentPoints += p;
 }
 
-void Student::studAddCourse(Course& course){
-    // if (course.getSemester() > currentSemester){
-    //     cout << "Student can't register. Lesson is at bigger semester\n";
-    //     return;
-    // }
-    for (auto& element : coursesWithGrades){
-        const Course& vecCourse = element.first;
-        if (course == vecCourse){
-            cout << "Student already registered\n";
-            return;
-        }
-    }
-    course.incrRegistered();
-    coursesWithGrades.push_back(make_pair(course,-1));
+// void Student::studAddCourse(Course& course){
+//     // if (course.getSemester() > currentSemester){
+//     //     cout << "Student can't register. Lesson is at bigger semester\n";
+//     //     return;
+//     // }
+//     for (auto& element : coursesWithGrades){
+//         const Course& vecCourse = element.first;
+//         if (course == vecCourse){
+//             cout << "Student already registered\n";
+//             return;
+//         }
+//     }
+//     course.incrRegistered();
+//     coursesWithGrades.push_back(make_pair(course,-1));
 
-    cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
-}
+//     cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
+// }
 
 // void Student::studentChangeGrade(Course& course){
 //     for (auto& element : coursesWithGrades){
@@ -181,7 +181,7 @@ void Student::studAddCourse(Course& course){
 void Student::printGrades(bool semesterOnly){
     bool found = false;
     for (auto& element : coursesWithGrades){
-        const Course& course = element.first;
+        const Course& course = *element.first;
         int grade = element.second;
         if (grade != -1 && !semesterOnly){
             cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
@@ -199,8 +199,21 @@ void Student::printGrades(bool semesterOnly){
 
 void Student::printGradesToto(){
     for (auto& element : coursesWithGrades){
-        cout << "THE GRADE FOR COURSE " << element.first.getName()<< " IS " << element.second << endl;
+        cout << "THE GRADE FOR COURSE " << element.first->getName()<< " IS " << element.second << endl;
     }
+}
+
+void Student::addCourseWithGrade(Course* course, int grade){
+    coursesWithGrades[course] = grade;
+}
+
+int Student::getCourseGrade(Course* course){
+    for (auto& element : coursesWithGrades){
+        if (element.first->getCode() == course->getCode()){
+            return element.second;
+        }
+    }
+    return -1;
 }
 
 

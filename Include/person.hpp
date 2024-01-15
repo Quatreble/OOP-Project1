@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <unordered_map>
 #include "json.hpp"
 
 #include "course.hpp"
@@ -54,7 +55,7 @@ private:
     int registrationYear;
     int currentPoints = 0;
     int mandatoryPassed = 0;
-    vector<pair<Course, int>> coursesWithGrades;
+    unordered_map<Course*, int> coursesWithGrades;
 
 public:
 
@@ -96,11 +97,15 @@ public:
 
     void printGrades(bool semesterOnly = false);
     void printGradesToto();
+
+    void addCourseWithGrade(Course* course, int grade);
+
+    int getCourseGrade(Course* course);
 };
 
 struct StudentCourseInstance{
     Student* stud;
-    int grade;
+    int grade = -1;
 };
 
 class Professor : public Person {
@@ -128,4 +133,5 @@ public:
     bool teachesCourse(Course& course);
 
     void printStats(int sem);
+
 };

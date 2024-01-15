@@ -107,6 +107,10 @@ istream& operator>>(istream& is, Course& course) {
     is >> course.academicPoints;
     is.ignore(numeric_limits<streamsize>::max(), '\n');  
 
+    cout << "Enter course year: ";
+    is >> course.year;
+    is.ignore(numeric_limits<streamsize>::max(), '\n');  
+
     string choice;
     do {
         cout << "Is the course mandatory? (y/n): ";
