@@ -400,7 +400,7 @@ void Secretary::registerStudentToCourse(){
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
     if (course == nullptr) return;
-    if((sem->getYear() - stud->getReg()) < course->getYear()){
+    if((sem->getYear() - stud->getReg()) < course->getYear() || sem->isRegistered(course, stud) != nullptr){
         cout << "STUDENT CAN'T REGISTER TO THIS COURSE\n";
         return;
     }
