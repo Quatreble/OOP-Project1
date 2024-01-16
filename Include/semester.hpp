@@ -49,4 +49,6 @@ public:
     
     void printPassed(Course* course);
 
+    void printProfStats(Professor* prof);
+
 };

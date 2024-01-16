@@ -444,6 +444,13 @@ void Secretary::printStudentsWhoPassed(){
     sem->printPassed(course);
 }
 
+void Secretary::printProfStats(){
+    Professor* prof = readAndValidateProfessor();
+    if (prof == nullptr) return;
+    Semester* sem = readAndValidateSemester();
+    sem->printProfStats(prof);
+}
+
 void Secretary::printMenu(){
     cout << "\tECLASS\n";
     cout << "1. PROFESSOR OPTIONS\n";
@@ -453,6 +460,7 @@ void Secretary::printMenu(){
     cout << "5. SET PROFESSOR TO COURSE\n";
     cout << "6. GRADE STUDENTS\n";
     cout << "7. PRINT STUDENTS WHO PASSED A COURSE\n";
+    cout << "8. PRINT PROFESSOR COURSES STATS\n";
     // cout << "4. SET COURSE PROFESSOR\n";
     // cout << "5. REGISTER TO COURSE(STUDENT ONLY)\n";
     // cout << "6. STUDENTS WHO PASSED A COURSE\n";
@@ -539,6 +547,9 @@ void Secretary::SecretaryOperation(){
         }
         else if (op == 7){
             printStudentsWhoPassed();
+        }
+        else if (op == 8){
+            printProfStats();
         }
         // else if (op == 4){
         //     cout << "Enter the course name: \n";

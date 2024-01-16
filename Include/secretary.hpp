@@ -87,6 +87,7 @@ public:
     void registerStudentToCourse();
     void gradeStudents();
     void printStudentsWhoPassed();
+    void printProfStats();
 
     void printMenu();
     void SecretaryOperation();
