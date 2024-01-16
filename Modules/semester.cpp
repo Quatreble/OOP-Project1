@@ -61,67 +61,62 @@ bool Semester::gradeStud(StudentCourseInstance* sci){
     }
 }
 
-void Semester::printPassed(Course* course){
-    for (auto& element : courseStuds){
-        if (element.first->getCode() == course->getCode()){
-            string fileName = course->getName() + "-" + to_string(year);
-            ifstream fin(fileName + ".json");
-            if (fin.is_open()){
-                json j;
-                json temp;
-                auto it = passedJson.emplace(course,j);
-                if (it.second == true){
-                    temp = json::parse(fin);
-                    for (auto& item : temp){
-                        StudentCourseInstance sciTemp;
-                        item.get_to(sciTemp);
-                        StudentCourseInstance* sciPtr = new StudentCourseInstance(sciTemp);
-                        bool exists = false;
-                        for (StudentCourseInstance* t : courseStuds[course]){
-                            if (t->stud->getIdCode() == sciPtr->stud->getIdCode()){
-                                exists = true;
-                                break;
-                            }
-                        }
-                        if (!exists){
-                            courseStuds[course].push_back(sciPtr);
-                        }
-                    }  
-                }
-                fin.close();
-                cout << "Course: " << course->getName() << '\n';
-                cout << "Students passed: \n";
-                for (StudentCourseInstance* sci : element.second){
-                    if (sci->grade >= 5){
-                        cout << sci->stud->getFirstName() << " " << sci->stud->getLastName() << " " << sci->stud->getIdCode() << '\n';
-                        passedJson[course].push_back(sci->to_json());
-                    }
-                }
-                ofstream file (fileName + ".json");
-                file << passedJson[course].dump(4);
-                file.close();
+void Semester::printPassed(Course* course) {
+    string fileName = course->getName() + "-" + to_string(year) + ".json";
+    ifstream fin(fileName);
 
-            }
-            else{
-                cout << "Creating file..\n";
-                json j;
-                passedJson.emplace(course,j);
-            }
-            cout << "Course: " << course->getName() << '\n';
-            cout << "Students passed: \n";
-            for (StudentCourseInstance* sci : element.second){
-                if (sci->grade >= 5){
-                    cout << sci->stud->getFirstName() << " " << sci->stud->getLastName() << " " << sci->stud->getIdCode() << '\n';
-                    passedJson[course].push_back(sci->to_json());
+    // Temporary JSON object to store file content if it exists
+    json temp;
+
+    if (fin.is_open()) {
+        // File exists, parse its content
+        temp = json::parse(fin);
+        fin.close();  // Close the file after reading
+
+        // Process the file content
+        for (auto& item : temp) {
+            StudentCourseInstance sciTemp;
+            item.get_to(sciTemp);
+            StudentCourseInstance* sciPtr = new StudentCourseInstance(sciTemp);
+            bool exists = false;
+            for (StudentCourseInstance* t : courseStuds[course]) {
+                if (t->stud->getIdCode() == sciPtr->stud->getIdCode()) {
+                    exists = true;
+                    break;
                 }
             }
-            ofstream file (fileName + ".json");
-            file << passedJson[course].dump(4);
-            file.close();
-        
+            if (!exists) {
+                courseStuds[course].push_back(sciPtr);
+                sciPtr->stud->addCourseWithGrade(course,sciPtr->grade);
+            }
+        }
+    } else {
+        cout << "File does not exist. Creating new file.\n";
+    }
+
+    // Process course information regardless of whether the file existed
+    auto it = passedJson.emplace(course, json{});
+    if (it.second == true) {
+        cout << "Course: " << course->getName() << '\n';
+        cout << "Students passed: \n";
+        for (StudentCourseInstance* sci : courseStuds[course]) {
+            if (sci->grade >= 5) {
+                cout << sci->stud->getFirstName() << " " << sci->stud->getLastName() << " " << sci->stud->getIdCode() << '\n';
+                passedJson[course].push_back(sci->to_json());
+            }
         }
     }
+
+    // Write updated information to the file
+    ofstream file(fileName);
+    if (file.is_open()) {
+        file << passedJson[course].dump(4);
+        file.close();
+    } else {
+        cout << "Failed to open file for writing.\n";
+    }
 }
+
 
 
 void Semester::printProfStats(Professor* prof){
