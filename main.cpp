@@ -99,7 +99,6 @@ int main(){
     //     j.at("registrationYear").get_to(s.registrationYear);
     // }
     Secretary mySec("Department of Informatics and Telecomunications", 8, 58);
-    cout << mySec;
 
 
 }

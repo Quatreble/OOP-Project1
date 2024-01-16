@@ -107,10 +107,6 @@ istream& operator>>(istream& is, Course& course) {
     is >> course.academicPoints;
     is.ignore(numeric_limits<streamsize>::max(), '\n');  
 
-    cout << "Enter course year: ";
-    is >> course.year;
-    is.ignore(numeric_limits<streamsize>::max(), '\n');  
-
     string choice;
     do {
         cout << "Is the course mandatory? (y/n): ";
@@ -128,12 +124,40 @@ istream& operator>>(istream& is, Course& course) {
         }
     } while (true);
 
+    cout << "Enter course year: ";
+    is >> course.year;
+    is.ignore(numeric_limits<streamsize>::max(), '\n');  
+
+    cout << "Enter 'w' for winter semester and 's' for summer semester: ";
+
+    while (true) {
+        is >> course.season;
+
+        // Check if the input is one of the allowed characters
+        if (course.season == "w" || course.season == "W" || course.season == "s" || course.season == "S") {
+            break;
+        } else {
+            cout << "Invalid input. Please enter 'w' or 's': ";
+            // Clear the error state and ignore the rest of the input line
+            is.clear();
+            is.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+    }
+
     return is;
 }
 
 bool Course::operator==(const Course& other) const {
     return name == other.name && academicPoints == other.academicPoints && code == other.code  && isMandatory == other.isMandatory && registered == other.registered;
 }
+
+bool Course::getSeason(){
+    return season == "w";
+}
+
+void Course::setYear(int newYear){ year = newYear; }
+
+void Course::setSemester(string newSeason){ season = newSeason; }
 
 
 

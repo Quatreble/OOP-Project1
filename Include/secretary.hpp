@@ -43,10 +43,15 @@ public:
     ~Secretary();
     Secretary(const Secretary& sec);
 
+    void printMenu();
+    void SecretaryOperation();
+
     void addPerson(Person& p, bool printStatement = true, bool manualAdd = true);
     void addProfessor();
     void addStudent();
     void addCourse(Course& course,bool manualAdd = true);
+
+    Semester* getCurrSem();
     
     void modifyProfessor();
     void modifyStudent();
@@ -88,9 +93,8 @@ public:
     void gradeStudents();
     void printStudentsWhoPassed();
     void printProfStats();
-
-    void printMenu();
-    void SecretaryOperation();
+    void getGrades();
+    void getGradesCurr();
 
     void printGraduates();
 

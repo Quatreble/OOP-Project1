@@ -76,7 +76,6 @@ public:
     //for now we just check equality of the super-class Person
     virtual bool equals(Student* s);
 
-    void setSemester(int sem, bool next = false);
     void setReg(int regYear){
         registrationYear = regYear;
     }
@@ -95,18 +94,30 @@ public:
     void studAddCourse(Course& course);
     void studentChangeGrade(Course& course);
 
-    void printGrades(bool semesterOnly = false);
-    void printGradesToto();
+    void printGrades();
 
     void addCourseWithGrade(Course* course, int grade);
 
     int getCourseGrade(Course* course);
+
 };
 
-struct StudentCourseInstance{
+struct StudentCourseInstance {
     Student* stud;
     int grade = -1;
+
+    nlohmann::json to_json() const {
+        return nlohmann::json{
+            {"student", stud ? *stud : Student{}},
+            {"grade", grade}
+        };
+    }
+
+    // Declare from_json as a friend function
+    friend void from_json(const nlohmann::json& j, StudentCourseInstance& sci);
 };
+
+
 
 class Professor : public Person {
 private:

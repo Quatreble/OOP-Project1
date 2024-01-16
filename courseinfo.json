@@ -4,6 +4,7 @@
         "code": "123",
         "isMandatory": true,
         "name": "Math",
+        "season": "w",
         "year": 1
     },
     {
@@ -11,6 +12,15 @@
         "code": "543",
         "isMandatory": true,
         "name": "OOP",
+        "season": "s",
         "year": 2
+    },
+    {
+        "academicPoints": 5,
+        "code": "111",
+        "isMandatory": true,
+        "name": "Physics",
+        "season": "w",
+        "year": 1
     }
 ]

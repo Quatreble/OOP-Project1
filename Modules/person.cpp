@@ -103,14 +103,6 @@ bool Student::equals(Student* s) {
     return Person::equals(s);
 }
 
-void Student::setSemester(int sem, bool next){
-    if (next){
-        currentSemester++;
-        return;
-    }
-     currentSemester = sem;
-}
-
 int Student::getSemesterCount() {
     return currentSemester;
 }
@@ -178,28 +170,9 @@ void Student::incrAcademicPoints(int p){
 
 // }
 
-void Student::printGrades(bool semesterOnly){
-    bool found = false;
+void Student::printGrades(){
     for (auto& element : coursesWithGrades){
-        const Course& course = *element.first;
-        int grade = element.second;
-        if (grade != -1 && !semesterOnly){
-            cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
-            found = true;
-        }
-        else if (grade != -1){
-            cout << "COURSE: " << course.getName() << "   GRADE: " << grade << '\n';
-            found = true;
-        }
-    }
-    if (found == false){
-        cout << "No Grades Found\n";
-    }
-}
-
-void Student::printGradesToto(){
-    for (auto& element : coursesWithGrades){
-        cout << "THE GRADE FOR COURSE " << element.first->getName()<< " IS " << element.second << endl;
+        cout << "Course: " << element.first->getName()<< ", Grade: " << element.second << '\n';
     }
 }
 
@@ -217,7 +190,12 @@ int Student::getCourseGrade(Course* course){
 }
 
 
-
+void from_json(const nlohmann::json& j, StudentCourseInstance& sci) {
+    Student temp_student;
+    j.at("student").get_to(temp_student);
+    sci.stud = new Student(temp_student);
+    j.at("grade").get_to(sci.grade);
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////Professor class functions/////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

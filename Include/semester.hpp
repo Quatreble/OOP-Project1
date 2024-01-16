@@ -1,6 +1,7 @@
 #include<iostream>
 #include <vector>
 #include <unordered_map>
+#include <string>
 
 #include "course.hpp"
 
@@ -10,6 +11,8 @@ private:
     bool winterOrSummer;
     unordered_map<Course* , vector<Professor* > > courseProfs;
     unordered_map<Course*, vector<StudentCourseInstance*> > courseStuds;
+    unordered_map <Course*, json> passedJson;
+
 public:
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(Semester,
@@ -50,5 +53,8 @@ public:
     void printPassed(Course* course);
 
     void printProfStats(Professor* prof);
+
+    void printStudStats(Student* stud);
+
 
 };

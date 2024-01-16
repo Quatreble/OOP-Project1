@@ -22,6 +22,7 @@ private:
     string code;
     int registered;
     int year;
+    string season;
    // vector<Student> studentsWhoPassed;
 
 public:
@@ -31,7 +32,8 @@ public:
                                    isMandatory,
                                    academicPoints,
                                    code,
-                                   year)
+                                   year,
+                                   season)
 
     Course();
 
@@ -63,5 +65,11 @@ public:
     friend istream& operator>>(istream& is, Course& course);
 
     bool operator==(const Course& other) const;
+
+    bool getSeason();
+
+    void setYear(int newYear);
+
+    void setSemester(string newSeason);
 };
 

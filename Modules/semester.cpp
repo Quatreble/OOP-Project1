@@ -64,16 +64,65 @@ bool Semester::gradeStud(StudentCourseInstance* sci){
 void Semester::printPassed(Course* course){
     for (auto& element : courseStuds){
         if (element.first->getCode() == course->getCode()){
+            string fileName = course->getName() + "-" + to_string(year);
+            ifstream fin(fileName + ".json");
+            if (fin.is_open()){
+                json j;
+                json temp;
+                auto it = passedJson.emplace(course,j);
+                if (it.second == true){
+                    temp = json::parse(fin);
+                    for (auto& item : temp){
+                        StudentCourseInstance sciTemp;
+                        item.get_to(sciTemp);
+                        StudentCourseInstance* sciPtr = new StudentCourseInstance(sciTemp);
+                        bool exists = false;
+                        for (StudentCourseInstance* t : courseStuds[course]){
+                            if (t->stud->getIdCode() == sciPtr->stud->getIdCode()){
+                                exists = true;
+                                break;
+                            }
+                        }
+                        if (!exists){
+                            courseStuds[course].push_back(sciPtr);
+                        }
+                    }  
+                }
+                fin.close();
+                cout << "Course: " << course->getName() << '\n';
+                cout << "Students passed: \n";
+                for (StudentCourseInstance* sci : element.second){
+                    if (sci->grade >= 5){
+                        cout << sci->stud->getFirstName() << " " << sci->stud->getLastName() << " " << sci->stud->getIdCode() << '\n';
+                        passedJson[course].push_back(sci->to_json());
+                    }
+                }
+                ofstream file (fileName + ".json");
+                file << passedJson[course].dump(4);
+                file.close();
+
+            }
+            else{
+                cout << "Creating file..\n";
+                json j;
+                passedJson.emplace(course,j);
+            }
             cout << "Course: " << course->getName() << '\n';
             cout << "Students passed: \n";
             for (StudentCourseInstance* sci : element.second){
                 if (sci->grade >= 5){
                     cout << sci->stud->getFirstName() << " " << sci->stud->getLastName() << " " << sci->stud->getIdCode() << '\n';
+                    passedJson[course].push_back(sci->to_json());
                 }
             }
+            ofstream file (fileName + ".json");
+            file << passedJson[course].dump(4);
+            file.close();
+        
         }
     }
 }
+
 
 void Semester::printProfStats(Professor* prof){
     int count;
@@ -85,11 +134,28 @@ void Semester::printProfStats(Professor* prof){
                 cout << "Students registered to course: "<< courseStuds[element.first].size() << '\n';
                 count = 0;
                 for (auto& sci : courseStuds[element.first]){
-                    if (sci->grade != -1){
+                    if (sci->grade >= 5){
                         ++count;
                     }
                 }
-                cout << "Students graded: " << count << "\n";
+                cout << "Students passed: " << count << "\n";
+                if (!courseStuds[element.first].empty())
+                    cout << "Percentage of students who passed: " << static_cast<float>(count)/courseStuds[element.first].size()*100 << "%\n";
+            }
+        }
+    }
+}
+
+void Semester::printStudStats(Student* stud){
+    for (auto& element : courseStuds){
+        for (StudentCourseInstance*  sci : element.second){
+            if (sci->stud == stud){
+                if (sci->grade == -1){
+                    cout << "Course: " << element.first->getName() << " has not been graded yet\n";
+                }
+                else{
+                    cout << "Course: " << element.first->getName() << ", Grade: " <<  sci->grade << '\n';
+                }
             }
         }
     }
