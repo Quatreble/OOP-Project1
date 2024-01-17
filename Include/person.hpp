@@ -117,6 +117,10 @@ struct StudentCourseInstance {
     friend void from_json(const nlohmann::json& j, StudentCourseInstance& sci);
 };
 
+struct CourseSemesterInstance {
+    C
+}
+
 
 
 class Professor : public Person {

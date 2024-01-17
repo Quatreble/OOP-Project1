@@ -46,7 +46,8 @@ public:
     void printMenu();
     void SecretaryOperation();
 
-    void addPerson(Person& p, bool printStatement = true, bool manualAdd = true);
+    void addPerson(Student& s, bool printStatement = true, bool manualAdd = true);
+    void addPerson(Professor& p, bool printStatement = true, bool manualAdd = true);
     void addProfessor();
     void addStudent();
     void addCourse(Course& course,bool manualAdd = true);
@@ -65,7 +66,8 @@ public:
     void deleteStudent();
     void deleteCourse();
 
-    Person* findPerson(const string& id);
+    Student* findStudent(const string& id);
+    Professor* findProfessor(const string& id);
     Course* findCourse(string code);
 
     void printSecSize();
@@ -78,7 +80,8 @@ public:
     static Student* isStudent(Person *p);
     static Professor* isProfessor(Person *p);
 
-    Secretary& operator+(Person& p);
+    Secretary& operator+(Student& p);
+    Secretary& operator+(Professor& p);
     Secretary& operator+=(const Secretary& sec);
     Secretary& operator=(const Secretary& sec);
 
