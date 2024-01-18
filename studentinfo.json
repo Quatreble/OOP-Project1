@@ -9,12 +9,14 @@
             "OOP": {
                 "grade": 9,
                 "isWinter": false,
-                "year": 2024
+                "year": 2023
             }
         },
+        "currentPoints": 12,
         "firstName": "Ioannis",
         "idCode": "sdi2200181",
         "lastName": "Tampouris",
+        "mandatoryPassed": 2,
         "registrationYear": 2022
     },
     {
@@ -29,16 +31,23 @@
                 "isWinter": true,
                 "year": 2023
             },
+            "OOP": {
+                "grade": 8,
+                "isWinter": false,
+                "year": 2024
+            },
             "Physics": {
                 "grade": 10,
                 "isWinter": true,
                 "year": 2023
             }
         },
+        "currentPoints": 25,
         "firstName": "Elpida",
         "idCode": "sdi2200173",
         "lastName": "Stergiou",
-        "registrationYear": 2022
+        "mandatoryPassed": 3,
+        "registrationYear": 2010
     },
     {
         "coursesWithGrades": {
@@ -48,9 +57,11 @@
                 "year": 2023
             }
         },
+        "currentPoints": 5,
         "firstName": "Xryssa",
         "idCode": "sdi111",
         "lastName": "Vouzika",
+        "mandatoryPassed": 0,
         "registrationYear": 2018
     },
     {
@@ -61,23 +72,35 @@
                 "year": 2023
             }
         },
+        "currentPoints": 8,
         "firstName": "Vassilis",
         "idCode": "sdi18006969",
         "lastName": "Perpiniadis",
+        "mandatoryPassed": 0,
         "registrationYear": 2019
     },
     {
         "coursesWithGrades": null,
+        "currentPoints": 0,
         "firstName": "Konstantinos",
         "idCode": "sdi0900333",
         "lastName": "Sotiriadis",
+        "mandatoryPassed": 0,
         "registrationYear": 2021
     },
     {
-        "coursesWithGrades": null,
+        "coursesWithGrades": {
+            "Arxitektonikh": {
+                "grade": 7,
+                "isWinter": false,
+                "year": 2023
+            }
+        },
+        "currentPoints": 8,
         "firstName": "Arsenis",
         "idCode": "sdi00000",
         "lastName": "Tade",
+        "mandatoryPassed": 1,
         "registrationYear": 2023
     }
 ]

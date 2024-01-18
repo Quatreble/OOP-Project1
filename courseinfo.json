@@ -26,7 +26,7 @@
     {
         "academicPoints": 6,
         "code": "2323",
-        "isMandatory": true,
+        "isMandatory": false,
         "name": "Linear",
         "season": "w",
         "year": 1
@@ -34,7 +34,7 @@
     {
         "academicPoints": 5,
         "code": "567",
-        "isMandatory": true,
+        "isMandatory": false,
         "name": "AI",
         "season": "w",
         "year": 3
@@ -42,7 +42,7 @@
     {
         "academicPoints": 8,
         "code": "999",
-        "isMandatory": true,
+        "isMandatory": false,
         "name": "Arxitektonikh",
         "season": "s",
         "year": 1

@@ -188,6 +188,7 @@ void Student::addCourseWithGrade(Course* course, SemesterGradeInstance* semGrade
     coursesWithGrades[course->getName()] = semGrade;
     if (semGrade->grade >= 5){
         mandatoryPassed++;
+        currentPoints+= course->getAcademicPoints();
     }
 }
 
@@ -206,6 +207,8 @@ void from_json(const json& j, Student& student) {
     j.at("lastName").get_to(student.lastName);
     j.at("idCode").get_to(student.idCode);
     j.at("registrationYear").get_to(student.registrationYear);
+    j.at("mandatoryPassed").get_to(student.mandatoryPassed);
+    j.at("currentPoints").get_to(student.currentPoints);
     // Add other fields as necessary
 
     // Deserialize coursesWithGrades
@@ -217,7 +220,8 @@ void from_json(const json& j, Student& student) {
             from_json(item.value(), *gradeInstance);
 
             // Assign the new gradeInstance to the student's coursesWithGrades map
-            student.coursesWithGrades[courseName] = gradeInstance;
+             student.coursesWithGrades[courseName] = gradeInstance;
+
         }
     }
 }

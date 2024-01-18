@@ -108,7 +108,9 @@ public:
             {"firstName", student.firstName},
             {"lastName", student.lastName},
             {"idCode", student.idCode},
-            {"registrationYear", student.registrationYear}
+            {"registrationYear", student.registrationYear},
+            {"mandatoryPassed", student.mandatoryPassed},
+            {"currentPoints", student.currentPoints}
             // Add other fields as necessary
         };
 

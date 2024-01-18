@@ -523,7 +523,7 @@ void Secretary::registerStudentToCourse(){
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
     if (course == nullptr) return;
-    if(sem->getSeason() != course->getSeason() || CURR_SEM.first > sem->getYear() || sem->getYear() - stud->getReg() < course->getYear() || sem->isRegistered(course, stud) != nullptr){
+    if(sem->getSeason() != course->getSeason() || CURR_SEM.first > sem->getYear() || sem->getYear() - stud->getReg() < course->getYear() - 1 || sem->isRegistered(course, stud) != nullptr){
         cout << "STUDENT CAN'T REGISTER TO THIS COURSE\n";
         return;
     }
@@ -718,9 +718,6 @@ void Secretary::readCourseFromFile(){
         for(auto& item: jCourses){
             item.get_to(course);
             addCourse(course, false);
-            if (course.getMand()){
-                numOfMandatory++;
-            }
         }
         f.close();
     }
