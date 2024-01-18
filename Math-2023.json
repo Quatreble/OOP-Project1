@@ -1,0 +1,11 @@
+[
+    {
+        "grade": 7,
+        "student": {
+            "firstName": "Ioannis",
+            "idCode": "sdi2200181",
+            "lastName": "Tampouris",
+            "registrationYear": 2022
+        }
+    }
+]

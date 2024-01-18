@@ -1,32 +1,33 @@
 [
     {
-        "firstName": "Elpida",
-        "idCode": "sdi2200173",
-        "lastName": "Stergiou",
-        "registrationYear": 2021
-    },
-    {
+        "coursesWithGrades": {
+            "Math": {
+                "grade": 7,
+                "isWinter": true,
+                "year": 2023
+            },
+            "OOP": {
+                "grade": 9,
+                "isWinter": false,
+                "year": 2024
+            }
+        },
         "firstName": "Ioannis",
         "idCode": "sdi2200181",
         "lastName": "Tampouris",
-        "registrationYear": 2021
+        "registrationYear": 2022
     },
     {
-        "firstName": "Vassilis",
-        "idCode": "sdi18006969",
-        "lastName": "Perpiniadis",
-        "registrationYear": 2018
-    },
-    {
-        "firstName": "Xryssa",
-        "idCode": "sdi1800134",
-        "lastName": "Vouzika",
-        "registrationYear": 2016
-    },
-    {
-        "firstName": "Konstantinos",
-        "idCode": "sdi0900333",
-        "lastName": "Sotiriadis",
-        "registrationYear": 2009
+        "coursesWithGrades": {
+            "Physics": {
+                "grade": 10,
+                "isWinter": true,
+                "year": 2023
+            }
+        },
+        "firstName": "Elpida",
+        "idCode": "sdi2200173",
+        "lastName": "Stergiou",
+        "registrationYear": 2022
     }
 ]

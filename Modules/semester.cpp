@@ -12,13 +12,15 @@ void Semester::addProfToCourse(Course* c, Professor* p){
     cout << p->getFirstName() << " " << p->getLastName() << " " << "is now professor of " << c->getName() << '\n';
 }
 
-void Semester::addStudToCourse(Course* c, Student* s){
+void Semester::addStudToCourse(Course* c, Student* s, bool print){
     courseStuds.emplace(c,vector<StudentCourseInstance*>());
     StudentCourseInstance* sci = new StudentCourseInstance;
     sci->stud = s;
     sci->grade = -1;
     courseStuds[c].push_back(sci);
-    cout << s->getFirstName() << " " << s->getLastName() << " is now registered to " << c->getName() << '\n';
+    if (print){
+        cout << s->getFirstName() << " " << s->getLastName() << " is now registered to " << c->getName() << '\n';
+    }
 }
 
 istream& operator>>(istream& is, Semester& semester) {
@@ -63,47 +65,12 @@ bool Semester::gradeStud(StudentCourseInstance* sci){
 
 void Semester::printPassed(Course* course) {
     string fileName = course->getName() + "-" + to_string(year) + ".json";
-    ifstream fin(fileName);
-
-    // Temporary JSON object to store file content if it exists
-    json temp;
-
-    if (fin.is_open()) {
-        // File exists, parse its content
-        temp = json::parse(fin);
-        fin.close();  // Close the file after reading
-
-        // Process the file content
-        for (auto& item : temp) {
-            StudentCourseInstance sciTemp;
-            item.get_to(sciTemp);
-            StudentCourseInstance* sciPtr = new StudentCourseInstance(sciTemp);
-            bool exists = false;
-            for (StudentCourseInstance* t : courseStuds[course]) {
-                if (t->stud->getIdCode() == sciPtr->stud->getIdCode()) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                courseStuds[course].push_back(sciPtr);
-                sciPtr->stud->addCourseWithGrade(course,sciPtr->grade);
-            }
-        }
-    } else {
-        cout << "File does not exist. Creating new file.\n";
-    }
-
-    // Process course information regardless of whether the file existed
-    auto it = passedJson.emplace(course, json{});
-    if (it.second == true) {
-        cout << "Course: " << course->getName() << '\n';
-        cout << "Students passed: \n";
-        for (StudentCourseInstance* sci : courseStuds[course]) {
-            if (sci->grade >= 5) {
-                cout << sci->stud->getFirstName() << " " << sci->stud->getLastName() << " " << sci->stud->getIdCode() << '\n';
-                passedJson[course].push_back(sci->to_json());
-            }
+    cout << "Course: " << course->getName() << '\n';
+    cout << "Students passed: \n";
+    for (StudentCourseInstance* sci : courseStuds[course]) {
+        if (sci->grade >= 5) {
+            cout << sci->stud->getFirstName() << " " << sci->stud->getLastName() << " " << sci->stud->getIdCode() << '\n';
+            passedJson[course].push_back(sci->to_json());
         }
     }
 
@@ -152,6 +119,28 @@ void Semester::printStudStats(Student* stud){
                     cout << "Course: " << element.first->getName() << ", Grade: " <<  sci->grade << '\n';
                 }
             }
+        }
+    }
+}
+
+
+void Semester::setYear(int yearIn){
+    year = yearIn;
+}
+
+void Semester::setSeason(bool season){
+    winterOrSummer = season;
+}
+
+void Semester::eraseCourse(string code){
+    for (auto& element : courseProfs){
+        if (element.first->getCode() == code){
+            courseProfs.erase(element.first);
+        }
+    }
+    for (auto& element : courseStuds){
+        if (element.first->getCode() == code){
+            courseProfs.erase(element.first);
         }
     }
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include<iostream>
 #include <vector>
 #include <unordered_map>
@@ -38,7 +40,7 @@ public:
 
     void addProfToCourse(Course* c, Professor* p);
 
-    void addStudToCourse(Course* c, Student* s);
+    void addStudToCourse(Course* c, Student* s, bool print = true);
 
     bool getSeason(){
         return winterOrSummer;
@@ -56,5 +58,9 @@ public:
 
     void printStudStats(Student* stud);
 
+    void setYear(int yearIn);
+    void setSeason(bool season);
+
+    void eraseCourse(string code);
 
 };

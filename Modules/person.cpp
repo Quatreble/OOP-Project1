@@ -172,29 +172,62 @@ void Student::incrAcademicPoints(int p){
 
 void Student::printGrades(){
     for (auto& element : coursesWithGrades){
-        cout << "Course: " << element.first->getName()<< ", Grade: " << element.second << '\n';
+        cout << "Course: " << element.first<< ", Grade: " << element.second->grade << '\n';
     }
 }
 
-void Student::addCourseWithGrade(Course* course, int grade){
-    coursesWithGrades[course] = grade;
+void Student::addCourseWithGrade(Course* course, SemesterGradeInstance* semGrade){
+    coursesWithGrades[course->getName()] = semGrade;
 }
 
 int Student::getCourseGrade(Course* course){
     for (auto& element : coursesWithGrades){
-        if (element.first->getCode() == course->getCode()){
-            return element.second;
+        if (element.first == course->getName()){
+            return element.second->grade;
         }
     }
     return -1;
 }
 
+void from_json(const json& j, Student& student) {
+    // Deserialize the basic student data
+    j.at("firstName").get_to(student.firstName);
+    j.at("lastName").get_to(student.lastName);
+    j.at("idCode").get_to(student.idCode);
+    j.at("registrationYear").get_to(student.registrationYear);
+    // Add other fields as necessary
+
+    // Deserialize coursesWithGrades
+    if (j.contains("coursesWithGrades")) {
+        const json& coursesJson = j.at("coursesWithGrades");
+        for (const auto& item : coursesJson.items()) {
+            std::string courseName = item.key();
+            SemesterGradeInstance* gradeInstance = new SemesterGradeInstance;
+            from_json(item.value(), *gradeInstance);
+
+            // Assign the new gradeInstance to the student's coursesWithGrades map
+            student.coursesWithGrades[courseName] = gradeInstance;
+        }
+    }
+}
 
 void from_json(const nlohmann::json& j, StudentCourseInstance& sci) {
     Student temp_student;
     j.at("student").get_to(temp_student);
     sci.stud = new Student(temp_student);
     j.at("grade").get_to(sci.grade);
+}
+
+unordered_map<string, SemesterGradeInstance*> Student::getCoursesWithGrades() { 
+    return coursesWithGrades; 
+}
+
+void Student::eraseCourse(string name){
+    for (auto& element : coursesWithGrades){
+        if (element.first == name){
+            coursesWithGrades.erase(name);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

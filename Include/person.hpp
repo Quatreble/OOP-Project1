@@ -9,9 +9,21 @@
 
 #include "course.hpp"
 class Course;
+class Semester;
 
 using json = nlohmann::json;
 using namespace std;
+
+
+struct SemesterGradeInstance {
+    int grade,year;
+    bool isWinter;
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(SemesterGradeInstance,
+                                grade,
+                                year,
+                                isWinter)
+
+};
 
 class Person {
 protected:
@@ -50,26 +62,19 @@ public:
 
 class Student : public Person {
 private:
-    //Semester* currentSemester;
     int currentSemester;
     int registrationYear;
     int currentPoints = 0;
     int mandatoryPassed = 0;
-    unordered_map<Course*, int> coursesWithGrades;
+    unordered_map<string, SemesterGradeInstance*> coursesWithGrades;
 
 public:
-
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Student,
-                                   firstName,
-                                   lastName,
-                                   idCode,
-                                   registrationYear)
-
     Student();
     Student(string fName, string lName, string id, int regYear);
     Student(const Person& p)
     : Person(p)
     {}
+
 
     virtual Student* clone() override;
 
@@ -81,13 +86,9 @@ public:
     }
 
     int getSemesterCount();
-    int getReg(){
-        return registrationYear;
-    }
+    int getReg() {return registrationYear;}
     int getAcademicPoints();
-    int getMandatoryPassed(){
-        return mandatoryPassed;
-    }
+    int getMandatoryPassed() {return mandatoryPassed;}
 
     void incrAcademicPoints(int p);
 
@@ -96,9 +97,36 @@ public:
 
     void printGrades();
 
-    void addCourseWithGrade(Course* course, int grade);
+    void addCourseWithGrade(Course* course, SemesterGradeInstance* semGrade);
 
     int getCourseGrade(Course* course);
+
+    void to_json(json& j, const Student& student, bool printCoursesWithGrades = true) {
+        j = json{
+            {"firstName", student.firstName},
+            {"lastName", student.lastName},
+            {"idCode", student.idCode},
+            {"registrationYear", student.registrationYear}
+            // Add other fields as necessary
+        };
+
+        if (printCoursesWithGrades == true){
+            // Serialize coursesWithGrades
+            json coursesJson;
+            for (const auto& pair : student.coursesWithGrades) {
+                const std::string& courseName = pair.first;
+                const SemesterGradeInstance* gradeInstance = pair.second;
+                coursesJson[courseName] = *gradeInstance;
+            }
+            j["coursesWithGrades"] = coursesJson;
+        }
+    }
+
+    friend void from_json(const json& j, Student& student);
+
+    unordered_map<string, SemesterGradeInstance*> getCoursesWithGrades();
+
+    void eraseCourse(string name);
 
 };
 
@@ -107,19 +135,19 @@ struct StudentCourseInstance {
     int grade = -1;
 
     nlohmann::json to_json() const {
-        return nlohmann::json{
-            {"student", stud ? *stud : Student{}},
+        nlohmann::json j = {
             {"grade", grade}
         };
+
+        nlohmann::json studentJson;
+        stud->to_json(studentJson, *stud, false);
+        j["student"] = studentJson;   
+        return j;
     }
 
     // Declare from_json as a friend function
     friend void from_json(const nlohmann::json& j, StudentCourseInstance& sci);
 };
-
-struct CourseSemesterInstance {
-    C
-}
 
 
 

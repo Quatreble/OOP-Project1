@@ -125,4 +125,8 @@ public:
     void jsonRemoveStudent(Student& stud);
     void jsonRemoveCourse(Course& course);
 
+    void readCoursesAndGrades(Student* stud);
+
+    Course* findCourseByName(string name);
+
 };

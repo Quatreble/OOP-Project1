@@ -4,15 +4,22 @@
 Secretary::Secretary(const string& dep, int sem, int reqPoints)
 : depName(dep), depSemesters(sem), pointsToGraduate(reqPoints)
 {
-    readStudentsFromFile();
-    readProfessorsFromFile();
     readCourseFromFile();
+    readStudentsFromFile();
+    for (auto& element : depStudents){
+        readCoursesAndGrades(element.second);
+    }
+    readProfessorsFromFile();
     SecretaryOperation();
     //cout<<"Secretary " << depName << " constructed!" <<endl;
 }
 
 Secretary::Secretary(){
+    readCourseFromFile();
     readStudentsFromFile();
+    for (auto& element : depStudents){
+        readCoursesAndGrades(element.second);
+    }
     readProfessorsFromFile();
     SecretaryOperation();
     //cout << "Secretary constructed!" << endl;
@@ -300,6 +307,13 @@ void Secretary::removeCourse(Course& course){
     auto it = depCourses.find(course.getCode());
     if(it != depCourses.end()){
         cout << "Erased " << course.getName() << '\n';
+        for (auto& element : depStudents){
+            element.second->eraseCourse(course.getName());
+            jsonModifyStud(*element.second,element.second->getIdCode());
+        }
+        for (Semester* sem : semesters){
+            sem->eraseCourse(course.getCode());
+        }
         delete it->second;
         depCourses.erase(it);
         return;
@@ -522,7 +536,7 @@ void Secretary::registerStudentToCourse(){
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
     if (course == nullptr) return;
-    if(sem->getSeason() != course->getSeason() || CURR_SEM.first < sem->getYear() || sem->getYear() - stud->getReg() < course->getYear() || sem->isRegistered(course, stud) != nullptr){
+    if(sem->getSeason() != course->getSeason() || CURR_SEM.first > sem->getYear() || sem->getYear() - stud->getReg() < course->getYear() || sem->isRegistered(course, stud) != nullptr){
         cout << "STUDENT CAN'T REGISTER TO THIS COURSE\n";
         return;
     }
@@ -540,15 +554,22 @@ void Secretary::gradeStudents(){
     if (stud == nullptr) return;
     Course* course = readAndValidateCourse();
     if (course == nullptr) return;
-    for (Semester* sem : semesters){
-        StudentCourseInstance* sciTemp = sem->isRegistered(course, stud);
+    for (Semester* semTemp : semesters){
+        StudentCourseInstance* sciTemp = semTemp->isRegistered(course, stud);
         if (sciTemp != nullptr && sciTemp->grade == -1){
             sci = sciTemp;
+            sem = semTemp;
+            break;
         }
     }
     if (sci != nullptr){
         sem->gradeStud(sci);
-        stud->addCourseWithGrade(course, sci->grade);
+        SemesterGradeInstance* semGrade = new SemesterGradeInstance;
+        semGrade->grade = sci->grade;
+        semGrade->year = sem->getYear();
+        semGrade->isWinter = sem->getSeason();
+        stud->addCourseWithGrade(course, semGrade);
+        jsonModifyStud(*stud,stud->getIdCode());
         return;
     }
     if (sem == nullptr){
@@ -662,22 +683,24 @@ Semester* Secretary::readAndValidateSemester(){
     return addSemester(sem);
 }
 
-void Secretary::readStudentsFromFile(){
+void Secretary::readStudentsFromFile() {
     ifstream f("studentinfo.json");
-    if(f.is_open()){
+    if (f.is_open()) {
         jStudents = json::parse(f);
-        Student stud;
-        for(auto& item: jStudents){
-            item.get_to(stud);
+
+        for (auto& item : jStudents) {
+            Student stud; 
+            item.get_to(stud); 
             //cout << stud;
-            addPerson(stud, false, false);
+            addPerson(stud, false, false); 
         }
+
         f.close();
-    }
-    else{
-        cerr << "Unable to open file\n"; 
+    } else {
+        cerr << "Unable to open file\n";
     }
 }
+
 
 void Secretary::readProfessorsFromFile(){
     ifstream f("profinfo.json");
@@ -716,7 +739,9 @@ void Secretary::readCourseFromFile(){
 }
 
 void Secretary::printStudentToFile(Student& student){
-    jStudents.push_back(student);
+    nlohmann::json studentJson;
+    student.to_json(studentJson, student); // Explicitly convert Student to json
+    jStudents.push_back(studentJson);
     ofstream f("studentinfo.json");
     if(f.is_open()){
         f << jStudents.dump(4);
@@ -784,7 +809,9 @@ void Secretary::jsonModifyProf(Professor& prof, string id){
 void Secretary::jsonModifyStud(Student& stud, string id){
     for (auto& element : jStudents){
         if (element["idCode"] == id){
-            element = stud;
+            nlohmann::json studentJson;
+            stud.to_json(studentJson, stud);
+            element = studentJson;
             break;
         }
     }
@@ -870,4 +897,40 @@ void Secretary::jsonRemoveCourse(Course& course){
     else{
         cerr << "Could not open file for writing\n";
     }
+}
+
+
+void Secretary::readCoursesAndGrades(Student* stud){
+    unordered_map<string, SemesterGradeInstance*> map;
+    map = stud->getCoursesWithGrades();
+    for (auto& element : map){
+        Course* course;
+        Semester* sem = nullptr;
+        for(auto semptr : semesters){
+            if(semptr->getYear() == element.second->year && semptr->getSeason() == element.second->isWinter){
+                sem = semptr;
+            }
+        }
+        if (sem == nullptr){
+            Semester semTemp;
+            semTemp.setYear(element.second->year);
+            semTemp.setSeason(element.second->isWinter);
+            sem = addSemester(semTemp);
+        }
+        course = findCourseByName(element.first);
+        if (!course) return;
+        sem->addStudToCourse(course,stud, false);
+        StudentCourseInstance* sci = sem->isRegistered(course, stud);
+        if (!sci) return;
+        sci->grade = element.second->grade;
+    }
+}
+
+Course* Secretary::findCourseByName(string name){
+    for (auto& element : depCourses){
+        if (element.second->getName() == name){
+            return element.second;
+        }
+    }
+    return nullptr;
 }

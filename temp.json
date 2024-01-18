@@ -1,0 +1,34 @@
+[
+    {
+        "firstName": "Elpida",
+        "idCode": "sdi2200173",
+        "lastName": "Stergiou",
+        "registrationYear": 2021
+    },
+    {
+        "firstName": "Ioannis",
+        "idCode": "sdi2200181",
+        "lastName": "Tampouris",
+        "registrationYear": 2021
+    },
+    {
+        "firstName": "Vassilis",
+        "idCode": "sdi18006969",
+        "lastName": "Perpiniadis",
+        "registrationYear": 2018
+    },
+    {
+        "firstName": "Xryssa",
+        "idCode": "sdi1800134",
+        "lastName": "Vouzika",
+        "registrationYear": 2016
+    },
+    {
+        "firstName": "Konstantinos",
+        "idCode": "sdi0900333",
+        "lastName": "Sotiriadis",
+        "registrationYear": 2009
+    }
+]
+
+

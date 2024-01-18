@@ -2,5 +2,9 @@
     {
         "winterOrSummer": true,
         "year": 2023
+    },
+    {
+        "winterOrSummer": false,
+        "year": 2024
     }
 ]
