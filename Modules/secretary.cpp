@@ -37,7 +37,7 @@ Secretary::~Secretary(){
     for(auto it: semesters){
         delete it;
     }
-    cout << "SECRETARY DELETED\n";
+    cout << "\tSECRETARY DELETED\n";
 
 }
 
@@ -296,6 +296,9 @@ void Secretary::removeCourse(Course& course){
         }
         for (Semester* sem : semesters){
             sem->eraseCourse(course.getCode());
+        }
+        if (course.getMand()){
+            numOfMandatory--;
         }
         delete it->second;
         depCourses.erase(it);

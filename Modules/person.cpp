@@ -186,6 +186,9 @@ void Student::printGrades(){
 
 void Student::addCourseWithGrade(Course* course, SemesterGradeInstance* semGrade){
     coursesWithGrades[course->getName()] = semGrade;
+    if (semGrade->grade >= 5){
+        mandatoryPassed++;
+    }
 }
 
 int Student::getCourseGrade(Course* course){
@@ -234,6 +237,9 @@ void Student::eraseCourse(string name){
     for (auto& element : coursesWithGrades){
         if (element.first == name){
             coursesWithGrades.erase(name);
+            if(element.second->grade >= 5){
+                mandatoryPassed--;
+            }
         }
     }
 }
