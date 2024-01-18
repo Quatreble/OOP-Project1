@@ -17,6 +17,8 @@ Person::Person(string fName, string lName, string id)
 
 Person::~Person() {}
 
+
+
 void Person::setFirstName(const string& name){
     firstName = name;
 }
@@ -91,6 +93,12 @@ Student::Student(string fName, string lName, string id, int regYear)
 : Person(fName, lName, id), registrationYear(regYear)
 {
     //cout << "Constructed student!" << endl;
+}
+
+void Student::deleteCoursesWithGrades(){
+    for(auto& it: coursesWithGrades){
+        delete it.second;
+    }
 }
 
 //dynamically allocates and returns a copy of Student 
@@ -201,7 +209,7 @@ void from_json(const json& j, Student& student) {
     if (j.contains("coursesWithGrades")) {
         const json& coursesJson = j.at("coursesWithGrades");
         for (const auto& item : coursesJson.items()) {
-            std::string courseName = item.key();
+            string courseName = item.key();
             SemesterGradeInstance* gradeInstance = new SemesterGradeInstance;
             from_json(item.value(), *gradeInstance);
 
@@ -255,49 +263,4 @@ Professor* Professor::clone(){
 bool Professor::equals(Professor* f) {
     return Professor::equals(f);
 }
-
-void Professor::profAddCourse(Course& course){
-    for (Course& c : profCourses){
-        if (c == course){
-            cout << "Professor " << lastName << " is already assigned to this course\n";
-            return;
-        }
-    }
-    profCourses.push_back(course);
-    cout << "Professor " << firstName << " " << lastName << " now teaches " << course.getName() << '\n';
-}
-
-bool Professor::teachesCourse(Course& course){
-    for (Course& c : profCourses){
-        if (c == course){
-            return true;
-        }
-    }
-    return false;
-}
-
-void Professor::printStats(int sem){
-    if(profCourses.empty()){
-        cout << "The professor has no courses\n";
-        return;
-    }
-    // float perc;
-    // for(Course& c : profCourses){
-    //     // if(c.getSemester() == sem){
-    //     //     perc = c.passedNumber() / c.registeredNumber() * 100.0;
-    //     //     cout << "Course name: " << c.getName() << endl;
-    //     //     cout << "Course academic points: " << c.getAcademicPoints() << endl;
-    //     //     cout << "Number of registered students for current semester: " << c.registeredNumber() << endl;
-    //     //     cout << "Number of students who passed for current semester: " << c.passedNumber() << endl;
-    //     //     cout << "Percentage of students who passed: " << perc << "%" << '\n';
-    //     // }
-    // }
-}
-
-
-// void courseRegister(){
-//     if (!currDepartment->startSemester()){
-//         std::cout << "Registrations not possible at the current moment\n";
-//     }
-// }
 

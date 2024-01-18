@@ -7,5 +7,14 @@
             "lastName": "Tampouris",
             "registrationYear": 2022
         }
+    },
+    {
+        "grade": 9,
+        "student": {
+            "firstName": "Elpida",
+            "idCode": "sdi2200173",
+            "lastName": "Stergiou",
+            "registrationYear": 2022
+        }
     }
 ]

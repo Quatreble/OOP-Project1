@@ -14,9 +14,8 @@ class Semester;
 using json = nlohmann::json;
 using namespace std;
 
-
 struct SemesterGradeInstance {
-    int grade,year;
+    int grade, year;
     bool isWinter;
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(SemesterGradeInstance,
                                 grade,
@@ -75,6 +74,9 @@ public:
     : Person(p)
     {}
 
+    ~Student(){}
+
+    void deleteCoursesWithGrades();
 
     virtual Student* clone() override;
 
@@ -152,9 +154,6 @@ struct StudentCourseInstance {
 
 
 class Professor : public Person {
-private:
-    vector<Course> profCourses;
-
 public:
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(Professor,
                                    firstName,
@@ -171,10 +170,5 @@ public:
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Professor* f);
-
-    void profAddCourse(Course& course);
-    bool teachesCourse(Course& course);
-
-    void printStats(int sem);
 
 };

@@ -11,7 +11,6 @@ Secretary::Secretary(const string& dep, int sem, int reqPoints)
     }
     readProfessorsFromFile();
     SecretaryOperation();
-    //cout<<"Secretary " << depName << " constructed!" <<endl;
 }
 
 Secretary::Secretary(){
@@ -22,15 +21,24 @@ Secretary::Secretary(){
     }
     readProfessorsFromFile();
     SecretaryOperation();
-    //cout << "Secretary constructed!" << endl;
-
 }
 
 Secretary::~Secretary(){
-    // for(Person* it : depMembers){
-    //     delete it;
-    // }
-    //cout << "Deleted secretary " << depName << endl;
+    for(auto& it : depStudents){
+        it.second->deleteCoursesWithGrades();
+        delete it.second;
+    }
+    for(auto& it : depProfessors){
+        delete it.second;
+    }
+    for(auto& it : depCourses){
+        delete it.second;
+    }
+    for(auto it: semesters){
+        delete it;
+    }
+    cout << "SECRETARY DELETED\n";
+
 }
 
 Secretary::Secretary(const Secretary& sec) //copy constructor for deep copy 
@@ -58,6 +66,7 @@ void Secretary::printMenu(){
     cout << "7. PRINT STUDENTS WHO PASSED A COURSE\n";
     cout << "8. PRINT PROFESSOR COURSES STATS\n";
     cout << "9. GET GRADES\n";
+    cout << "10. LIST OF STUDENTS WHO CAN GRADUATE\n";
     cout << "TYPE 0 TO EXIT\n";
 }
 
@@ -67,11 +76,12 @@ void Secretary::SecretaryOperation(){
         this_thread::sleep_for(chrono::seconds(1));
         printMenu();
         cin >> op;
+
         if (op == 0){
             cout << "\tGOODBYE\n";
             return;
         }
-        else if (op < 0 || op > 12){
+        else if (op < 0 || op > 10){
             cout << "WRONG INPUT\n";
             cout << "INPUT AGAIN\n";
             continue;
@@ -81,67 +91,42 @@ void Secretary::SecretaryOperation(){
             cout << "2. MODIFY PROFESSOR\n";
             cout << "3. REMOVE PROFESSOR\n";
             cin >> op;
-            if (op == 1){
-                addProfessor();
-            }
-            else if (op == 2){
-                modifyProfessor();
-            }
-            else if (op == 3){
-                deleteProfessor();
-            }
+
+            if (op == 1){ readAndAddProfessor(); }
+            else if (op == 2){ modifyProfessor(); }
+            else if (op == 3){ deleteProfessor(); }
         }
         else if (op == 2){
             cout << "1. ADD STUDENT\n";
             cout << "2. MODIFY STUDENT\n";
             cout << "3. REMOVE STUDENT\n";
+
             cin >> op;
-            if (op == 1){
-                addStudent();
-            }
-            else if (op == 2){
-                modifyStudent();
-            }
-            else if (op == 3){
-                deleteStudent();
-            }
+            if (op == 1){ readAndAddStudent(); }
+            else if (op == 2){ modifyStudent(); }
+            else if (op == 3){ deleteStudent(); }
         }
         else if (op == 3){
             cout << "1. ADD COURSE\n";
             cout << "2. MODIFY COURSE\n";
             cout << "3. REMOVE COURSE\n";
             cin >> op;
+
             if (op == 1){
                 Course course;
                 cin >> course;
                 addCourse(course);
             }
-            else if (op == 2){
-                modifyCourse();
-            }
-            else if (op == 3){
-                deleteCourse();
-            }
-
+            else if (op == 2){ modifyCourse(); }
+            else if (op == 3){ deleteCourse(); }
         }
-        else if(op == 4){
-            registerStudentToCourse();
-        }
-        else if (op == 5){
-            setCourseProf();
-        }
-        else if (op == 6){
-            gradeStudents();
-        }
-        else if (op == 7){
-            printStudentsWhoPassed();
-        }
-        else if (op == 8){
-            printProfStats();
-        }
-        else if (op == 9){
-            getGrades();
-        }
+        else if(op == 4){ registerStudentToCourse(); }
+        else if (op == 5){ setCourseProf(); }
+        else if (op == 6){ gradeStudents(); }
+        else if (op == 7){ printStudentsWhoPassed(); }
+        else if (op == 8){ printProfStats(); }
+        else if (op == 9){ getGrades(); }
+        else if (op == 10){ printGraduates(); }
     }
     
 }
@@ -153,7 +138,7 @@ void Secretary::addPerson(Student& s, bool printStatement, bool manualAdd){
             printStudentToFile(*stud);
         }
         else if (!check.second && manualAdd){
-            cout << "ID already exists\n";
+            cout << "ID ALREADY EXISTS\n";
             printStatement = false;
         }
         if (printStatement) cout << "Added " << stud->getFirstName() << " to " << depName << "!" << endl;
@@ -166,22 +151,20 @@ void Secretary::addPerson(Professor& p, bool printStatement, bool manualAdd){
             printProfessorToFile(*prof);
         }
         else if (!check.second && manualAdd){
-            cout << "ID already exists\n";
+            cout << "ID ALREADY EXISTS\n";
             printStatement = false;
         }
         if (printStatement) cout << "Added " << prof->getFirstName() << " to " << depName << "!" << endl;
 }
 
-void Secretary::addProfessor(){
+void Secretary::readAndAddProfessor(){
     Professor f;
-    //cout << "Enter Name, Surname and ID Code: " << endl;
     cin >> f;
     addPerson(f,true);
 }
 
-void Secretary::addStudent(){
+void Secretary::readAndAddStudent(){
     Student s;
-    //cout << "Enter Name, Surname and ID Code: " << endl;
     cin >> s;
     addPerson(s,true);
 }
@@ -193,7 +176,7 @@ void Secretary::addCourse(Course& c,bool manualAdd){
         printCourseToFile(*courseptr);
     }
     else if (!check.second && manualAdd){
-        cout << "Code already exists\n";
+        cout << "CODE ALREADY EXISTS\n";
     }
     if(courseptr->getMand()){
         ++numOfMandatory;
@@ -217,7 +200,7 @@ void Secretary::modifyProfessor(){
         cout << "Professor " << prevName << " changed to " << prof->getFirstName() << " " << prof->getLastName() << '\n';
 
     } else{ //if person is found but isnt a professor
-        cout << "The person with ID " << id << " is not a Professor.\n";
+        cout << "THE PERSON WITH ID " << id << " IS NOT A PROFESSOR.\n";
     }
 }
 
@@ -238,7 +221,7 @@ void Secretary::modifyStudent(){
         cout << "Student " << prevName << " changed to " << stud->getFirstName() << " " << stud->getLastName() << '\n';
 
     } else{ //if person is found but isnt a professor
-        cout << "The person with ID " << id << " is not a Student.\n";
+        cout << "THE PERSON WITH ID " << id << " IS NOT A STUDENT.\n";
     }
 }
 
@@ -269,14 +252,14 @@ void Secretary::modifyCourse(){
             if (season == "w" || season == "W" || season == "s" || season == "S") {
                 break;
             } else {
-                cout << "Invalid input. Please enter 'w' for winter or 's' for summer: ";
+                cout << "INVALID INPUT. ENTER W FOR WITER, S FOR SUMMER: ";
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
         }
         course->setSemester(season);
     }
-    cout << "Course was changed\n";
+    cout << "COURSE WAS MODIFIED\n";
     jsonModifyCourse(*course,prevCode);
 }
 
@@ -386,6 +369,15 @@ Course* Secretary::findCourse(string code){
     for (auto& element : depCourses){
         if (element.second->getCode() == code){
             cout << "Found course \n";
+            return element.second;
+        }
+    }
+    return nullptr;
+}
+
+Course* Secretary::findCourseByName(string name){
+    for (auto& element : depCourses){
+        if (element.second->getName() == name){
             return element.second;
         }
     }
@@ -506,17 +498,9 @@ istream& operator>>(istream& is, Secretary& sec){
     return is;
 }
 
-void Secretary::createSemester(){
-    Semester sem;
-    cin >> sem;
-    sem.printSem();
-    addSemester(sem);
-}
-
 Semester* Secretary::addSemester(Semester& toAdd){
     Semester* semptr = new Semester(toAdd);
     semesters.push_back(semptr);
-    printSemesterToFile(toAdd);
     return semptr;
 }
 
@@ -596,8 +580,8 @@ void Secretary::printProfStats(){
 
 void Secretary::getGrades(){
     Student* stud = readAndValidateStudent();
-    cout << "1. GET GRADES FOR CURRENT SEMESTER\n";
-    cout << "2. GET GRADES HISTORY\n";
+    cout << "1. GRADES FOR CURRENT SEMESTER\n";
+    cout << "2. GRADE HISTORY\n";
     int op;
     cin >> op;
     if (op == 1){
@@ -609,28 +593,32 @@ void Secretary::getGrades(){
     }
 }
 
+void Secretary::printGraduates(){
+    Student* stud;
+    bool grads = false;
+    for(auto& it: depStudents){
+        stud = it.second;
+        if(CURR_SEM.first - stud->getReg() >= depSemesters/2 && stud->getAcademicPoints() >= pointsToGraduate 
+        && stud->getMandatoryPassed() >= numOfMandatory){
+            grads = true;
+            cout << *stud;
+        } 
+    }
+    if(grads == false){
+        cout << "NO STUDENTS ARE CURRENTLY ABLE TO GRADUATE\n";
+    }
+}
+
 Semester* Secretary::getCurrSem(){
     int year = CURR_SEM.first;
     char sem = CURR_SEM.second;
-    bool isWinter = false;
-    if(sem == 'W' || sem == 'w'){
-        isWinter = true;
-    }
+    bool isWinter = (sem == 'W' || sem == 'w');
     for(auto& semester: semesters){
         if(semester->getYear() == year && semester->getSeason() == isWinter){
             return semester;
         }
     }
     return nullptr;
-}
-
-void Secretary::printGraduates(){
-    for (auto& element : depStudents){
-        Student* stud = element.second;
-        if(stud->getSemesterCount() >= depSemesters && stud->getMandatoryPassed()==getNumOfMandatory() && stud->getAcademicPoints() >= pointsToGraduate){
-            cout << *stud;
-        }
-    }
 }
 
 Student* Secretary::readAndValidateStudent(){
@@ -738,6 +726,32 @@ void Secretary::readCourseFromFile(){
     }
 }
 
+void Secretary::readCoursesAndGrades(Student* stud){
+    unordered_map<string, SemesterGradeInstance*> map;
+    map = stud->getCoursesWithGrades();
+    for (auto& element : map){
+        Course* course;
+        Semester* sem = nullptr;
+        for(auto semptr : semesters){
+            if(semptr->getYear() == element.second->year && semptr->getSeason() == element.second->isWinter){
+                sem = semptr;
+            }
+        }
+        if (sem == nullptr){
+            Semester semTemp;
+            semTemp.setYear(element.second->year);
+            semTemp.setSeason(element.second->isWinter);
+            sem = addSemester(semTemp);
+        }
+        course = findCourseByName(element.first);
+        if (!course) return;
+        sem->addStudToCourse(course,stud, false);
+        StudentCourseInstance* sci = sem->isRegistered(course, stud);
+        if (!sci) return;
+        sci->grade = element.second->grade;
+    }
+}
+
 void Secretary::printStudentToFile(Student& student){
     nlohmann::json studentJson;
     student.to_json(studentJson, student); // Explicitly convert Student to json
@@ -776,11 +790,19 @@ void Secretary::printCourseToFile(Course& course){
     }
 }
 
-void Secretary::printSemesterToFile(Semester& sem){
-    jSemesters.push_back(sem);
-    ofstream f("semesterinfo.json");
+void Secretary::jsonModifyStud(Student& stud, string id){
+    for (auto& element : jStudents){
+        if (element["idCode"] == id){
+            nlohmann::json studentJson;
+            stud.to_json(studentJson, stud);
+            element = studentJson;
+            break;
+        }
+    }
+        
+    ofstream f("studentinfo.json");
     if(f.is_open()){
-        f << jSemesters.dump(4);
+        f << jStudents.dump(4);            // Writes the JSON array to the file
         f.close();
     }
     else{
@@ -799,26 +821,6 @@ void Secretary::jsonModifyProf(Professor& prof, string id){
     ofstream f("profinfo.json");
     if(f.is_open()){
         f << jProfessors.dump(4);            // Writes the JSON array to the file
-        f.close();
-    }
-    else{
-        cerr << "Could not open file for writing\n";
-    }
-}
-
-void Secretary::jsonModifyStud(Student& stud, string id){
-    for (auto& element : jStudents){
-        if (element["idCode"] == id){
-            nlohmann::json studentJson;
-            stud.to_json(studentJson, stud);
-            element = studentJson;
-            break;
-        }
-    }
-        
-    ofstream f("studentinfo.json");
-    if(f.is_open()){
-        f << jStudents.dump(4);            // Writes the JSON array to the file
         f.close();
     }
     else{
@@ -897,40 +899,4 @@ void Secretary::jsonRemoveCourse(Course& course){
     else{
         cerr << "Could not open file for writing\n";
     }
-}
-
-
-void Secretary::readCoursesAndGrades(Student* stud){
-    unordered_map<string, SemesterGradeInstance*> map;
-    map = stud->getCoursesWithGrades();
-    for (auto& element : map){
-        Course* course;
-        Semester* sem = nullptr;
-        for(auto semptr : semesters){
-            if(semptr->getYear() == element.second->year && semptr->getSeason() == element.second->isWinter){
-                sem = semptr;
-            }
-        }
-        if (sem == nullptr){
-            Semester semTemp;
-            semTemp.setYear(element.second->year);
-            semTemp.setSeason(element.second->isWinter);
-            sem = addSemester(semTemp);
-        }
-        course = findCourseByName(element.first);
-        if (!course) return;
-        sem->addStudToCourse(course,stud, false);
-        StudentCourseInstance* sci = sem->isRegistered(course, stud);
-        if (!sci) return;
-        sci->grade = element.second->grade;
-    }
-}
-
-Course* Secretary::findCourseByName(string name){
-    for (auto& element : depCourses){
-        if (element.second->getName() == name){
-            return element.second;
-        }
-    }
-    return nullptr;
 }

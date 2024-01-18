@@ -19,6 +19,16 @@
     },
     {
         "coursesWithGrades": {
+            "Arxitektonikh": {
+                "grade": 6,
+                "isWinter": false,
+                "year": 2023
+            },
+            "Math": {
+                "grade": 9,
+                "isWinter": true,
+                "year": 2023
+            },
             "Physics": {
                 "grade": 10,
                 "isWinter": true,
@@ -29,5 +39,45 @@
         "idCode": "sdi2200173",
         "lastName": "Stergiou",
         "registrationYear": 2022
+    },
+    {
+        "coursesWithGrades": {
+            "Physics": {
+                "grade": 3,
+                "isWinter": true,
+                "year": 2023
+            }
+        },
+        "firstName": "Xryssa",
+        "idCode": "sdi111",
+        "lastName": "Vouzika",
+        "registrationYear": 2018
+    },
+    {
+        "coursesWithGrades": {
+            "Arxitektonikh": {
+                "grade": 5,
+                "isWinter": false,
+                "year": 2023
+            }
+        },
+        "firstName": "Vassilis",
+        "idCode": "sdi18006969",
+        "lastName": "Perpiniadis",
+        "registrationYear": 2019
+    },
+    {
+        "coursesWithGrades": null,
+        "firstName": "Konstantinos",
+        "idCode": "sdi0900333",
+        "lastName": "Sotiriadis",
+        "registrationYear": 2021
+    },
+    {
+        "coursesWithGrades": null,
+        "firstName": "Arsenis",
+        "idCode": "sdi00000",
+        "lastName": "Tade",
+        "registrationYear": 2023
     }
 ]

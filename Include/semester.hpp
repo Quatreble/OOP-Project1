@@ -27,6 +27,15 @@ public:
 
     Semester(){}
 
+    ~Semester(){
+        for(auto& it: courseStuds){
+            for(auto element: it.second){
+                //delete element->stud;
+                delete element;
+            }
+        }
+    }
+
     Semester(const Semester& other)
     : year(other.year), winterOrSummer(other.winterOrSummer) {}
 

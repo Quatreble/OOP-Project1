@@ -20,3 +20,6 @@ clean:
 
 run: $(EXECUTABLE)
 	./$(EXECUTABLE)
+
+valgrind: $(EXECUTABLE)
+	valgrind --leak-check=full ./$(EXECUTABLE)

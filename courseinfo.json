@@ -22,5 +22,37 @@
         "name": "Physics",
         "season": "w",
         "year": 1
+    },
+    {
+        "academicPoints": 6,
+        "code": "2323",
+        "isMandatory": true,
+        "name": "Linear",
+        "season": "w",
+        "year": 1
+    },
+    {
+        "academicPoints": 5,
+        "code": "567",
+        "isMandatory": true,
+        "name": "AI",
+        "season": "w",
+        "year": 3
+    },
+    {
+        "academicPoints": 8,
+        "code": "999",
+        "isMandatory": true,
+        "name": "Arxitektonikh",
+        "season": "s",
+        "year": 1
+    },
+    {
+        "academicPoints": 3,
+        "code": "700",
+        "isMandatory": false,
+        "name": "ergashtrio",
+        "season": "w",
+        "year": 2
     }
 ]

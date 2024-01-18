@@ -1,9 +1,5 @@
 #pragma once
 
-// we choose to use a vector instead of a map since we would like to be able 
-                                  // to search with all Person's properties using linear iteration. Since all takes place
-                                  // in memory there is no significant performance hit to go through every Person  ( O(n) )
-
 #include <vector>
 #include <chrono>
 #include <thread>
@@ -17,9 +13,9 @@
 
 #define CURR_SEM std::pair<int, char>(2023, 'W')
 
+using namespace std;
 class Person;
 
-using namespace std;
 
 class Secretary {
 private:  
@@ -48,11 +44,10 @@ public:
 
     void addPerson(Student& s, bool printStatement = true, bool manualAdd = true);
     void addPerson(Professor& p, bool printStatement = true, bool manualAdd = true);
-    void addProfessor();
-    void addStudent();
+    void readAndAddProfessor();
+    void readAndAddStudent();
     void addCourse(Course& course,bool manualAdd = true);
-
-    Semester* getCurrSem();
+    Semester* addSemester(Semester& toAdd);
     
     void modifyProfessor();
     void modifyStudent();
@@ -73,8 +68,9 @@ public:
     void printSecSize();
 
     void setSecName(const string& dep);
-    const string& getSecName();
 
+    const string& getSecName();
+    Semester* getCurrSem();
     int getNumOfMandatory() { return numOfMandatory; }
 
     static Student* isStudent(Person *p);
@@ -88,17 +84,12 @@ public:
     friend ostream& operator<<(ostream& os, Secretary& secretary);
     friend istream& operator>>(istream& is, Secretary& secretary);
 
-    void createSemester();
-    Semester* addSemester(Semester& toAdd);
-
     void setCourseProf();
     void registerStudentToCourse();
     void gradeStudents();
     void printStudentsWhoPassed();
     void printProfStats();
     void getGrades();
-    void getGradesCurr();
-
     void printGraduates();
 
     Student* readAndValidateStudent();
@@ -110,12 +101,10 @@ public:
     void readStudentsFromFile();
     void readProfessorsFromFile();
     void readCourseFromFile();
-    void readSemesterFromFile();
 
     void printStudentToFile(Student& student);
     void printProfessorToFile(Professor& professor);
     void printCourseToFile(Course& course);
-    void printSemesterToFile(Semester& semester);
 
     void jsonModifyProf(Professor& prof, string id);
     void jsonModifyStud(Student& stud, string id);
