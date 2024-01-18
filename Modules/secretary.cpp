@@ -1,7 +1,7 @@
 #include "secretary.hpp"
 
 //////Secretary class functions
-Secretary::Secretary(const string& dep, int sem, int reqPoints)
+Secretary::Secretary(const string& dep, int sem, int reqPoints, int year, char season)
 : depName(dep), depSemesters(sem), pointsToGraduate(reqPoints)
 {
     readCourseFromFile();
@@ -10,16 +10,7 @@ Secretary::Secretary(const string& dep, int sem, int reqPoints)
         readCoursesAndGrades(element.second);
     }
     readProfessorsFromFile();
-    SecretaryOperation();
-}
-
-Secretary::Secretary(){
-    readCourseFromFile();
-    readStudentsFromFile();
-    for (auto& element : depStudents){
-        readCoursesAndGrades(element.second);
-    }
-    readProfessorsFromFile();
+    readCurrentDate();
     SecretaryOperation();
 }
 
@@ -37,7 +28,7 @@ Secretary::~Secretary(){
     for(auto it: semesters){
         delete it;
     }
-    cout << "\tSECRETARY DELETED\n";
+    cout << "    SECRETARY DELETED\n";
 
 }
 
@@ -61,12 +52,12 @@ void Secretary::printMenu(){
     cout << "2. STUDENT OPTIONS\n";
     cout << "3. COURSE OPTIONS\n";
     cout << "4. REGISTER STUDENT TO COURSE\n";
-    cout << "5. SET PROFESSOR TO COURSE\n";
-    cout << "6. GRADE STUDENTS\n";
+    cout << "5. REGISTER PROFESSOR TO COURSE\n";
+    cout << "6. GRADE STUDENT\n";
     cout << "7. PRINT STUDENTS WHO PASSED A COURSE\n";
-    cout << "8. PRINT PROFESSOR COURSES STATS\n";
-    cout << "9. GET GRADES\n";
-    cout << "10. LIST OF STUDENTS WHO CAN GRADUATE\n";
+    cout << "8. PRINT PROFESSOR COURSE STATISTICS\n";
+    cout << "9. GET STUDENT'S GRADES\n";
+    cout << "10. GET LIST OF STUDENTS WHO CAN GRADUATE\n";
     cout << "TYPE 0 TO EXIT\n";
 }
 
@@ -78,10 +69,10 @@ void Secretary::SecretaryOperation(){
         cin >> op;
 
 
-        if (std::cin.fail()) {
-            std::cin.clear(); 
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid input. Please enter a number." << std::endl;
+        if (cin.fail()) {
+            cin.clear(); 
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "INVALID INPUUT. PLEASE ENTER A NUMBER: " << std::endl;
         } 
         else if (op < 0 || op > 10){
             cout << "WRONG INPUT\n";
@@ -89,7 +80,7 @@ void Secretary::SecretaryOperation(){
             continue;
         }
         else if (op == 0){
-            cout << "\tGOODBYE\n";
+            cout << "\tGOODBYE! :)\n";
             return;
         }
         else if (op == 1){
@@ -176,16 +167,21 @@ void Secretary::readAndAddStudent(){
 }
 
 void Secretary::addCourse(Course& c,bool manualAdd){
-    Course* courseptr = new Course(c);
-    auto check = depCourses.emplace(courseptr->getCode(),courseptr);
-    if (check.second && manualAdd){
-        printCourseToFile(*courseptr);
+    try{
+        Course* courseptr = new Course(c);
+        auto check = depCourses.emplace(courseptr->getCode(),courseptr);
+        if (check.second && manualAdd){
+            printCourseToFile(*courseptr);
+        }
+        else if (!check.second && manualAdd){
+            cout << "CODE ALREADY EXISTS\n";
+        }
+        if(courseptr->getMand()){
+            ++numOfMandatory;
+        }
     }
-    else if (!check.second && manualAdd){
-        cout << "CODE ALREADY EXISTS\n";
-    }
-    if(courseptr->getMand()){
-        ++numOfMandatory;
+    catch(const bad_alloc& e){
+        cerr << "FAILED MEMORY ALLOCATION: " << e.what() << '\n';
     }
 }
 
@@ -199,7 +195,7 @@ void Secretary::modifyProfessor(){
         string prevId = prof->getIdCode();
         auto it = depProfessors.find(prof->getIdCode());
         depProfessors.erase(it);
-        cout << "Please enter the new attributes of the professor\n";
+        cout << "PLEASE ENTER THE NEW DATA: \n";
         cin >> *prof;
         depProfessors[prof->getIdCode()] = prof;
         jsonModifyProf(*prof,prevId);
@@ -220,7 +216,7 @@ void Secretary::modifyStudent(){
         string prevId = stud->getIdCode();
         auto it = depStudents.find(stud->getIdCode());
         depStudents.erase(it);
-        cout << "Please enter the new attributes of the student\n";
+        cout << "PLEASE ENTER THE NEW DATA: \n";
         cin >> *stud;
         depStudents[stud->getIdCode()] = stud;
         jsonModifyStud(*stud,prevId);
@@ -242,12 +238,12 @@ void Secretary::modifyCourse(){
     if (op == 1){
         auto it = depCourses.find(course->getCode());
         depCourses.erase(it);
-        cout << "Please enter new attributes\n";
+        cout << "PLEASE ENTER THE NEW DATA: \n";
         cin >> *course;
         depCourses[course->getCode()] = course;
     }
     else if (op == 2){
-        cout << "Enter course year\n";
+        cout << "ENTER COURSE YEAR: ";
         int year;
         cin >> year;
         course->setYear(year);
@@ -508,9 +504,15 @@ istream& operator>>(istream& is, Secretary& sec){
 }
 
 Semester* Secretary::addSemester(Semester& toAdd){
-    Semester* semptr = new Semester(toAdd);
-    semesters.push_back(semptr);
-    return semptr;
+    try{
+        Semester* semptr = new Semester(toAdd);
+        semesters.push_back(semptr);
+        return semptr;
+    }
+    catch(const bad_alloc &e){
+        cerr << "Memory allocation failed: " << e.what() << '\n';
+        return nullptr;
+    }
 }
 
 void Secretary::setCourseProf(){
@@ -529,7 +531,7 @@ void Secretary::registerStudentToCourse(){
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
     if (course == nullptr) return;
-    if(sem->getSeason() != course->getSeason() || CURR_SEM.first > sem->getYear() || sem->getYear() - stud->getReg() < course->getYear() - 1 || sem->isRegistered(course, stud) != nullptr){
+    if(sem->getSeason() != course->getSeason() || currYear > sem->getYear() || sem->getYear() - stud->getReg() < course->getYear() - 1 || sem->isRegistered(course, stud) != nullptr){
         cout << "STUDENT CAN'T REGISTER TO THIS COURSE\n";
         return;
     }
@@ -556,14 +558,20 @@ void Secretary::gradeStudents(){
         }
     }
     if (sci != nullptr){
-        sem->gradeStud(sci);
-        SemesterGradeInstance* semGrade = new SemesterGradeInstance;
-        semGrade->grade = sci->grade;
-        semGrade->year = sem->getYear();
-        semGrade->isWinter = sem->getSeason();
-        stud->addCourseWithGrade(course, semGrade);
-        jsonModifyStud(*stud,stud->getIdCode());
-        return;
+        try{
+            sem->gradeStud(sci);
+            SemesterGradeInstance* semGrade = new SemesterGradeInstance;
+            semGrade->grade = sci->grade;
+            semGrade->year = sem->getYear();
+            semGrade->isWinter = sem->getSeason();
+            stud->addCourseWithGrade(course, semGrade);
+            jsonModifyStud(*stud,stud->getIdCode());
+            return;
+        }
+        catch (const bad_alloc &e){
+            cerr << "Memory allocation failed: " << e.what() << '\n';
+            return;
+        }
     }
     if (sem == nullptr){
         cout << "Student not registered to that course or is already graded\n";
@@ -589,12 +597,17 @@ void Secretary::printProfStats(){
 
 void Secretary::getGrades(){
     Student* stud = readAndValidateStudent();
+    if (stud == nullptr) return;
     cout << "1. GRADES FOR CURRENT SEMESTER\n";
     cout << "2. GRADE HISTORY\n";
     int op;
     cin >> op;
     if (op == 1){
         Semester* sem = getCurrSem();
+        if (sem == nullptr){
+            cout << "NO GRADES FOR THE CURRENT SEMESTER\n";
+            return;
+        }
         sem->printStudStats(stud);
     }
     if (op == 2){
@@ -607,7 +620,7 @@ void Secretary::printGraduates(){
     bool grads = false;
     for(auto& it: depStudents){
         stud = it.second;
-        if(CURR_SEM.first - stud->getReg() >= depSemesters/2 && stud->getAcademicPoints() >= pointsToGraduate 
+        if(currYear - stud->getReg() >= depSemesters/2 && stud->getAcademicPoints() >= pointsToGraduate 
         && stud->getMandatoryPassed() >= numOfMandatory){
             grads = true;
             cout << *stud;
@@ -619,8 +632,8 @@ void Secretary::printGraduates(){
 }
 
 Semester* Secretary::getCurrSem(){
-    int year = CURR_SEM.first;
-    char sem = CURR_SEM.second;
+    int year = currYear;
+    char sem = currSeason;
     bool isWinter = (sem == 'W' || sem == 'w');
     for(auto& semester: semesters){
         if(semester->getYear() == year && semester->getSeason() == isWinter){
@@ -681,44 +694,45 @@ Semester* Secretary::readAndValidateSemester(){
 }
 
 void Secretary::readStudentsFromFile() {
-    ifstream f("studentinfo.json");
-    if (f.is_open()) {
+    try{
+        ifstream f("studentinfo.json");
+        if (!f) throw runtime_error("Could not open file for writing");
         jStudents = json::parse(f);
-
         for (auto& item : jStudents) {
             Student stud; 
             item.get_to(stud); 
-            //cout << stud;
             addPerson(stud, false, false); 
         }
 
         f.close();
-    } else {
+    } 
+    catch(const exception &e) {
         cerr << "Unable to open file\n";
     }
 }
 
 
 void Secretary::readProfessorsFromFile(){
-    ifstream f("profinfo.json");
-    if(f.is_open()){
+    try{
+        ifstream f("profinfo.json");
+        if (!f) throw runtime_error("Could not open file for writing");
         jProfessors = json::parse(f);
         Professor prof;
         for(auto& item: jProfessors){
             item.get_to(prof);
-            //cout << prof;
             addPerson(prof, false, false);
         }
         f.close();
     }
-    else{
+    catch(const exception &e){
         cerr << "Unable to open file\n"; 
     }   
 }
 
 void Secretary::readCourseFromFile(){
-    ifstream f("courseinfo.json");
-    if(f.is_open()){
+    try{
+        ifstream f("courseinfo.json");
+        if (!f) throw runtime_error("Could not open file for writing");
         jCourses = json::parse(f);
         Course course;
         for(auto& item: jCourses){
@@ -727,7 +741,7 @@ void Secretary::readCourseFromFile(){
         }
         f.close();
     }
-    else{
+    catch (const exception &e){
         cerr << "Unable to open file\n"; 
     }
 }
@@ -762,38 +776,20 @@ void Secretary::printStudentToFile(Student& student){
     nlohmann::json studentJson;
     student.to_json(studentJson, student); // Explicitly convert Student to json
     jStudents.push_back(studentJson);
-    ofstream f("studentinfo.json");
-    if(f.is_open()){
-        f << jStudents.dump(4);
-        f.close();
-    }
-    else{
-        cerr << "Could not open file for writing\n";
-    }
+    printJson("studentinfo.json",jStudents);
+
 }
 
 void Secretary::printProfessorToFile(Professor& professor){
     jProfessors.push_back(professor);
-    ofstream f("profinfo.json");
-    if(f.is_open()){
-        f << jProfessors.dump(4);
-        f.close();
-    }
-    else{
-        cerr << "Could not open file for writing\n";
-    }
+    printJson("profinfo.json",jProfessors);
+
 }
 
 void Secretary::printCourseToFile(Course& course){
     jCourses.push_back(course);
-    ofstream f("courseinfo.json");
-    if(f.is_open()){
-        f << jCourses.dump(4);
-        f.close();
-    }
-    else{
-        cerr << "Could not open file for writing\n";
-    }
+    printJson("courseinfo.json",jCourses);
+
 }
 
 void Secretary::jsonModifyStud(Student& stud, string id){
@@ -806,14 +802,8 @@ void Secretary::jsonModifyStud(Student& stud, string id){
         }
     }
         
-    ofstream f("studentinfo.json");
-    if(f.is_open()){
-        f << jStudents.dump(4);            // Writes the JSON array to the file
-        f.close();
-    }
-    else{
-        cerr << "Could not open file for writing\n";
-    }
+    printJson("studentinfo.json",jStudents);
+
 }
 
 void Secretary::jsonModifyProf(Professor& prof, string id){
@@ -824,14 +814,8 @@ void Secretary::jsonModifyProf(Professor& prof, string id){
         }
     }
         
-    ofstream f("profinfo.json");
-    if(f.is_open()){
-        f << jProfessors.dump(4);            // Writes the JSON array to the file
-        f.close();
-    }
-    else{
-        cerr << "Could not open file for writing\n";
-    }
+    printJson("profinfo.json",jProfessors);
+
 }
 
 void Secretary::jsonModifyCourse(Course& course, string code){
@@ -842,14 +826,7 @@ void Secretary::jsonModifyCourse(Course& course, string code){
         }
     }
         
-    ofstream f("courseinfo.json");
-    if(f.is_open()){
-        f << jCourses.dump(4);            // Writes the JSON array to the file
-        f.close();
-    }
-    else{
-        cerr << "Could not open file for writing\n";
-    }
+    printJson("courseinfo.json",jCourses);
 }
 
 void Secretary::jsonRemoveProfessor(Professor& prof){
@@ -860,15 +837,7 @@ void Secretary::jsonRemoveProfessor(Professor& prof){
         }
     }
 
-    try {
-        ofstream f("profinfo.json");
-        if (!f) throw runtime_error("Could not open file for writing");
-        f << jProfessors.dump(4);            // Writes the JSON array to the file
-        f.close();
-    }
-    catch (const exception& e){
-        cerr << e.what() << '\n';
-    }
+    printJson("profinfo.json",jProfessors);
 
 }
 
@@ -880,14 +849,7 @@ void Secretary::jsonRemoveStudent(Student& stud){
         }
     }
 
-    try {
-        ofstream f("studentinfo.json");
-        if (!f) throw runtime_error("Could not open file for writing");
-        f << jStudents.dump(4);  // Writes the JSON array to the file
-        f.close();
-    } catch (const exception& e) {
-        cerr << e.what() << '\n';
-    }
+    printJson("studentinfo.json",jStudents);
 }
 
 void Secretary::jsonRemoveCourse(Course& course){
@@ -898,13 +860,39 @@ void Secretary::jsonRemoveCourse(Course& course){
         }
     }
 
+    printJson("courseinfo.json",jCourses);
+}
+
+void Secretary::printJson(string fileName, json& array){
     try{
-        ofstream f("courseinfo.json");
+        ofstream f(fileName);
         if (!f) throw runtime_error("Could not open file for writing");
-        f << jCourses.dump(4);            // Writes the JSON array to the file
+        f << array.dump(4);
         f.close();
     }
     catch (const exception& e){
         cerr << e.what() << '\n';
     }
+}
+
+void Secretary::readCurrentDate(){
+    cout << "ENTER CURRENT YEAR: ";
+    cin >> currYear;
+    while (cin.fail()){
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "WRONG INPUT. PLEASE ENTER A VALID YEAR: ";
+        cin >> currYear;
+    }
+
+    cout << "ENTER CURRENT SEMESTER SEASON ('W' OR 'S'): ";
+    cin >> currSeason;
+    while ((currSeason != 'w' && currSeason != 'W' && currSeason != 's' && currSeason != 'S') || cin.fail()){
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "WRONG INPUT. PLEASE ENTER 'W' OR 'S': ";
+        cin >> currSeason;
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
 }

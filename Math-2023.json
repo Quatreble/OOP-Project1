@@ -1,19 +1,23 @@
 [
     {
-        "grade": 7,
-        "student": {
-            "firstName": "Ioannis",
-            "idCode": "sdi2200181",
-            "lastName": "Tampouris",
-            "registrationYear": 2022
-        }
-    },
-    {
         "grade": 9,
         "student": {
+            "currentPoints": 25,
             "firstName": "Elpida",
             "idCode": "sdi2200173",
             "lastName": "Stergiou",
+            "mandatoryPassed": 3,
+            "registrationYear": 2010
+        }
+    },
+    {
+        "grade": 7,
+        "student": {
+            "currentPoints": 12,
+            "firstName": "Ioannis",
+            "idCode": "sdi2200181",
+            "lastName": "Tampouris",
+            "mandatoryPassed": 2,
             "registrationYear": 2022
         }
     }

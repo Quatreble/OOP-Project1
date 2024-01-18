@@ -266,7 +266,13 @@ Professor::Professor(string fName, string lName, string id)
 
 //dynamically allocates and returns a copy of Professor 
 Professor* Professor::clone(){
-    return new Professor(*this);
+    try {
+        return new Professor(*this);
+    }
+    catch(const bad_alloc &e){
+        cerr << "Memory allocation failed: " << e.what() << '\n';
+        return nullptr;
+    }
 }
 
 //for now we just check equality of the super-class Person

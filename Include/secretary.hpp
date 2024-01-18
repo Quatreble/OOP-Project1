@@ -11,8 +11,6 @@
 #include "course.hpp"
 #include "semester.hpp"
 
-#define CURR_SEM std::pair<int, char>(2023, 'W')
-
 using namespace std;
 class Person;
 
@@ -27,6 +25,8 @@ private:
     unordered_map<string, Course*> depCourses;  
     vector<Semester*> semesters;
     int pointsToGraduate;
+    int currYear;
+    char currSeason;
     int numOfMandatory = 0;
     json jCourses;
     json jProfessors;
@@ -34,8 +34,7 @@ private:
     json jSemesters;
 
 public:
-    Secretary(const string& dep, int sem, int reqPoints);
-    Secretary();
+    Secretary(const string& dep, int sem, int reqPoints, int currYear, char currSeason);
     ~Secretary();
     Secretary(const Secretary& sec);
 
@@ -117,5 +116,9 @@ public:
     void readCoursesAndGrades(Student* stud);
 
     Course* findCourseByName(string name);
+
+    void printJson(string fileName, json& array);
+
+    void readCurrentDate();
 
 };

@@ -98,7 +98,7 @@ int main(){
     //     j.at("studentid").get_to(s.idCode);
     //     j.at("registrationYear").get_to(s.registrationYear);
     // }
-    Secretary mySec("Department of Informatics and Telecomunications", 8, 10);
+    Secretary mySec("Department of Informatics and Telecomunications", 8, 10, 2050, 'w');
 
 
 }
