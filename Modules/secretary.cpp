@@ -77,14 +77,20 @@ void Secretary::SecretaryOperation(){
         printMenu();
         cin >> op;
 
-        if (op == 0){
-            cout << "\tGOODBYE\n";
-            return;
-        }
+
+        if (std::cin.fail()) {
+            std::cin.clear(); 
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid input. Please enter a number." << std::endl;
+        } 
         else if (op < 0 || op > 10){
             cout << "WRONG INPUT\n";
             cout << "INPUT AGAIN\n";
             continue;
+        }
+        else if (op == 0){
+            cout << "\tGOODBYE\n";
+            return;
         }
         else if (op == 1){
             cout << "1. ADD PROFESSOR\n";
