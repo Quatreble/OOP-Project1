@@ -860,13 +860,14 @@ void Secretary::jsonRemoveProfessor(Professor& prof){
         }
     }
 
-    ofstream f("profinfo.json");
-    if(f.is_open()){
+    try {
+        ofstream f("profinfo.json");
+        if (!f) throw runtime_error("Could not open file for writing");
         f << jProfessors.dump(4);            // Writes the JSON array to the file
         f.close();
     }
-    else{
-        cerr << "Could not open file for writing\n";
+    catch (const exception& e){
+        cerr << e.what() << '\n';
     }
 
 }
@@ -879,13 +880,13 @@ void Secretary::jsonRemoveStudent(Student& stud){
         }
     }
 
-    ofstream f("studentinfo.json");
-    if(f.is_open()){
-        f << jStudents.dump(4);            // Writes the JSON array to the file
+    try {
+        ofstream f("studentinfo.json");
+        if (!f) throw runtime_error("Could not open file for writing");
+        f << jStudents.dump(4);  // Writes the JSON array to the file
         f.close();
-    }
-    else{
-        cerr << "Could not open file for writing\n";
+    } catch (const exception& e) {
+        cerr << e.what() << '\n';
     }
 }
 
@@ -897,12 +898,13 @@ void Secretary::jsonRemoveCourse(Course& course){
         }
     }
 
-    ofstream f("courseinfo.json");
-    if(f.is_open()){
+    try{
+        ofstream f("courseinfo.json");
+        if (!f) throw runtime_error("Could not open file for writing");
         f << jCourses.dump(4);            // Writes the JSON array to the file
         f.close();
     }
-    else{
-        cerr << "Could not open file for writing\n";
+    catch (const exception& e){
+        cerr << e.what() << '\n';
     }
 }
