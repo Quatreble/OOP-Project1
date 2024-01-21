@@ -1,32 +1,25 @@
 [
     {
-        "firstName": "Nikos",
-        "idCode": "sdi0x0x",
-        "lastName": "Damdhmopoulos"
-    },
-    {
-        "firstName": "Gianis",
-        "idCode": "sdi12345678",
-        "lastName": "Famelis"
-    },
-    {
-        "firstName": "vasilis",
-        "idCode": "sdiskata",
-        "lastName": "malakas"
-    },
-    {
-        "firstName": "giannis",
-        "idCode": "1212",
-        "lastName": "liokaris"
-    },
-    {
-        "firstName": "gkoup",
-        "idCode": "sdi69",
-        "lastName": "gkap"
-    },
-    {
-        "firstName": "HI",
-        "idCode": "<33",
-        "lastName": "BABE"
+        "firstName": "Giannhs",
+        "idCode": "sdi123",
+        "lastName": "Famelhs",
+        "profCourses": {
+            "Math": [
+                {
+                    "Year": 2023,
+                    "isWinter": true
+                },
+                {
+                    "Year": 2022,
+                    "isWinter": true
+                }
+            ],
+            "ergashtrio": [
+                {
+                    "Year": 2023,
+                    "isWinter": true
+                }
+            ]
+        }
     }
 ]

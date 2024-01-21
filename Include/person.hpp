@@ -156,11 +156,9 @@ struct StudentCourseInstance {
 
 
 class Professor : public Person {
+private:
+unordered_map <string, vector<pair<int,bool>>> profCourses;
 public:
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(Professor,
-                                   firstName,
-                                   lastName,
-                                   idCode)
 
     Professor();
     Professor(string fName, string lName, string id);
@@ -173,4 +171,28 @@ public:
     //for now we just check equality of the super-class Person
     virtual bool equals(Professor* f);
 
+    friend void to_json(json& j, const Professor& p) {
+        j = json{{"firstName", p.firstName}, {"lastName", p.lastName}, {"idCode", p.idCode}};
+        json courseMap = json::object();
+        for (const auto& coursePair : p.profCourses) {
+            const string& courseName = coursePair.first;
+            const auto& yearWinterPairs = coursePair.second;
+            json pairsArray = json::array();
+            for (const auto& yearWinterPair : yearWinterPairs) {
+                int year = yearWinterPair.first;
+                bool isWinter = yearWinterPair.second;
+                pairsArray.push_back({{"Year", year}, {"isWinter", isWinter}});
+            }
+            courseMap[courseName] = pairsArray;
+        }
+        j["profCourses"] = courseMap;
+    }
+
+    friend void from_json(const json& j, Professor& p);
+
+    void addCourse(string courseName, int year, bool season);
+
+    unordered_map<string, vector<pair<int,bool>>> getProfCourses();
+
+    void eraseCourse(string name);
 };

@@ -1,6 +1,6 @@
 #include "semester.hpp"
 
-void Semester::addProfToCourse(Course* c, Professor* p){
+void Semester::addProfToCourse(Course* c, Professor* p, bool print){
     courseProfs.emplace(c,vector<Professor*>());
     for (Professor* prof : courseProfs[c]){
         if (prof->getIdCode() == p->getIdCode()){
@@ -9,7 +9,8 @@ void Semester::addProfToCourse(Course* c, Professor* p){
         }
     }
     courseProfs[c].push_back(p);
-    cout << p->getFirstName() << " " << p->getLastName() << " " << "is now professor of " << c->getName() << '\n';
+    if (print)
+        cout << p->getFirstName() << " " << p->getLastName() << " " << "is now professor of " << c->getName() << '\n';
 }
 
 void Semester::addStudToCourse(Course* c, Student* s, bool print){

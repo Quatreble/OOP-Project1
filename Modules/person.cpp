@@ -280,3 +280,37 @@ bool Professor::equals(Professor* f) {
     return Professor::equals(f);
 }
 
+void from_json(const json& j, Professor& p) {
+    j.at("firstName").get_to(p.firstName);
+    j.at("lastName").get_to(p.lastName);
+    j.at("idCode").get_to(p.idCode);
+    json courseMap = j.at("profCourses");
+    for (const auto& courseItem : courseMap.items()) {
+        const string& courseName = courseItem.key();
+        const json& pairsArray = courseItem.value();
+        vector<pair<int, bool>> yearWinterPairs;
+        for (const auto& item : pairsArray) {
+            int year = item.at("Year");
+            bool isWinter = item.at("isWinter");
+            yearWinterPairs.emplace_back(year, isWinter);
+        }
+        p.profCourses[courseName] = yearWinterPairs;
+    }
+}
+
+void Professor::addCourse(string CourseName, int year, bool season){
+    profCourses[CourseName].push_back(make_pair(year,season));
+}
+
+unordered_map<string,vector<pair<int,bool>>> Professor::getProfCourses(){
+    return profCourses;
+}
+
+void Professor::eraseCourse(string name){
+    for (auto& element : profCourses){
+        if (element.first == name){
+            profCourses.erase(name);
+        }
+    }
+}
+

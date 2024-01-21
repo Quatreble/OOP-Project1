@@ -47,7 +47,7 @@ public:
         return year;
     }
 
-    void addProfToCourse(Course* c, Professor* p);
+    void addProfToCourse(Course* c, Professor* p, bool print = true);
 
     void addStudToCourse(Course* c, Student* s, bool print = true);
 

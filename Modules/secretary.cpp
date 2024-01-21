@@ -10,6 +10,9 @@ Secretary::Secretary(const string& dep, int sem, int reqPoints, int year, char s
         readCoursesAndGrades(element.second);
     }
     readProfessorsFromFile();
+    for (auto& element : depProfessors){
+        readProfessorCourses(element.second);
+    }
     readCurrentDate();
     SecretaryOperation();
 }
@@ -296,6 +299,10 @@ void Secretary::removeCourse(Course& course){
             element.second->eraseCourse(course.getName());
             jsonModifyStud(*element.second,element.second->getIdCode());
         }
+        for (auto& element : depProfessors){
+            element.second->eraseCourse(course.getName());
+            jsonModifyProf(*element.second,element.second->getIdCode());
+        }
         for (Semester* sem : semesters){
             sem->eraseCourse(course.getCode());
         }
@@ -522,6 +529,8 @@ void Secretary::setCourseProf(){
         Professor* prof = readAndValidateProfessor();
         if(prof==nullptr) return;
         sem->addProfToCourse(course, prof);
+        prof->addCourse(course->getName(),sem->getYear(),sem->getSeason());
+        jsonModifyProf(*prof,prof->getIdCode());
     }
 }
 
@@ -696,7 +705,7 @@ Semester* Secretary::readAndValidateSemester(){
 void Secretary::readStudentsFromFile() {
     try{
         ifstream f("studentinfo.json");
-        if (!f) throw runtime_error("Could not open file for writing");
+        if (!f) throw runtime_error("Could not open file for reading");
         jStudents = json::parse(f);
         for (auto& item : jStudents) {
             Student stud; 
@@ -715,7 +724,7 @@ void Secretary::readStudentsFromFile() {
 void Secretary::readProfessorsFromFile(){
     try{
         ifstream f("profinfo.json");
-        if (!f) throw runtime_error("Could not open file for writing");
+        if (!f) throw runtime_error("Could not open file for reading");
         jProfessors = json::parse(f);
         Professor prof;
         for(auto& item: jProfessors){
@@ -732,7 +741,7 @@ void Secretary::readProfessorsFromFile(){
 void Secretary::readCourseFromFile(){
     try{
         ifstream f("courseinfo.json");
-        if (!f) throw runtime_error("Could not open file for writing");
+        if (!f) throw runtime_error("Could not open file for reading");
         jCourses = json::parse(f);
         Course course;
         for(auto& item: jCourses){
@@ -769,6 +778,30 @@ void Secretary::readCoursesAndGrades(Student* stud){
         StudentCourseInstance* sci = sem->isRegistered(course, stud);
         if (!sci) return;
         sci->grade = element.second->grade;
+    }
+}
+
+void Secretary::readProfessorCourses(Professor* prof){
+    unordered_map<string,vector<pair<int,bool>>> map;
+    map = prof->getProfCourses();
+    for (auto& element : map){
+        Semester* sem;
+        for (auto& pair : element.second){
+            sem = nullptr;
+            for(auto& semptr : semesters){
+                if(semptr->getYear() == pair.first && semptr->getSeason() == pair.second){
+                    sem = semptr;
+                }
+            }
+            if (sem == nullptr){
+                Semester semTemp;
+                semTemp.setYear(pair.first);
+                semTemp.setSeason(pair.second);
+                sem = addSemester(semTemp);
+            }
+            Course* course = findCourseByName(element.first);
+            sem->addProfToCourse(course,prof,false);
+        }
     }
 }
 

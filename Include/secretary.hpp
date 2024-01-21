@@ -121,4 +121,6 @@ public:
 
     void readCurrentDate();
 
+    void readProfessorCourses(Professor* prof);
+
 };

@@ -10,13 +10,18 @@
                 "grade": 9,
                 "isWinter": false,
                 "year": 2023
+            },
+            "ergashtrio": {
+                "grade": 9,
+                "isWinter": true,
+                "year": 2023
             }
         },
-        "currentPoints": 12,
+        "currentPoints": 15,
         "firstName": "Ioannis",
         "idCode": "sdi2200181",
         "lastName": "Tampouris",
-        "mandatoryPassed": 2,
+        "mandatoryPassed": 3,
         "registrationYear": 2022
     },
     {
