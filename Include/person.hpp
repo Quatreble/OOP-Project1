@@ -9,7 +9,7 @@
 
 #include "course.hpp"
 class Course;
-class Semester;
+
 
 using json = nlohmann::json;
 using namespace std;
@@ -37,17 +37,17 @@ public:
     : firstName(p.firstName), lastName(p.lastName), idCode(p.idCode)
     {}
 
-    virtual ~Person();
+    virtual ~Person(){}
 
-    static int getCount();
+    void setFirstName(const string& name) {firstName = name; }
+    void setLastName(const string& name) {lastName = name; }
+    void setIdCode(const string& id) {idCode = id; }
 
-    void setFirstName(const string& name);
-    void setLastName(const string& name);
-    void setIdCode(const string& id);
+    string getFirstName() {return firstName; }
+    string getLastName() {return lastName; }
+    string getIdCode() {return idCode; }
+    static int getCount() {return pCount; }
 
-    string getFirstName();
-    string getLastName();
-    string getIdCode();
 
     //sub-classes should override this and add logic specific to their fields
     virtual bool equals(Person* p);
@@ -157,7 +157,8 @@ struct StudentCourseInstance {
 
 class Professor : public Person {
 private:
-unordered_map <string, vector<pair<int,bool>>> profCourses;
+    unordered_map <string, vector<pair<int,bool>>> profCourses;
+
 public:
 
     Professor();
@@ -175,24 +176,24 @@ public:
         j = json{{"firstName", p.firstName}, {"lastName", p.lastName}, {"idCode", p.idCode}};
         json courseMap = json::object();
         for (const auto& coursePair : p.profCourses) {
-            const string& courseName = coursePair.first;
-            const auto& yearWinterPairs = coursePair.second;
-            json pairsArray = json::array();
-            for (const auto& yearWinterPair : yearWinterPairs) {
-                int year = yearWinterPair.first;
-                bool isWinter = yearWinterPair.second;
-                pairsArray.push_back({{"Year", year}, {"isWinter", isWinter}});
+            const string& courseCode = coursePair.first;
+            const auto& semesterPairs = coursePair.second;
+            json semArray = json::array();
+            for (const auto& pair : semesterPairs) {
+                int year = pair.first;
+                bool isWinter = pair.second;
+                semArray.push_back({{"Year", year}, {"isWinter", isWinter}});
             }
-            courseMap[courseName] = pairsArray;
+            courseMap[courseCode] = semArray;
         }
         j["profCourses"] = courseMap;
     }
 
     friend void from_json(const json& j, Professor& p);
 
-    void addCourse(string courseName, int year, bool season);
+    void addCourse(string courseCode, int year, bool season);
 
     unordered_map<string, vector<pair<int,bool>>> getProfCourses();
 
-    void eraseCourse(string name);
+    void eraseCourse(string code);
 };

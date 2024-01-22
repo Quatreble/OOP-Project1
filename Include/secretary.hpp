@@ -13,6 +13,7 @@
 
 using namespace std;
 class Person;
+class Professor;
 
 
 class Secretary {
@@ -62,7 +63,7 @@ public:
 
     Student* findStudent(const string& id);
     Professor* findProfessor(const string& id);
-    Course* findCourse(string code);
+    Course* findCourseByCode(string code);
 
     void printSecSize();
 

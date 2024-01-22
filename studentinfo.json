@@ -85,27 +85,23 @@
         "registrationYear": 2019
     },
     {
-        "coursesWithGrades": null,
-        "currentPoints": 0,
-        "firstName": "Konstantinos",
-        "idCode": "sdi0900333",
-        "lastName": "Sotiriadis",
-        "mandatoryPassed": 0,
-        "registrationYear": 2021
-    },
-    {
         "coursesWithGrades": {
             "Arxitektonikh": {
                 "grade": 7,
                 "isWinter": false,
                 "year": 2023
+            },
+            "Math": {
+                "grade": 7,
+                "isWinter": true,
+                "year": 2023
             }
         },
-        "currentPoints": 8,
+        "currentPoints": 13,
         "firstName": "Arsenis",
-        "idCode": "sdi00000",
-        "lastName": "Tade",
-        "mandatoryPassed": 1,
+        "idCode": "sdi000",
+        "lastName": "idk",
+        "mandatoryPassed": 2,
         "registrationYear": 2023
     }
 ]

@@ -347,7 +347,7 @@ void Secretary::deleteCourse(){
     string name;
     cout << "Enter Course code: ";
     cin >> name;     
-    Course* course = findCourse(name);
+    Course* course = findCourseByCode(name);
     if (course != nullptr){
         jsonRemoveCourse(*course);
         removeCourse(*course);
@@ -377,10 +377,9 @@ Professor* Secretary::findProfessor(const string& id){
 }
 
 
-Course* Secretary::findCourse(string code){
+Course* Secretary::findCourseByCode(string code){
     for (auto& element : depCourses){
         if (element.second->getCode() == code){
-            cout << "Found course \n";
             return element.second;
         }
     }
@@ -529,7 +528,7 @@ void Secretary::setCourseProf(){
         Professor* prof = readAndValidateProfessor();
         if(prof==nullptr) return;
         sem->addProfToCourse(course, prof);
-        prof->addCourse(course->getName(),sem->getYear(),sem->getSeason());
+        prof->addCourse(course->getCode(),sem->getYear(),sem->getSeason());
         jsonModifyProf(*prof,prof->getIdCode());
     }
 }
@@ -617,7 +616,7 @@ void Secretary::getGrades(){
             cout << "NO GRADES FOR THE CURRENT SEMESTER\n";
             return;
         }
-        sem->printStudStats(stud);
+        sem->printStudGrades(stud);
     }
     if (op == 2){
         stud->printGrades();
@@ -684,7 +683,7 @@ Course* Secretary::readAndValidateCourse(){
     cout << "Enter the course code: ";
     string code;
     cin >> code;
-    Course* course = findCourse(code);
+    Course* course = findCourseByCode(code);
     if (course == nullptr){
         cout << "Course not found\n";
     }
@@ -799,8 +798,8 @@ void Secretary::readProfessorCourses(Professor* prof){
                 semTemp.setSeason(pair.second);
                 sem = addSemester(semTemp);
             }
-            Course* course = findCourseByName(element.first);
-            sem->addProfToCourse(course,prof,false);
+            Course* course = findCourseByCode(element.first);
+            sem->addProfToCourse(course, prof, false);
         }
     }
 }

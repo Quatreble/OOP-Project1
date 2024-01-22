@@ -1,13 +1,9 @@
 #pragma once
 
 #include <limits>
-#include <fstream>
-#include <iostream>
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "json.hpp"
 #include "person.hpp"
 
 using namespace std;
@@ -23,7 +19,6 @@ private:
     int registered;
     int year;
     string season;
-   // vector<Student> studentsWhoPassed;
 
 public:
 
@@ -35,41 +30,33 @@ public:
                                    year,
                                    season)
 
-    Course();
+    Course() : registered(0){}
 
-    Course(string nameIn, int academicPointsIn, bool isMandatoryIn, int semsterIn);
+    Course(string nameIn, int academicPointsIn, bool isMandatoryIn);
 
-    // Course(const Course& other);
-
-    ~Course();
+    //Course(const Course& other);
 
     unique_ptr<Course> clone() const;
 
-    void setName(string name);
-    void setAcademicPoints(int points);
-    void setMand(string c);
+    void setName(string name) {this->name = name; }
+    void setAcademicPoints(int points) {academicPoints = points; }
+    void setMand(string c) {isMandatory = (c == "y" || c == "Y"); }
+    void setYear(int newYear) {year = newYear; }
+    void setSemester(string newSeason) {season = newSeason; }
 
-    string getName() const;
-    int getAcademicPoints() const;
-    bool getMand() const;
-    string getCode(){ return code;  }
-    int getYear(){  return year; }
+    string getName() const {return name; }
+    int getAcademicPoints() const {return academicPoints; }
+    bool getMand() const {return isMandatory; }
+    string getCode() const {return code; }
+    int getYear() const {return year; }
+    int registeredNumber() const {return registered; }
+    bool getSeason() const {return season == "w"; }
 
-    void addStudentsWhoPassed(Student& stud);
-    void printStudentsWhoPassed();
-    int passedNumber();
-
-    void incrRegistered();
-    int registeredNumber();
-
-    friend istream& operator>>(istream& is, Course& course);
+    void incrRegistered(){ ++registered; }
 
     bool operator==(const Course& other) const;
 
-    bool getSeason();
+    friend istream& operator>>(istream& is, Course& course);
 
-    void setYear(int newYear);
-
-    void setSemester(string newSeason);
 };
 

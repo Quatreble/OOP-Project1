@@ -4,7 +4,7 @@
         "idCode": "sdi123",
         "lastName": "Famelhs",
         "profCourses": {
-            "Math": [
+            "123": [
                 {
                     "Year": 2023,
                     "isWinter": true
@@ -14,10 +14,27 @@
                     "isWinter": true
                 }
             ],
-            "ergashtrio": [
+            "700": [
                 {
                     "Year": 2023,
                     "isWinter": true
+                },
+                {
+                    "Year": 2022,
+                    "isWinter": true
+                }
+            ]
+        }
+    },
+    {
+        "firstName": "Nikos",
+        "idCode": "sdi69",
+        "lastName": "Damdimopoulos",
+        "profCourses": {
+            "543": [
+                {
+                    "Year": 2021,
+                    "isWinter": false
                 }
             ]
         }

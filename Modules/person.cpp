@@ -15,34 +15,6 @@ Person::Person(string fName, string lName, string id)
     pCount++;
 }
 
-Person::~Person() {}
-
-
-
-void Person::setFirstName(const string& name){
-    firstName = name;
-}
-
-void Person::setLastName(const string& name){
-    lastName = name;
-}
-
-void Person::setIdCode(const string& id){
-    idCode = id;
-}
-
-string Person::getFirstName() {
-    return firstName;
-}
-
-string Person::getLastName() {
-    return lastName;
-}
-
-string Person::getIdCode() {
-    return idCode;
-}
-
 //sub-classes should override this and add logic specific to their fields
 bool Person::equals(Person* p){
     return (firstName == p->firstName && lastName == p->lastName && idCode == p->idCode); 
@@ -51,27 +23,19 @@ bool Person::equals(Person* p){
 //initialize static member
 int Person::pCount = 0;
 
-int Person::getCount(){
-    return pCount;
-}
-
 //overloaded operators <<, >> for input and output of Person objects
 ostream& operator<<(ostream& os, const Person& p) {
-    os << "Name: " << p.firstName << " " << p.lastName << ", " << "ID code: " << p.idCode;
-    // Student* stud = dynamic_cast<Student *> (&p);
-    // if (stud != nullptr){
-    //     os << ", year of registration: " << stud->getReg();
-    // }
-    os << endl;
+    os << "NAME: " << p.firstName << " " << p.lastName << ", " << "ID: " << p.idCode;
+    os << '\n';
     return os;
 }
 
 istream& operator>>(std::istream& is, Person& p){
-    cout << "Enter first Name, last Name and ID code: " << endl;
+    cout << "ENTER FIRST NAME, LAST NAME AND ID CODE: " << endl;
     is >> p.firstName >> p.lastName >> p.idCode;
     Student* stud = dynamic_cast<Student *> (&p);
     if (stud != nullptr){
-        cout << "Enter year of registration: ";
+        cout << "ENTER YEAR OF REGISTRATION: ";
         int reg;
         cin >> reg;
         stud->setReg(reg);
@@ -85,15 +49,11 @@ istream& operator>>(std::istream& is, Person& p){
 
 Student::Student()
 : Person()
-{
-    //cout << "Constructed student!" << endl;
-}
+{}
 
 Student::Student(string fName, string lName, string id, int regYear)
 : Person(fName, lName, id), registrationYear(regYear)
-{
-    //cout << "Constructed student!" << endl;
-}
+{}
 
 void Student::deleteCoursesWithGrades(){
     for(auto& it: coursesWithGrades){
@@ -108,7 +68,7 @@ Student* Student::clone(){
 
 //for now we just check equality of the super-class Person
 bool Student::equals(Student* s) {
-    return Person::equals(s);
+    return Person::equals(s) && registrationYear == s->getReg();
 }
 
 int Student::getSemesterCount() {
@@ -122,61 +82,6 @@ int Student::getAcademicPoints(){
 void Student::incrAcademicPoints(int p){
     currentPoints += p;
 }
-
-// void Student::studAddCourse(Course& course){
-//     // if (course.getSemester() > currentSemester){
-//     //     cout << "Student can't register. Lesson is at bigger semester\n";
-//     //     return;
-//     // }
-//     for (auto& element : coursesWithGrades){
-//         const Course& vecCourse = element.first;
-//         if (course == vecCourse){
-//             cout << "Student already registered\n";
-//             return;
-//         }
-//     }
-//     course.incrRegistered();
-//     coursesWithGrades.push_back(make_pair(course,-1));
-
-//     cout << "Student " << getFirstName() << " " << getLastName() << " is now registered in " << course.getName() << '\n';
-// }
-
-// void Student::studentChangeGrade(Course& course){
-//     for (auto& element : coursesWithGrades){
-//         Course& c = element.first;
-//         if (c == course){
-//             int grade;
-//             bool error;
-//             do {
-//                 error = false;
-//                 cout << "Enter desired grade: ";
-//                 cin >> grade;
-//                 if (grade < 0 || grade > 10){
-//                     cout << "Wrong input";
-//                     error = true;
-//                 }
-//             }while (error);
-
-//             if (element.second == -1){
-//                 if (grade >= 5){
-//                     course.addStudentsWhoPassed(*this);
-//                     incrAcademicPoints(course.getAcademicPoints());
-//                     if(course.getMand()){
-//                         ++mandatoryPassed;
-//                     }
-//                 }
-//                 element.second = grade;
-//                 cout << "Grade was changed to " << element.second << '\n';
-//             }
-//             else{
-//                 cout << "Student already graded\n";
-//             }
-//             return;
-//         }
-//     }
-//     cout << "Student not registered to course\n";
-
-// }
 
 void Student::printGrades(){
     for (auto& element : coursesWithGrades){
@@ -254,15 +159,11 @@ void Student::eraseCourse(string name){
 
 Professor::Professor()
 : Person()
-{
-    //cout << "Constructed Professor!" << endl;
-}
+{}
 
 Professor::Professor(string fName, string lName, string id)
 : Person(fName, lName, id)
-{
-    //cout << "Constructed Professor!" << endl;
-}
+{}
 
 //dynamically allocates and returns a copy of Professor 
 Professor* Professor::clone(){
@@ -286,30 +187,30 @@ void from_json(const json& j, Professor& p) {
     j.at("idCode").get_to(p.idCode);
     json courseMap = j.at("profCourses");
     for (const auto& courseItem : courseMap.items()) {
-        const string& courseName = courseItem.key();
-        const json& pairsArray = courseItem.value();
-        vector<pair<int, bool>> yearWinterPairs;
-        for (const auto& item : pairsArray) {
+        const string& courseCode = courseItem.key();
+        const json& semArray = courseItem.value();
+        vector<pair<int, bool>> semesterPairs;
+        for (const auto& item : semArray) {
             int year = item.at("Year");
             bool isWinter = item.at("isWinter");
-            yearWinterPairs.emplace_back(year, isWinter);
+            semesterPairs.emplace_back(year, isWinter);
         }
-        p.profCourses[courseName] = yearWinterPairs;
+        p.profCourses[courseCode] = semesterPairs;
     }
 }
 
-void Professor::addCourse(string CourseName, int year, bool season){
-    profCourses[CourseName].push_back(make_pair(year,season));
+void Professor::addCourse(string CourseCode, int year, bool season){
+    profCourses[CourseCode].push_back(make_pair(year,season));
 }
 
 unordered_map<string,vector<pair<int,bool>>> Professor::getProfCourses(){
     return profCourses;
 }
 
-void Professor::eraseCourse(string name){
+void Professor::eraseCourse(string code){
     for (auto& element : profCourses){
-        if (element.first == name){
-            profCourses.erase(name);
+        if (element.first == code){
+            profCourses.erase(code);
         }
     }
 }
