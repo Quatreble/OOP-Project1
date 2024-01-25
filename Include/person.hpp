@@ -68,7 +68,7 @@ private:
     unordered_map<string, SemesterGradeInstance*> coursesWithGrades;
 
 public:
-    Student();
+    Student():Person(){};
     Student(string fName, string lName, string id, int regYear);
     Student(const Person& p)
     : Person(p)
@@ -87,12 +87,12 @@ public:
         registrationYear = regYear;
     }
 
-    int getSemesterCount();
+    int getSemesterCount(){return currentSemester; }
     int getReg() {return registrationYear;}
-    int getAcademicPoints();
+    int getAcademicPoints(){return currentPoints; }
     int getMandatoryPassed() {return mandatoryPassed;}
 
-    void incrAcademicPoints(int p);
+    void incrAcademicPoints(int p){currentPoints += p; }
 
     void studAddCourse(Course& course);
     void studentChangeGrade(Course& course);
@@ -100,8 +100,8 @@ public:
     void printGrades();
 
     void addCourseWithGrade(Course* course, SemesterGradeInstance* semGrade);
-
     int getCourseGrade(Course* course);
+    void eraseCourse(string name);
 
     void to_json(json& j, const Student& student, bool printCoursesWithGrades = true) {
         j = json{
@@ -111,7 +111,6 @@ public:
             {"registrationYear", student.registrationYear},
             {"mandatoryPassed", student.mandatoryPassed},
             {"currentPoints", student.currentPoints}
-            // Add other fields as necessary
         };
 
         if (printCoursesWithGrades == true){
@@ -130,8 +129,6 @@ public:
 
     unordered_map<string, SemesterGradeInstance*> getCoursesWithGrades();
 
-    void eraseCourse(string name);
-
 };
 
 struct StudentCourseInstance {
@@ -149,7 +146,6 @@ struct StudentCourseInstance {
         return j;
     }
 
-    // Declare from_json as a friend function
     friend void from_json(const nlohmann::json& j, StudentCourseInstance& sci);
 };
 
@@ -161,7 +157,7 @@ private:
 
 public:
 
-    Professor();
+    Professor():Person(){};
     Professor(string fName, string lName, string id);
     Professor(const Person& p)
     : Person(p)
@@ -171,6 +167,8 @@ public:
 
     //for now we just check equality of the super-class Person
     virtual bool equals(Professor* f);
+
+    unordered_map<string, vector<pair<int,bool>>> getProfCourses(){return profCourses; }
 
     friend void to_json(json& j, const Professor& p) {
         j = json{{"firstName", p.firstName}, {"lastName", p.lastName}, {"idCode", p.idCode}};
@@ -192,8 +190,6 @@ public:
     friend void from_json(const json& j, Professor& p);
 
     void addCourse(string courseCode, int year, bool season);
-
-    unordered_map<string, vector<pair<int,bool>>> getProfCourses();
 
     void eraseCourse(string code);
 };

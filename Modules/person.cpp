@@ -47,10 +47,6 @@ istream& operator>>(std::istream& is, Person& p){
 //////Student class functions///////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Student::Student()
-: Person()
-{}
-
 Student::Student(string fName, string lName, string id, int regYear)
 : Person(fName, lName, id), registrationYear(regYear)
 {}
@@ -63,7 +59,13 @@ void Student::deleteCoursesWithGrades(){
 
 //dynamically allocates and returns a copy of Student 
 Student* Student::clone(){
-    return new Student(*this);
+    try {
+        return new Student(*this);
+    }
+    catch(const bad_alloc &e){
+        cerr << "Memory allocation failed: " << e.what() << '\n';
+        return nullptr;
+    }
 }
 
 //for now we just check equality of the super-class Person
@@ -71,21 +73,9 @@ bool Student::equals(Student* s) {
     return Person::equals(s) && registrationYear == s->getReg();
 }
 
-int Student::getSemesterCount() {
-    return currentSemester;
-}
-
-int Student::getAcademicPoints(){
-    return currentPoints;
-}
-
-void Student::incrAcademicPoints(int p){
-    currentPoints += p;
-}
-
 void Student::printGrades(){
     for (auto& element : coursesWithGrades){
-        cout << "Course: " << element.first<< ", Grade: " << element.second->grade << '\n';
+        cout << "COURSE: " << element.first<< ", GRADE: " << element.second->grade << '\n';
     }
 }
 
@@ -106,6 +96,17 @@ int Student::getCourseGrade(Course* course){
     return -1;
 }
 
+void Student::eraseCourse(string name){
+    for (auto& element : coursesWithGrades){
+        if (element.first == name){
+            coursesWithGrades.erase(name);
+            if(element.second->grade >= 5){
+                mandatoryPassed--;
+            }
+        }
+    }
+}
+
 void from_json(const json& j, Student& student) {
     // Deserialize the basic student data
     j.at("firstName").get_to(student.firstName);
@@ -114,7 +115,6 @@ void from_json(const json& j, Student& student) {
     j.at("registrationYear").get_to(student.registrationYear);
     j.at("mandatoryPassed").get_to(student.mandatoryPassed);
     j.at("currentPoints").get_to(student.currentPoints);
-    // Add other fields as necessary
 
     // Deserialize coursesWithGrades
     if (j.contains("coursesWithGrades")) {
@@ -142,24 +142,9 @@ unordered_map<string, SemesterGradeInstance*> Student::getCoursesWithGrades() {
     return coursesWithGrades; 
 }
 
-void Student::eraseCourse(string name){
-    for (auto& element : coursesWithGrades){
-        if (element.first == name){
-            coursesWithGrades.erase(name);
-            if(element.second->grade >= 5){
-                mandatoryPassed--;
-            }
-        }
-    }
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////Professor class functions/////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-Professor::Professor()
-: Person()
-{}
 
 Professor::Professor(string fName, string lName, string id)
 : Person(fName, lName, id)
@@ -178,7 +163,7 @@ Professor* Professor::clone(){
 
 //for now we just check equality of the super-class Person
 bool Professor::equals(Professor* f) {
-    return Professor::equals(f);
+    return Person::equals(f);
 }
 
 void from_json(const json& j, Professor& p) {
@@ -201,10 +186,6 @@ void from_json(const json& j, Professor& p) {
 
 void Professor::addCourse(string CourseCode, int year, bool season){
     profCourses[CourseCode].push_back(make_pair(year,season));
-}
-
-unordered_map<string,vector<pair<int,bool>>> Professor::getProfCourses(){
-    return profCourses;
 }
 
 void Professor::eraseCourse(string code){

@@ -12,23 +12,21 @@
 #include "semester.hpp"
 
 using namespace std;
-class Person;
-class Professor;
-
 
 class Secretary {
 private:  
     string depName;
     int depSemesters;
-    //bool endSemester;
-    unordered_map<string, Professor*> depProfessors; 
-    unordered_map<string, Student*> depStudents; 
-    unordered_map<string, Course*> depCourses;  
-    vector<Semester*> semesters;
     int pointsToGraduate;
     int currYear;
     char currSeason;
     int numOfMandatory = 0;
+
+    unordered_map<string, Professor*> depProfessors; 
+    unordered_map<string, Student*> depStudents; 
+    unordered_map<string, Course*> depCourses;  
+    vector<Semester*> semesters;
+
     json jCourses;
     json jProfessors;
     json jStudents;
@@ -42,10 +40,30 @@ public:
     void printMenu();
     void SecretaryOperation();
 
-    void addPerson(Student& s, bool printStatement = true, bool manualAdd = true);
-    void addPerson(Professor& p, bool printStatement = true, bool manualAdd = true);
+    void printSecSize(){cout << "PEOPLE IN SECRETARY: " << depStudents.size() + depProfessors.size() << endl; }
+    void setSecName(const string& dep){ depName = dep;}
+    const string& getSecName(){ return depName; }
+    int getNumOfMandatory() { return numOfMandatory; }
+
+    Semester* getCurrSem();
+
+    void setCourseProf();
+    void registerStudentToCourse();
+    void gradeStudents();
+    void printStudentsWhoPassed();
+    void printProfStats();
+    void getGrades();
+    void printGraduates();
+
+    static Student* isStudent(Person *p);
+    static Professor* isProfessor(Person *p);
+
     void readAndAddProfessor();
     void readAndAddStudent();
+    void readAndAddCourse();
+
+    void addPerson(Student& s, bool printStatement = true, bool manualAdd = true);
+    void addPerson(Professor& p, bool printStatement = true, bool manualAdd = true);
     void addCourse(Course& course,bool manualAdd = true);
     Semester* addSemester(Semester& toAdd);
     
@@ -64,47 +82,24 @@ public:
     Student* findStudent(const string& id);
     Professor* findProfessor(const string& id);
     Course* findCourseByCode(string code);
-
-    void printSecSize();
-
-    void setSecName(const string& dep);
-
-    const string& getSecName();
-    Semester* getCurrSem();
-    int getNumOfMandatory() { return numOfMandatory; }
-
-    static Student* isStudent(Person *p);
-    static Professor* isProfessor(Person *p);
-
-    Secretary& operator+(Student& p);
-    Secretary& operator+(Professor& p);
-    Secretary& operator+=(const Secretary& sec);
-    Secretary& operator=(const Secretary& sec);
-
-    friend ostream& operator<<(ostream& os, Secretary& secretary);
-    friend istream& operator>>(istream& is, Secretary& secretary);
-
-    void setCourseProf();
-    void registerStudentToCourse();
-    void gradeStudents();
-    void printStudentsWhoPassed();
-    void printProfStats();
-    void getGrades();
-    void printGraduates();
+    Course* findCourseByName(string name);
 
     Student* readAndValidateStudent();
     Professor* readAndValidateProfessor();
     Course* readAndValidateCourse();
     Semester* readAndValidateSemester();
 
-
     void readStudentsFromFile();
     void readProfessorsFromFile();
     void readCourseFromFile();
 
+    void readCoursesAndGrades(Student* stud);
+    void readProfessorCourses(Professor* prof);
+
     void printStudentToFile(Student& student);
     void printProfessorToFile(Professor& professor);
     void printCourseToFile(Course& course);
+    void printJson(string fileName, json& array);
 
     void jsonModifyProf(Professor& prof, string id);
     void jsonModifyStud(Student& stud, string id);
@@ -114,14 +109,14 @@ public:
     void jsonRemoveStudent(Student& stud);
     void jsonRemoveCourse(Course& course);
 
-    void readCoursesAndGrades(Student* stud);
-
-    Course* findCourseByName(string name);
-
-    void printJson(string fileName, json& array);
-
     void readCurrentDate();
 
-    void readProfessorCourses(Professor* prof);
+    Secretary& operator+(Student& p);
+    Secretary& operator+(Professor& p);
+    Secretary& operator+=(const Secretary& sec);
+    Secretary& operator=(const Secretary& sec);
+
+    friend ostream& operator<<(ostream& os, Secretary& secretary);
+    friend istream& operator>>(istream& is, Secretary& secretary);
 
 };
