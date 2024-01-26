@@ -142,24 +142,32 @@ void Secretary::SecretaryOperation(){
     
 }
 
+// using the appropriate readAndValidateXX function, register given to Professor to given Course for Given Semester
 void Secretary::setCourseProf(){
-    Semester* sem = readAndValidateSemester();
+    Semester* sem = readAndValidateSemester(); //checks
     Course* course = readAndValidateCourse();
     if(course != nullptr){
         Professor* prof = readAndValidateProfessor();
         if(prof==nullptr) return;
-        sem->addProfToCourse(course, prof);
-        prof->addCourse(course->getCode(),sem->getYear(),sem->getSeason());
-        jsonModifyProf(*prof,prof->getIdCode());
+        sem->addProfToCourse(course, prof); // in given semester add professor to course's professors
+        prof->addCourse(course->getCode(),sem->getYear(),sem->getSeason()); // Course-Professor connection is made by and stored in Semester class
+        jsonModifyProf(*prof,prof->getIdCode()); // update the professorInfo file after this registration
     }
 }
 
+// register given student to given course for given semester
+// there are certain additional checks to be made for this registration:
+// 1. student may not register if they have already passed this course
+// 2. student can only register to a course of the current season with student's year >= course's year 
+// (a student in semester 3(winter) can register to a semester 1(also winter) course) that they have not passed
+// 3. obviously, the student cannot register to courses on a higher academic year and lastly,
+// 4. the year of the semester for which they are trying to register must not be earlier than their registration year
 void Secretary::registerStudentToCourse(){
-    Student* stud = readAndValidateStudent();
+    Student* stud = readAndValidateStudent(); // input validity checks
     if (stud == nullptr) return;
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
-    if (course == nullptr) return;
+    if (course == nullptr) return; // checks for Student's registration eligibility
     if(sem->getSeason() != course->getSeason() || currYear > sem->getYear() || sem->getYear() - stud->getReg() < course->getYear() - 1 || sem->isRegistered(course, stud) != nullptr){
         cout << "STUDENT CAN'T REGISTER TO THIS COURSE\n";
         return;
@@ -168,25 +176,29 @@ void Secretary::registerStudentToCourse(){
         cout << "STUDENT HAS ALREADY PASSED COURSE\n";
         return;
     }
-    sem->addStudToCourse(course, stud);
+    sem->addStudToCourse(course, stud); // again the Course-Student connection is made by and stored in Semester class
 }
 
+
+// this functions allows to give a grade to a given student for a given course in a semester
+// the readAndValidate functions for each class operate as above
+// there is also a check for whether the student is registered to the course, and whether they have already been graded or not
 void Secretary::gradeStudents(){
     StudentCourseInstance* sci = nullptr;
     Semester* sem  = nullptr;
-    Student* stud = readAndValidateStudent();
+    Student* stud = readAndValidateStudent(); // read and check
     if (stud == nullptr) return;
     Course* course = readAndValidateCourse();
     if (course == nullptr) return;
-    for (Semester* semTemp : semesters){
-        StudentCourseInstance* sciTemp = semTemp->isRegistered(course, stud);
-        if (sciTemp != nullptr && sciTemp->grade == -1){
+    for (Semester* semTemp : semesters){ // iterate through Secretary::semesters
+        StudentCourseInstance* sciTemp = semTemp->isRegistered(course, stud); // if semester exists, check if the combination of given Student and Course are stored in it
+        if (sciTemp != nullptr && sciTemp->grade == -1){ // if the grade stored equals -1 (hasn't been graded yet), continue to change it
             sci = sciTemp;
             sem = semTemp;
             break;
         }
     }
-    if (sci != nullptr){
+    if (sci != nullptr){ // create a new SemesterGradeInstance and pass it to Student to store it along with the new grade through the function Student::addCourseWithGrade
         try{
             sem->gradeStud(sci);
             SemesterGradeInstance* semGrade = new SemesterGradeInstance;
@@ -194,11 +206,11 @@ void Secretary::gradeStudents(){
             semGrade->year = sem->getYear();
             semGrade->isWinter = sem->getSeason();
             stud->addCourseWithGrade(course, semGrade);
-            jsonModifyStud(*stud,stud->getIdCode());
+            jsonModifyStud(*stud,stud->getIdCode()); // update studentInfo file which contains information about students and their registered courses' grades
             return;
         }
-        catch (const bad_alloc &e){
-            cerr << "MEMORY ALLOCATION FAILES: " << e.what() << '\n';
+        catch (const bad_alloc &e){ // throw exception for bad allocation
+            cerr << "MEMORY ALLOCATION FAILED: " << e.what() << '\n';
             return;
         }
     }
@@ -210,6 +222,8 @@ void Secretary::gradeStudents(){
     
 }
 
+// mandatory checks and then call Semester::printPassed to print and write to a json file the info of the student that 
+// passed a given course in a given semester
 void Secretary::printStudentsWhoPassed(){
     Semester* sem = readAndValidateSemester();
     Course* course = readAndValidateCourse();
@@ -217,6 +231,8 @@ void Secretary::printStudentsWhoPassed(){
     sem->printPassed(course);
 }
 
+// operates as above, Semester::printProfStats prints the statistics of a certain course that a certain professor
+// is teaching in a semester 
 void Secretary::printProfStats(){
     Professor* prof = readAndValidateProfessor();
     if (prof == nullptr) return;
@@ -224,35 +240,50 @@ void Secretary::printProfStats(){
     sem->printProfStats(prof);
 }
 
+// read and validate a student, then give the following options:
+// (a) get all grades for registered courses of current semester
+// (b) get grade history of student(grades of all past semesters)
+// call corresponding functions: Semester::printStudGrades for (a)
+// Student::printGrades for (b)
+// the two functions although similar are of different classes
+// this is because for (a) we require data of just one semester, which is stored in a Semester class instance,
+// while for (b) we require all data for past semesters that concerns a Student object
+// and is stored inside it using the SemesterGradeInstance struct
 void Secretary::getGrades(){
-    Student* stud = readAndValidateStudent();
+    Student* stud = readAndValidateStudent(); // checks
     if (stud == nullptr) return;
     cout << "1. GRADES FOR CURRENT SEMESTER\n";
     cout << "2. GRADE HISTORY\n";
     int op;
     cin >> op;
     if (op == 1){
-        Semester* sem = getCurrSem();
+        Semester* sem = getCurrSem(); // assure that there is data stored for current semester
         if (sem == nullptr){
             cout << "NO GRADES FOR THE CURRENT SEMESTER\n";
             return;
         }
-        sem->printStudGrades(stud);
+        sem->printStudGrades(stud); // operation (a)
     }
     if (op == 2){
-        stud->printGrades();
+        stud->printGrades(); // operation (b)
     }
 }
 
+
+// print info of all students in secretary that are able to graduate
+// a student may graduate if they have:
+// 1. completed the years of study
+// 2. passed all mandatory courses
+// 3. collected the required number of academic points
 void Secretary::printGraduates(){
     Student* stud;
     bool grads = false;
-    for(auto& it: depStudents){
+    for(auto& it: depStudents){ // iterate through the department's students
         stud = it.second;
-        if(currYear - stud->getReg() >= depSemesters/2 && stud->getAcademicPoints() >= pointsToGraduate 
+        if(currYear - stud->getReg() >= depSemesters/2 && stud->getAcademicPoints() >= pointsToGraduate // required checks
         && stud->getMandatoryPassed() >= numOfMandatory){
             grads = true;
-            cout << *stud;
+            cout << *stud; // if student passed the check, print
         } 
     }
     if(grads == false){
@@ -260,6 +291,8 @@ void Secretary::printGraduates(){
     }
 }
 
+// iterates through the secretary's semesters, to find whether the current semester is logged/ there is info for it
+// semester equality is based on their year and season
 Semester* Secretary::getCurrSem(){
     int year = currYear;
     char sem = currSeason;
@@ -303,11 +336,18 @@ void Secretary::readAndAddCourse(){
     addCourse(c, true);
 }
 
+// this overloaded function takes as an argument either a Student& or a Professor& and adds them to their respective
+// unordered_maps Secretary::depStudents and Secretary::depProfessors (with their unique idCode as key) which store all of the department's members 
+// initially the Person::clone function is called, which dynamically allocates and creates a new Student/Professor and returns a
+// pointer to it which is what later gets inserted to the map
+// also the studentinfo.json/profinfo.json are respectively updated to contain the new member
+// there is also a check for whether this Person is already in the map, and a printStatement to let the user know
+// that the addition was successful
 void Secretary::addPerson(Student& s, bool printStatement, bool manualAdd){
-        Student* stud = s.clone();
-        auto check = depStudents.emplace(stud->getIdCode(),stud);
+        Student* stud = s.clone(); // clone, create pointer to be added to map
+        auto check = depStudents.emplace(stud->getIdCode(),stud); // emplace, if it already exists it isn't re-added to the map
         if (check.second && manualAdd){
-            printStudentToFile(*stud);
+            printStudentToFile(*stud); // update file
         }
         else if (!check.second && manualAdd){
             cout << "ID ALREADY EXISTS\n";
@@ -316,6 +356,7 @@ void Secretary::addPerson(Student& s, bool printStatement, bool manualAdd){
         if (printStatement) cout << "ADDED " << stud->getFirstName() << " TO " << depName << "!" << endl;
 }
 
+// ^^
 void Secretary::addPerson(Professor& p, bool printStatement, bool manualAdd){
         Professor* prof = p.clone();
         auto check = depProfessors.emplace(prof->getIdCode(),prof);
@@ -329,6 +370,8 @@ void Secretary::addPerson(Professor& p, bool printStatement, bool manualAdd){
         if (printStatement) cout << "ADDED " << prof->getFirstName() << " TO " << depName << "!" << endl;
 }
 
+// operates exactly like addPerson, only the dynamic allocation of the new Course is inside this funtion
+// if the Courses is mandatory, increment the number of the secretary's mandatory courses by 1
 void Secretary::addCourse(Course& c,bool manualAdd){
     try{
         Course* courseptr = new Course(c);
@@ -343,11 +386,12 @@ void Secretary::addCourse(Course& c,bool manualAdd){
             ++numOfMandatory;
         }
     }
-    catch(const bad_alloc& e){
+    catch(const bad_alloc& e){ // throw exception if unable to allocate space 
         cerr << "MEMORY ALLOCATION FAILED: " << e.what() << '\n';
     }
 }
 
+// same as above, semesters are stored in a vector
 Semester* Secretary::addSemester(Semester& toAdd){
     try{
         Semester* semptr = new Semester(toAdd);
@@ -360,20 +404,24 @@ Semester* Secretary::addSemester(Semester& toAdd){
     }
 }
 
+// these two functions for modifying a professor or a student inside the secretary operate as following:
+// the person's unique id code is given. If that person is found in the correspoinding map(depStudents/depProfessors)
+// the previous pair of code/Person* is removed from the map, while a new one is created using the user's input and inserted to the map
+// the json file which contains the student/professor info is also updated
 void Secretary::modifyProfessor(){
     cout << "INPUT PROFESSOR ID: ";
     string id;
     cin >> id;
     Professor* prof = findProfessor(id);
-    if (prof!=nullptr) {  //Check if person is professor
+    if (prof!=nullptr) {  // Check if person is professor and is in secretary
         string prevName = prof->getFirstName() + " " + prof->getLastName();
         string prevId = prof->getIdCode();
-        auto it = depProfessors.find(prof->getIdCode());
-        depProfessors.erase(it);
+        auto it = depProfessors.find(prof->getIdCode()); // find pair in map with previous info
+        depProfessors.erase(it); // remove it
         cout << "PLEASE ENTER THE NEW DATA: \n";
-        cin >> *prof;
-        depProfessors[prof->getIdCode()] = prof;
-        jsonModifyProf(*prof,prevId);
+        cin >> *prof; // read new data
+        depProfessors[prof->getIdCode()] = prof; // insert new data to map
+        jsonModifyProf(*prof,prevId); // write to file
         cout << "PROFESSOR " << prevName << " CHANGED TO " << prof->getFirstName() << " " << prof->getLastName() << '\n';
 
     } else{ //if person is found but isnt a professor
@@ -381,6 +429,7 @@ void Secretary::modifyProfessor(){
     }
 }
 
+// ^^
 void Secretary::modifyStudent(){
     cout << "INPUT STUDENT ID: ";
     string id;
@@ -402,6 +451,9 @@ void Secretary::modifyStudent(){
     }
 }
 
+// functions operates eaxctly as the ones above, with a slight difference:
+// a choice is given to the user for whether they want to modify all of the course's
+// attributes, or simply change the academic semester for which it is available
 void Secretary::modifyCourse(){
     Course* course = readAndValidateCourse();
     if (course == nullptr) return;
@@ -440,7 +492,9 @@ void Secretary::modifyCourse(){
     jsonModifyCourse(*course,prevCode);
 }
 
-//iterates vector until person with same properties is found(Person::equals function is used for this), delete Person, remove it from vector 
+// this overloaded function for Student and Professor
+// iterates vector until person with same properties is found(Person::equals function is used for this), delete Person, remove it from vector 
+// Secretary::depStudents and Secretary::depProfessors accordingly
 bool Secretary::removePerson(Student& s){
     auto it = depStudents.find(s.getIdCode());
     if(it != depStudents.end()){
@@ -452,6 +506,7 @@ bool Secretary::removePerson(Student& s){
     return false;
 }
 
+// ^^
 bool Secretary::removePerson(Professor& p){
     auto it = depProfessors.find(p.getIdCode());
     if(it != depProfessors.end()){
@@ -463,19 +518,22 @@ bool Secretary::removePerson(Professor& p){
     return false;
 }
 
+// same as above, but also erases any of the course's data that is stored by other objects(students, professors and semesters)
+// also decrease by 1 the number of secretary's mandatory courses if needed
+// updates any json with info that is needed
 void Secretary::removeCourse(Course& course){
     auto it = depCourses.find(course.getCode());
     if(it != depCourses.end()){
         cout << "ERASED " << course.getName() << '\n';
-        for (auto& element : depStudents){
+        for (auto& element : depStudents){ // erase from students
             element.second->eraseCourse(course.getName());
             jsonModifyStud(*element.second,element.second->getIdCode());
         }
-        for (auto& element : depProfessors){
+        for (auto& element : depProfessors){ // erase from professors
             element.second->eraseCourse(course.getName());
             jsonModifyProf(*element.second,element.second->getIdCode());
         }
-        for (Semester* sem : semesters){
+        for (Semester* sem : semesters){ // erase from semesters
             sem->eraseCourse(course.getCode());
         }
         if (course.getMand()){
@@ -488,6 +546,11 @@ void Secretary::removeCourse(Course& course){
     
 }
 
+// the following three delete functions operate as follows:
+// finds Professor/ Student/ Course whose id code is input and deletes them from secretary
+// utilizes Secretary::findProfessor/findStudent/findCourseByCode to get object pointer,
+// if it is not null, the corresponding remove function gets called and also the jsonRemove function,
+// in order to modify the json info file after deletion
 void Secretary::deleteProfessor(){
     cout << "INPUT PROFESSOR ID: ";
     string id;
@@ -501,6 +564,7 @@ void Secretary::deleteProfessor(){
     }
 }
 
+// ^^
 void Secretary::deleteStudent(){
     cout << "INPUT STUDENT ID: ";
     string id;
@@ -514,7 +578,7 @@ void Secretary::deleteStudent(){
     }
 }
 
-
+// ^^
 void Secretary::deleteCourse(){
     string name;
     cout << "INPUT COURSE CODE: ";
@@ -528,6 +592,9 @@ void Secretary::deleteCourse(){
         cout << "COURSE NOT FOUND\n";
 }
 
+// find function using a map is extremely simple
+// find the Student which corresponds to the given key, in this case
+// the id code, and if it exists return the object. else return nullptr
 Student* Secretary::findStudent(const string& id){
     auto itStud = depStudents.find(id);
     if (itStud != depStudents.end()){
@@ -536,6 +603,7 @@ Student* Secretary::findStudent(const string& id){
     return nullptr;
 }
 
+// same as above
 Professor* Secretary::findProfessor(const string& id){
     auto itProf = depProfessors.find(id);
     if (itProf != depProfessors.end()){
@@ -544,7 +612,7 @@ Professor* Secretary::findProfessor(const string& id){
     return nullptr;
 }
 
-
+// same as above
 Course* Secretary::findCourseByCode(string code){
     for (auto& element : depCourses){
         if (element.second->getCode() == code){
@@ -554,6 +622,9 @@ Course* Secretary::findCourseByCode(string code){
     return nullptr;
 }
 
+// find course by name, iterate the depCourses map and if 
+// a course's name equals the given string return that course
+// else return nullptr
 Course* Secretary::findCourseByName(string name){
     for (auto& element : depCourses){
         if (element.second->getName() == name){
