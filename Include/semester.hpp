@@ -22,6 +22,11 @@
 // the passedJson map helps us keep track of all the students who passed a given course in a certain semester
 // and then update(or create) the file in which this info is kept when the printPassed functions is called
 
+// the semester class is basically the connecting factor of all other classes in this project(student, professor, course)
+// and the Semester objects are handled by and stored in the secretary class
+// all info handled from the secretary, is stored and internally handled in the Semester class
+// it stores the folowing necessary associations: course-profesor and course-student-grade
+
 class Semester{
 private:
     int year;
@@ -49,9 +54,6 @@ public:
             }
         }
     }
-
-    // Semester(const Semester& other)
-    // : year(other.year), winterOrSummer(other.winterOrSummer) {}
 
     int getYear() const { return year; }
     bool getSeason() const {return winterOrSummer; }

@@ -14,6 +14,16 @@ class Course;
 using json = nlohmann::json;
 using namespace std;
 
+// this struct is stored alongside a course code(Course class identifier)
+// inside Student::coursesWithGrades. It serves as a connection between a semester, a course, and the Student's 
+// corresponding grade. When the program starts and a secretary is created, in studentsinfo.json besides the students basic info
+// there are are course-SemesterGradeInstance pairs that are also read and loaded. there pairs contain info about each course
+// for which a student has been graded in the past.
+// The macro NLOHMANN_DEFINE_TYPE_INTRUSIVE is used to facilitate serialization and 
+// deserialization with the nlohmann/json library. This macro makes it possible to 
+// automatically tie the member variables of this struct to corresponding fields in 
+// a json object
+
 struct SemesterGradeInstance {
     int grade, year;
     bool isWinter;
@@ -24,6 +34,8 @@ struct SemesterGradeInstance {
 
 };
 
+// abstract person class, is inherited by children classes Student and Professors. Basic attributes of 
+// person are: first name, last name and a unique id code
 class Person {
 protected:
     static int pCount; //counter for every Person object that is instantiated 
@@ -59,6 +71,12 @@ public:
     friend istream& operator>>(istream& is, Person& p);
 };
 
+// this class implements a student of a department and is a child class of person
+// the unique attributes of a studnet are: the current academic semester they are in(eg semester 3), 
+// their registration year, their current academic points and the number of mandatory courses they have passed
+// in the class there is also an unordered map associating a course(identified by its unique code) and a SemesterGradeInstance,
+// which contains the information about the semester in which they took that course and their grade for it
+// this map is useful for storing and having access to a student's grade history
 class Student : public Person {
 private:
     int currentSemester;
@@ -70,10 +88,6 @@ private:
 public:
     Student():Person(){};
     Student(string fName, string lName, string id, int regYear);
-    Student(const Person& p)
-    : Person(p)
-    {}
-
     ~Student(){}
 
     void deleteCoursesWithGrades();
@@ -103,6 +117,9 @@ public:
     int getCourseGrade(Course* course);
     void eraseCourse(string name, bool isMand);
 
+    // serialization of Student
+    // convert a Student object to its json represantation. to_json's functionality
+    // has been described above(see StudentCourseInstance)
     void to_json(json& j, const Student& student, bool printCoursesWithGrades = true) {
         j = json{
             {"firstName", student.firstName},
@@ -131,30 +148,40 @@ public:
 
 };
 
+// this struct contains a Student* and an integer grade variable
+// it is stored in an unordered map in Semester class where a vector containinig these structs
+// is associated to a course. This makes it easy to have access to all of a course's students and their grades
+// for a given semester
+// because for serialization and deserialization we need to handle a Student class object,
+// we dont use a macro for it but the two more specific functions: to_json and from_json
 struct StudentCourseInstance {
     Student* stud;
     int grade = -1;
 
+    // convert the current instance of SemesterGradeInstance to a json object.
     nlohmann::json to_json() const {
         nlohmann::json j = {
-            {"grade", grade}
+            {"grade", grade} // seiralize grade
         };
-
+        // create a new empty json object
         nlohmann::json studentJson;
-        stud->to_json(studentJson, *stud, false);
-        j["student"] = studentJson;   
+        stud->to_json(studentJson, *stud, false);// here we serialize the student data, for this the to_json of Student is called 
+        j["student"] = studentJson;  // assign the serialized student data to the "student" field of the object
         return j;
     }
 
     friend void from_json(const nlohmann::json& j, StudentCourseInstance& sci);
 };
 
-
-
+// this class implements a professor of a department and is a child class of person
+// it contains an unordered map which associates courses(by code) to semesters(year and season)
+// this map helps us store the courses that the professor has taught through the years
+// in the map are stored a string(unique id code) for the course and a year, int pair for the semester
+// and not a Course* or a Semester*. That does not pose a problem, as it is very easy and fast
+// to find an object of those classes given the right identifier
 class Professor : public Person {
 private:
     unordered_map <string, vector<pair<int,bool>>> profCourses;
-
 public:
 
     Professor():Person(){};
@@ -170,6 +197,7 @@ public:
 
     unordered_map<string, vector<pair<int,bool>>> getProfCourses(){return profCourses; }
 
+// to_json function operates as described above
     friend void to_json(json& j, const Professor& p) {
         j = json{{"firstName", p.firstName}, {"lastName", p.lastName}, {"idCode", p.idCode}};
         json courseMap = json::object();

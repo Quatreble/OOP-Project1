@@ -10,18 +10,29 @@ using namespace std;
 
 class Student;
 
+
+// this class represents a course of secretary
+// its basic attributes are the following:
+// name, unique id code, academic points, mandatory status,
+// **academic year and academic season(winter semester or summer semester)
+// the year and season attributes in a Course class instance can be changed
+// and their use is the following: they define the academic semester
+// for which the course is designated. eg, a course might be meant for students in their 3rd 
+// academic semester(year 2, winter season)
+// of course, as was mentioned, this is something that may be changed, for example a course
+// used to be for first year students and is now for second year students 
 class Course {
 private:
     string name;
     int academicPoints;
     bool isMandatory;
     string code;
-    int registered;
     int year;
     string season;
 
 public:
-
+    //  NLOHMANN_DEFINE_TYPE_INTRUSIVE macro declaration.
+    // this registers the member variables for automatic json serialization and deserialization
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(Course,
                                    name,
                                    isMandatory,
@@ -30,11 +41,9 @@ public:
                                    year,
                                    season)
 
-    Course() : registered(0){}
+    Course(){}
 
     Course(string nameIn, string codeIn, int academicPointsIn, bool isMandatoryIn);
-
-    //Course(const Course& other);
 
     unique_ptr<Course> clone() const;
 
@@ -49,10 +58,7 @@ public:
     bool getMand() const {return isMandatory; }
     string getCode() const {return code; }
     int getYear() const {return year; }
-    int registeredNumber() const {return registered; }
     bool getSeason() const {return season == "w"; }
-
-    void incrRegistered(){ ++registered; }
 
     bool operator==(const Course& other) const;
 

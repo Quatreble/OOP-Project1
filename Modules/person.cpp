@@ -118,10 +118,13 @@ void Student::eraseCourse(string name, bool isMand){
     }
 }
 
-// this overloaded function makes it possible to convert a json object to a student object with a single function call(get_to)
-// it determines how a student's attributes should passed from a json object to a student object
+// deserialize a json object into a Student object
+// this function takes a json object representing a student and parses it
+// to fill the fields of a Student object. The json structure is expected to include the student's
+// first and last name, id code, registration year, information about mandatory courses passed,
+// current academic points and a list of courses with grades.
 void from_json(const json& j, Student& student) {
-    // deserialize the basic student data
+    // deserialize basic student data
     j.at("firstName").get_to(student.firstName);
     j.at("lastName").get_to(student.lastName);
     j.at("idCode").get_to(student.idCode);
@@ -133,7 +136,7 @@ void from_json(const json& j, Student& student) {
     if (j.contains("coursesWithGrades")) { // if there are courses with grades in the student's data, load them as well
         const json& coursesJson = j.at("coursesWithGrades");
         for (const auto& item : coursesJson.items()) {
-            string courseName = item.key();
+            string courseName = item.key(); // this is a mapping of course names to their corresponding grades and semesters
             SemesterGradeInstance* gradeInstance = new SemesterGradeInstance;
             from_json(item.value(), *gradeInstance); 
 
@@ -144,7 +147,7 @@ void from_json(const json& j, Student& student) {
     }
 }
 
-// makes a new StudentcourseInstance from json file
+// deserializes studentCourseInstance
 void from_json(const nlohmann::json& j, StudentCourseInstance& sci) {
     Student temp_student;
     j.at("student").get_to(temp_student);
@@ -180,20 +183,40 @@ bool Professor::equals(Professor* f) {
     return Person::equals(f);
 }
 
+
+// deserialize a json object into a Professor object
+// this function takes a json object representing a professor and parses it
+// to fill the fields of a Professor object. The expected json
+// structure includes the professor's first name, last name, id code, and a
+// map of courses they teach, along with the semesters and years those
+// courses are taught.
 void from_json(const json& j, Professor& p) {
+    // assign basic attributes: first name, last name, and id code
     j.at("firstName").get_to(p.firstName);
     j.at("lastName").get_to(p.lastName);
     j.at("idCode").get_to(p.idCode);
+
+    // extract the mapping of courses
     json courseMap = j.at("profCourses");
     for (const auto& courseItem : courseMap.items()) {
+        // extract course code as key
         const string& courseCode = courseItem.key();
         const json& semArray = courseItem.value();
+
+        // vector for year-season of semester pairs
         vector<pair<int, bool>> semesterPairs;
+
+        // iterate semester array
         for (const auto& item : semArray) {
+            // extract semester info
             int year = item.at("Year");
             bool isWinter = item.at("isWinter");
+
+            // store semester info as pair
             semesterPairs.emplace_back(year, isWinter);
         }
+
+        // assign the semester pairs to the respective course in profCourses
         p.profCourses[courseCode] = semesterPairs;
     }
 }

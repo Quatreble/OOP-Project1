@@ -9,7 +9,7 @@
 // read Person and Course data from files, create Student, 
 // Professor, Course and Semester instances accordingly and add them to secretary
 // finally, read the semester for which the program is ran and call secretaryOperation() to begin operations
-Secretary::Secretary(const string& dep, int sem, int reqPoints, int year, char season) 
+Secretary::Secretary(const string& dep, int sem, int reqPoints) 
 : depName(dep), depSemesters(sem), pointsToGraduate(reqPoints) 
 {                                                              
     readCourseFromFile();
@@ -748,14 +748,18 @@ void Secretary::readCourseFromFile(){
     }
 }
 
-
+// this function takes the data stored in student after reading the studentinfo.json file
+// at the start of the program and creates the necessary objects and connections to store that
+// info properly in secretary. eg. we have a student registered to a course in X semester who has also been graded
+// and we want to create that semester and store in it that data. remember that the semester class is the one that connects
+// course to student to grade for secretary
 void Secretary::readCoursesAndGrades(Student* stud){
     unordered_map<string, SemesterGradeInstance*> map;
-    map = stud->getCoursesWithGrades();
+    map = stud->getCoursesWithGrades(); // get info from student 
     for (auto& element : map){
         Course* course;
         Semester* sem = nullptr;
-        for(auto semptr : semesters){
+        for(auto semptr : semesters){ // iterate map with course-semester-grade info. if a semester in that map does not exist in secretary, create it
             if(semptr->getYear() == element.second->year && semptr->getSeason() == element.second->isWinter){
                 sem = semptr;
             }
@@ -768,13 +772,15 @@ void Secretary::readCoursesAndGrades(Student* stud){
         }
         course = findCourseByName(element.first);
         if (!course) return;
-        sem->addStudToCourse(course,stud, false);
+        sem->addStudToCourse(course,stud, false); // register student to course in semester
         StudentCourseInstance* sci = sem->isRegistered(course, stud);
         if (!sci) return;
-        sci->grade = element.second->grade;
+        sci->grade = element.second->grade; // store the grade also in semester
     }
 }
 
+//this functions works similarly to the one above, but for professor and the courses they've teached in a semester
+// takes the info from inside professor class, creates semester if needed and passes the info to it (in the Semester courseProfs map)
 void Secretary::readProfessorCourses(Professor* prof){
     unordered_map<string,vector<pair<int,bool>>> map;
     map = prof->getProfCourses();

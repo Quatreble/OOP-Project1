@@ -2,18 +2,16 @@
 
 // find given course, and if given student is registered to it return the StudentCourseInstance*, else return nullptr
 StudentCourseInstance* Semester::isRegistered(Course* course, Student* stud){
-    for (auto& element : courseStuds){ // iterate courseStuds intil you find course
-        if (element.first == course){
-            for (StudentCourseInstance* sci : element.second){ // iterates course's students until you findStudent
-                if (sci->stud->getIdCode() == stud->getIdCode()){
-                    return sci; // return sci if found 
-                }
+    auto it = courseStuds.find(course);
+    if (it != courseStuds.end()){ // try to find course in courseStuds
+        for (StudentCourseInstance* sci : it->second){ // iterates course's students until you find Student
+            if (sci->stud->getIdCode() == stud->getIdCode()){
+                return sci; // return sci if found 
             }
         }
     }
     return nullptr;
 }
-
 // add given to student to given course
 // to do this a SemesterGradeInstance must first be created with the student and their grade(initialized to -1)
 void Semester::addStudToCourse(Course* c, Student* s, bool print){

@@ -13,6 +13,28 @@
 
 using namespace std;
 
+// this class represents the secretary of a department
+// it is responsible for storing, delete, modifying, etc.
+// members of the department(students and professors) and its courses
+// this class makes all the calls about registering mewmbers, to courses, grading, member's data, etc.
+// more specifically, by handling the program's four basic classes: Semester, Course, Student and Professor
+// it implements the following operations:
+// 1. add/modify/remove a student/professor/course
+// 2. register student/professor to course
+// 3. grade students/ get students current and past grades
+// 4. get professor's teaching statistics
+// 5. define who can graduate
+// very importantly, the secretary is also responsible for the file-handling
+// there are files which contain student, professors, course and grade data
+// these are all updated and modified by the secretary class when necessary
+// to facilitate file handling, the class contains four json arrays, one for each of the 4 basic classes
+// it also contains three maps to store professors, students and courses respectively and a vector for the semesters
+// the reason we chose an unordered map for the first three is the following:
+// in the map we store as data an Object* and the associated key is each object's unique id code. This makes for a very quick code based search
+// which is what we needed most. 
+// a secretary's basic attributes are the following: department name, number of academic semesters, number of academic points needed to graduate, 
+// number of mandatory courses and finally the year and season for which a secretary object is operating
+
 class Secretary {
 private:  
     string depName;
@@ -33,7 +55,7 @@ private:
     json jSemesters;
 
 public:
-    Secretary(const string& dep, int sem, int reqPoints, int currYear, char currSeason);
+    Secretary(const string& dep, int sem, int reqPoints);
     ~Secretary();
     Secretary(const Secretary& sec);
 

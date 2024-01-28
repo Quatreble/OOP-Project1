@@ -2,7 +2,7 @@
 
 // constructor, initializes course attributes
 Course::Course(string nameIn, string codeIn, int academicPointsIn, bool isMandatoryIn)
-    : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn), code(codeIn), registered(0) 
+    : name(nameIn), academicPoints(academicPointsIn), isMandatory(isMandatoryIn), code(codeIn)
 {
     cout << "COURSE CREATED\n";
 }
@@ -14,7 +14,7 @@ unique_ptr<Course> Course::clone() const{
 
 // equality operator overload, compares all attributes of course
 bool Course::operator==(const Course& other) const {
-    return name == other.name && academicPoints == other.academicPoints && code == other.code  && isMandatory == other.isMandatory && registered == other.registered;
+    return name == other.name && academicPoints == other.academicPoints && code == other.code  && isMandatory == other.isMandatory;
 }
 
 // input operator overload, read a Course object
