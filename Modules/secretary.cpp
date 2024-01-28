@@ -526,7 +526,7 @@ void Secretary::removeCourse(Course& course){
     if(it != depCourses.end()){
         cout << "ERASED " << course.getName() << '\n';
         for (auto& element : depStudents){ // erase from students
-            element.second->eraseCourse(course.getName());
+            element.second->eraseCourse(course.getName(), course.getMand());
             jsonModifyStud(*element.second,element.second->getIdCode());
         }
         for (auto& element : depProfessors){ // erase from professors
@@ -634,6 +634,8 @@ Course* Secretary::findCourseByName(string name){
     return nullptr;
 }
 
+// read a student, search for it in Secretary::depStudents and if found return a Pointer to it
+// else return nullptr
 Student* Secretary::readAndValidateStudent(){
     cout << "INPUT STUDENT ID: ";
     string id;
@@ -648,6 +650,7 @@ Student* Secretary::readAndValidateStudent(){
     }
 }
 
+// same as above but  for Professor
 Professor* Secretary::readAndValidateProfessor(){
     cout << "INPUT PROFESSOR ID: ";
     string id;
@@ -662,6 +665,7 @@ Professor* Secretary::readAndValidateProfessor(){
     }
 }
 
+// ^^ but for Course
 Course* Secretary::readAndValidateCourse(){
     cout << "INPUT COURSE CODE: ";
     string code;
@@ -673,6 +677,8 @@ Course* Secretary::readAndValidateCourse(){
     return course;
 }
 
+// ^^ but for Semester. Because there is no findSemester function,
+// all we iterate semesters vector and compare the semesters' year and season 
 Semester* Secretary::readAndValidateSemester(){
     Semester sem;
     cin >> sem;
@@ -684,25 +690,29 @@ Semester* Secretary::readAndValidateSemester(){
     return addSemester(sem);
 }
 
+// read student information from json file, create the appropriate
+// Student objects, and add them to Secretary::depStudents using Secretary::addPerson 
+// for student, the file also contains information about the courses they've registered to and got graded in past semesters
 void Secretary::readStudentsFromFile() {
     try{
-        ifstream f("studentinfo.json");
+        ifstream f("studentinfo.json"); // try to open file, if unable to open throw exception
         if (!f) throw runtime_error("COULD NOT OPEN FILE FOR READING");
-        jStudents = json::parse(f);
-        for (auto& item : jStudents) {
-            Student stud; 
-            item.get_to(stud); 
+        jStudents = json::parse(f); // parse json and put it in json array Secretary::jStudents
+        for (auto& item : jStudents) { // for every object of array create a student from info and add it to secretary
+            Student stud;              // the json object to Student conversion is done by the from_json function in student.cpp
+            item.get_to(stud);    // tthe get_to function knows how "read" a Student object because of from_json
             addPerson(stud, false, false); 
         }
 
-        f.close();
+        f.close(); // close file
     } 
     catch(const exception &e) {
-        cerr << "Unable to open file\n";
+        cerr << "UNABLE TO OPEN FILE\n";
     }
 }
 
-
+// as above but for Professor
+// for professor, the file also contains information about the courses they've teached in past semesters
 void Secretary::readProfessorsFromFile(){
     try{
         ifstream f("profinfo.json");
@@ -716,10 +726,11 @@ void Secretary::readProfessorsFromFile(){
         f.close();
     }
     catch(const exception &e){
-        cerr << "Unable to open file\n"; 
+        cerr << "UNABLE TO OPEN FILE\n";
     }   
 }
 
+// as above but for Course
 void Secretary::readCourseFromFile(){
     try{
         ifstream f("courseinfo.json");
@@ -736,6 +747,7 @@ void Secretary::readCourseFromFile(){
         cerr << "UNABLE TO OPEN FILE\n"; 
     }
 }
+
 
 void Secretary::readCoursesAndGrades(Student* stud){
     unordered_map<string, SemesterGradeInstance*> map;

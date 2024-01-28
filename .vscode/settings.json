@@ -62,5 +62,6 @@
         "semaphore": "cpp",
         "stop_token": "cpp",
         "valarray": "cpp"
-    }
+    },
+    "editor.fontSize": 12
 }

@@ -34,7 +34,7 @@ istream& operator>>(std::istream& is, Person& p){
     cout << "ENTER FIRST NAME, LAST NAME AND ID CODE: " << endl;
     is >> p.firstName >> p.lastName >> p.idCode;
     Student* stud = dynamic_cast<Student *> (&p);
-    if (stud != nullptr){
+    if (stud != nullptr){ // dynamic cast to check if person is a student. if yes, read also year of registration
         cout << "ENTER YEAR OF REGISTRATION: ";
         int reg;
         cin >> reg;
@@ -51,6 +51,10 @@ Student::Student(string fName, string lName, string id, int regYear)
 : Person(fName, lName, id), registrationYear(regYear)
 {}
 
+// deletes all SemesterGradeInstance* inside Student::coursesWithGrades
+// this operation is not done in Student's destructor, because it would be called twice
+// and there would be a double free error
+// so this function is called from secretary's destructor as each Student* is deleted
 void Student::deleteCoursesWithGrades(){
     for(auto& it: coursesWithGrades){
         delete it.second;
@@ -62,8 +66,8 @@ Student* Student::clone(){
     try {
         return new Student(*this);
     }
-    catch(const bad_alloc &e){
-        cerr << "Memory allocation failed: " << e.what() << '\n';
+    catch(const bad_alloc &e){ // if unable to allocate throw exception
+        cerr << "MEMORY ALLOCATION FAILED: " << e.what() << '\n';
         return nullptr;
     }
 }
@@ -73,20 +77,25 @@ bool Student::equals(Student* s) {
     return Person::equals(s) && registrationYear == s->getReg();
 }
 
+// print all of a student's grades
+// for each SemesterGradeInstance in coursesWithGrades, print course name and grade
 void Student::printGrades(){
     for (auto& element : coursesWithGrades){
         cout << "COURSE: " << element.first<< ", GRADE: " << element.second->grade << '\n';
     }
 }
 
-void Student::addCourseWithGrade(Course* course, SemesterGradeInstance* semGrade){
-    coursesWithGrades[course->getName()] = semGrade;
-    if (semGrade->grade >= 5){
+// adds to Student::courseWithGrades a new SemesterGradeInstance which contains a new grade
+// if that grade is >= 5 and the course is mandatory , increment student's mandatoryPassed
+void Student::addCourseWithGrade(Course* course, SemesterGradeInstance* sgi){
+    coursesWithGrades[course->getName()] = sgi;
+    if (sgi->grade >= 5 && course->getMand()){
         mandatoryPassed++;
         currentPoints+= course->getAcademicPoints();
     }
 }
 
+// iterates courseWithGrades to find course, if found return Student's grade, else return -1
 int Student::getCourseGrade(Course* course){
     for (auto& element : coursesWithGrades){
         if (element.first == course->getName()){
@@ -96,19 +105,23 @@ int Student::getCourseGrade(Course* course){
     return -1;
 }
 
-void Student::eraseCourse(string name){
+// find course with given name in coursesWithGrades and erases it
+// if student has passed it and it is mandatory, decrease mandatory passed
+void Student::eraseCourse(string name, bool isMand){
     for (auto& element : coursesWithGrades){
         if (element.first == name){
             coursesWithGrades.erase(name);
-            if(element.second->grade >= 5){
+            if(element.second->grade >= 5 && isMand){
                 mandatoryPassed--;
             }
         }
     }
 }
 
+// this overloaded function makes it possible to convert a json object to a student object with a single function call(get_to)
+// it determines how a student's attributes should passed from a json object to a student object
 void from_json(const json& j, Student& student) {
-    // Deserialize the basic student data
+    // deserialize the basic student data
     j.at("firstName").get_to(student.firstName);
     j.at("lastName").get_to(student.lastName);
     j.at("idCode").get_to(student.idCode);
@@ -116,21 +129,22 @@ void from_json(const json& j, Student& student) {
     j.at("mandatoryPassed").get_to(student.mandatoryPassed);
     j.at("currentPoints").get_to(student.currentPoints);
 
-    // Deserialize coursesWithGrades
-    if (j.contains("coursesWithGrades")) {
+    // deserialize coursesWithGrades
+    if (j.contains("coursesWithGrades")) { // if there are courses with grades in the student's data, load them as well
         const json& coursesJson = j.at("coursesWithGrades");
         for (const auto& item : coursesJson.items()) {
             string courseName = item.key();
             SemesterGradeInstance* gradeInstance = new SemesterGradeInstance;
-            from_json(item.value(), *gradeInstance);
+            from_json(item.value(), *gradeInstance); 
 
-            // Assign the new gradeInstance to the student's coursesWithGrades map
-             student.coursesWithGrades[courseName] = gradeInstance;
+            // assign the new gradeInstance to the student's coursesWithGrades map
+            student.coursesWithGrades[courseName] = gradeInstance;
 
         }
     }
 }
 
+// makes a new StudentcourseInstance from json file
 void from_json(const nlohmann::json& j, StudentCourseInstance& sci) {
     Student temp_student;
     j.at("student").get_to(temp_student);
@@ -156,7 +170,7 @@ Professor* Professor::clone(){
         return new Professor(*this);
     }
     catch(const bad_alloc &e){
-        cerr << "Memory allocation failed: " << e.what() << '\n';
+        cerr << "MEMORY ALLOCATION FAILED: " << e.what() << '\n';
         return nullptr;
     }
 }
@@ -184,15 +198,16 @@ void from_json(const json& j, Professor& p) {
     }
 }
 
+// add a course code along with a semester year and season to Professor::profCourses map
+// *** not a Course* or Semester* ***
 void Professor::addCourse(string CourseCode, int year, bool season){
     profCourses[CourseCode].push_back(make_pair(year,season));
 }
 
+// find course by code in profCourses map and erase it
 void Professor::eraseCourse(string code){
-    for (auto& element : profCourses){
-        if (element.first == code){
-            profCourses.erase(code);
-        }
+    if(profCourses.find(code) != profCourses.end()){
+        profCourses.erase(code);
     }
 }
 

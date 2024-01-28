@@ -32,7 +32,7 @@ public:
 
     Course() : registered(0){}
 
-    Course(string nameIn, int academicPointsIn, bool isMandatoryIn);
+    Course(string nameIn, string codeIn, int academicPointsIn, bool isMandatoryIn);
 
     //Course(const Course& other);
 

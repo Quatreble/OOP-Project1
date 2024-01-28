@@ -2,11 +2,11 @@
 
 // find given course, and if given student is registered to it return the StudentCourseInstance*, else return nullptr
 StudentCourseInstance* Semester::isRegistered(Course* course, Student* stud){
-    for (auto& element : courseStuds){
+    for (auto& element : courseStuds){ // iterate courseStuds intil you find course
         if (element.first == course){
-            for (StudentCourseInstance* sci : element.second){
+            for (StudentCourseInstance* sci : element.second){ // iterates course's students until you findStudent
                 if (sci->stud->getIdCode() == stud->getIdCode()){
-                    return sci;
+                    return sci; // return sci if found 
                 }
             }
         }
@@ -14,6 +14,8 @@ StudentCourseInstance* Semester::isRegistered(Course* course, Student* stud){
     return nullptr;
 }
 
+// add given to student to given course
+// to do this a SemesterGradeInstance must first be created with the student and their grade(initialized to -1)
 void Semester::addStudToCourse(Course* c, Student* s, bool print){
     // if course is not already in courseStuds insert it as key
     courseStuds.emplace(c, vector<StudentCourseInstance*>());
@@ -40,6 +42,7 @@ void Semester::addProfToCourse(Course* c, Professor* p, bool print){
         cout << p->getFirstName() << " " << p->getLastName() <<" IS NOW TEACHING " << c->getName() << '\n';
 }
 
+// grade a student
 // if there is no grade (grade is equal to -1), allow student to be graded
 bool Semester::gradeStud(StudentCourseInstance* sci){
     if (sci->grade == -1){
@@ -55,6 +58,7 @@ bool Semester::gradeStud(StudentCourseInstance* sci){
     }
 }
 
+// print semester's year and season
 void Semester::printSem(){
     cout << "YEAR: " << year << endl << "SEMESTER: " << (winterOrSummer ? "WINTER" : "SUMMER") << '\n';
 }
@@ -91,9 +95,9 @@ void Semester::printPassed(Course* course) {
 // and its statistics for registered and passing students by accessing the Semester::courseProfs map  
 void Semester::printProfStats(Professor* prof){
     int count;
-    for (auto& element : courseProfs){
+    for (auto& element : courseProfs){ // iterate courseProfs until you find prof
         for (Professor* profTemp : element.second){
-            if (profTemp == prof){
+            if (profTemp == prof){ // print statistics
                 cout << "\nCOURSE NAME AND ID: " << element.first->getName() << ", " << element.first->getCode() << '\n';
                 cout << "ACADEMIC POINTS: " << element.first->getAcademicPoints() << '\n';
                 cout << "NUMBER REGISTERED STUDENTS: "<< courseStuds[element.first].size() << '\n';
@@ -114,9 +118,9 @@ void Semester::printProfStats(Professor* prof){
 
 // for each course of Semester::CourseStuds, if the given student is registered and graded, print their grade 
 void Semester::printStudGrades(Student* stud){
-    for (auto& element : courseStuds){
-        for (StudentCourseInstance*  sci : element.second){
-            if (sci->stud == stud){
+    for (auto& element : courseStuds){ // iterate courseStuds
+        for (StudentCourseInstance*  sci : element.second){ // for each course iterates its students
+            if (sci->stud == stud){ // if found student in course, and there is a grade(not -1), print course name and grade
                 if (sci->grade == -1){
                     cout << "NO GRADE AVAILABLE FOR " << element.first->getName() << '\n';
                 }

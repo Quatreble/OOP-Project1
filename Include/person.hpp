@@ -101,7 +101,7 @@ public:
 
     void addCourseWithGrade(Course* course, SemesterGradeInstance* semGrade);
     int getCourseGrade(Course* course);
-    void eraseCourse(string name);
+    void eraseCourse(string name, bool isMand);
 
     void to_json(json& j, const Student& student, bool printCoursesWithGrades = true) {
         j = json{
